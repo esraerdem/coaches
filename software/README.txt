@@ -4,14 +4,16 @@
                       Sapienza University of Rome, Italy
 ================================================================================
 
-The 'coaches/src' folder contains source code divided in the sub-folders:
+The 'coaches/software' folder contains source code, libraries and binary code 
+divided in the following sub-folders:
 
- - ros      contains ros modules
- - external contains external software (i.e., not maintained in the coaches repository)
+ - src       contains (non-ROS) source code maintained in the coaches repository
+ - ros       contains ros modules
+ - external  contains external software not maintained in the coaches repository
+ - bin       contains executable files
+ - include   contains include files 
+ - lib       contains libraries
 
-and these additional sub-folders:
-
- - bin      contains executable files
 
 
 === Initialize the COACHES software environment ===
@@ -22,10 +24,11 @@ you need to run the following steps:
 1. Set the environment variable COACHES_HOME in your ~/.bashrc file
    with the full path of the coaches/src directory
 
-   export COACHES_HOME=<PATH>/coaches/src
+   export COACHES_HOME=<PATH>/coaches/software
 
-2. run the following command from the 'src' directory
+2. run the following command from the 'software' directory
 
+  $ cd $COACHES_HOME
   $ bin/coaches_init.bash
 
 It will ask for sudo password in order to install or update required Linux packages.

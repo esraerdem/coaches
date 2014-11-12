@@ -5,6 +5,10 @@ if [ -z "$COACHES_HOME" ]; then
     exit 1
 fi
 
+# Make dirs if missing
+mkdir -p lib
+mkdir -p include
+
 # Install required Linux libs and applications
 sudo apt-get install cmake g++ xterm libxml2 libxml2-dev flex
 
