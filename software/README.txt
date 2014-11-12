@@ -45,11 +45,13 @@ If you get errors, try to solve them and/or write to iocchi@dis.uniroma1.it
 For every terminal in which you want to run or compile COACHES software, 
 you need to set up some environment variables with the following command
 
+  $ cd $COACHES_HOME
   $ source bin/coaches_setup.bash
 
 Note:
-You can add 'source <PATH>/coaches/src/bin/setup.bash' in your .bashrc file 
-  if you want variables to be automatically set whener you open a terminal.
+  If you want variables to be automatically set whenever you open a terminal,
+  add 'source $COACHES_HOME/bin/coaches_setup.bash' in your .bashrc file 
+  (after the definition of COACHES_HOME).
   Check that there are no conflicts with other projects in your machine 
   (e.g., if you use other ROS catkin workspaces, it may give problems).
 
