@@ -1,0 +1,6 @@
+*~
+src/ros/catkin_ws/.catkin_workspace
+src/ros/catkin_ws/build/
+src/ros/catkin_ws/devel/
+src/ros/catkin_ws/src/CMakeLists.txt
+
