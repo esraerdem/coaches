@@ -3,6 +3,8 @@ src/ros/catkin_ws/.catkin_workspace
 src/ros/catkin_ws/build/
 src/ros/catkin_ws/devel/
 src/ros/catkin_ws/src/CMakeLists.txt
-src/external/PetriNetPlans/
 src/external/gradient_based_navigation/
+src/ros/catkin_ws/src/gradient_based_navigation
+src/external/PetriNetPlans/
+src/ros/catkin_ws/src/PNPros
 

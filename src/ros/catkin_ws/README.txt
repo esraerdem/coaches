@@ -2,7 +2,14 @@ This folder contains Catkin ROS nodes.
 
 *IMPORTANT*
 
-You have to initialize your Catkin workspace the very first time you use it, following these instructions:
+You have to initialize your Catkin workspace the very first time you use it.
+
+This is done by the 'initialize.bash' script, so you just need to run 
+
+  $ ./initialize.bash
+
+
+Otherwise, you can follow these step-by-step instructions:
 
 1. Initialize the workspace from the src folder:
 
@@ -20,9 +27,12 @@ You have to initialize your Catkin workspace the very first time you use it, fol
 
   $ source devel/setup.bash
 
-(*) Setting environment variables can be done permanently by adding the source command 
-in your ~/.bashrc file. [Preferred option if you do not have other catkin workspaces in your machine]
-Otherwise, it must be run manually when you want to use this workspace (just once for each terminal). [Needed if you want to manage multiple workspaces.]
+(*) Setting environment variables can be done in two ways:
+1) permanently by adding the source command in your ~/.bashrc file. 
+   [Preferred option if you do not have other catkin workspaces in your machine]
+2) manually each time you want to use this workspace (just once for each terminal),
+   to this end, you can use the setup.bash script in the coaches/src directory.
+   [Needed if you want to manage multiple workspaces]
 
 
 4. Run roscore in another terminal
