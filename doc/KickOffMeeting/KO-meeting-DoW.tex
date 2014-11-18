@@ -1,0 +1,162 @@
+\documentclass{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amssymb}
+
+% Figures
+\usepackage{graphicx}
+\usepackage{color}
+
+% Page formatting
+\newsavebox{\notetitle}
+\newsavebox{\noteauthor}
+\newsavebox{\notenumber}
+\newsavebox{\notedate}
+\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
+\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+\renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
+\newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
+\newcommand{\makemadtitle}{
+  \hrule
+  \vspace{.5em}
+  \noindent
+  \begin{center}
+  \textbf{
+  %{\centering\includegraphics[height=3cm,bb=0 0 371 145]{../logoCHISTERA2014.png}}\\
+  {\centering\includegraphics[height=3cm]{../logoCHISTERA2014.eps}}\\
+   {\centering\Large COACHES project, CHIST-ERA 2014 program}
+  }
+  \end{center}
+  \vspace{.5em}
+ 
+  \hrule
+  \vspace{3em}
+  \begin{center}
+    \begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
+    \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
+    \begin{large}\usebox{\noteauthor} --- \usebox{\notedate}\end{large}
+  \end{center}
+  \vspace{3em}
+}
+
+% Various macros and environments
+\newtheorem{prop}{Proposition}
+\newtheorem{proposition}[prop]{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{definition}[defn]{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{corollary}[cor]{Corollary}
+\newtheorem{exmp}{Example}
+\newtheorem{example}[exmp]{Example}
+\newtheorem{lem}{Lemma}
+\newtheorem{lemma}[lem]{Lemma}
+\newtheorem{fact}{Fact}
+\newtheorem{thm}{Theorem}
+\newtheorem{theorem}[thm]{Theorem}
+\newtheorem{prob}{Problem}
+\newtheorem{problem}[prob]{Problem}
+\newtheorem{rem}{Remark}
+\newtheorem{remark}[rem]{Remark}
+\newtheorem{conj}{Conjecture}
+\newtheorem{conjecture}[conj]{Conjecture}
+\newenvironment{pf}{{\bf Proof }}{\hfill$\Box$\par}
+\newenvironment{proof}{{\bf Proof }}{\hfill$\Box$\par}
+\newcommand{\spaceafterproof}{\vspace{1em}}
+
+% NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{ Document of Work }
+\author{COACHES Consortium}
+\nb{of the kickoff meeting, $27^{th},28^{th}$ October }
+
+\date{\today}
+
+\begin{document}
+
+\makemadtitle
+
+\vspace*{1.0in}
+\begin{abstract}
+ This document summarizes the discussion during the kickoff meeting. It describes the document of work and specifying the role of each partner and describing the first steps for each work package.
+  \end{abstract}
+
+\vspace*{1.5in}
+
+\fbox{
+\begin{minipage}{1.0\textwidth}
+\begin{center}
+ $\copyright$, THE COACHES CONSORTIUM \\
+The copyright in this document is the property of the COACHES Consortium. This document is supplied by the COACHES consortium on the express terms that it is to be treated as confidential. This document is not external distribution without the project manager's permission. 
+\end{center}
+\end{minipage}
+}
+\newpage
+
+\section{Workpackages description and role of partners}
+\subsection{Workpackage WP1}
+\subsubsection*{Objectives}
+The goal of this work package is to provide a semantic representation of the environment and semantic maps using common sense knowledge representation and developing sptial and non-monotonic reasoning to acquire, update and query the knowledge base of robots. 
+\subsection*{Next steps of work}
+\begin{itemize}
+\item Commonsense representation (Esra and ??)
+\item semantic maps ( Luca should send a semantic map representation to Esra and Abdel-Illah)
+\item Event-based reasoning (Maroua and Arthur who is a Maroua's PhD student working on this topic)
+\end{itemize}
+\subsection*{Next meeting}
+A phone meeting between GREYC and SU in December/January to discuss the semantic map, which representation ?, which reasoning ? 
+
+
+\subsection{Workpackage WP2}
+\subsubsection*{Objectives}
+The goal of this work package is to provide visual techniques to better understand the scene using algorithms of image processing to detect objects and their location and then provide these information to WP1 to update the knowledge base of robots and to reason on to detect whether these objects are abnormal or not and algorithms of video processing to better understand the human activities. These algorithms should allow us to detect events such as motionless, waving motion, running and detecting groups of persons. 
+{\bf\tt Note that in Task 2.1, the work of localisation is processed in WP4 and then no need to consider this aspect in this task and in WP2.}
+\subsection*{Next steps of work}
+\begin{itemize}
+\item The use case should help Hichem to better focus on one aspects such as detecting groups of persons, distinguishing between the genre, age of persons. 
+\item Fusing between information coming from the static cameras on cameras onboard. 
+\end{itemize}
+\subsection*{Next meeting}
+A meeting between GREYC and VUB  (Frederic and Hichem) to better share  tasks and to define who do what. Hichem will contact first Frederic.
+\subsection{Workpackage WP3}
+\subsubsection*{Objectives}
+The goal of this work package is to provide a multi-modal interaction interface allowing customers of the mall to express their need and send their requests using the touch screen or microphone and allowing the robot to display information with text, image and video. The requests received by the robots from the customers allow them to better estimate the need of the costumers and reinforce their believes constructed from observation.
+{\bf\tt Note that deliverable D3.1 is splitted into two deliverables namely D3.1.1 for task 3.1 and D3.1.2 for task 3.2}
+
+\subsection*{Next steps of work}
+\begin{itemize}
+\item The use case should help in proposing a first version of the multimodal interface. Sapienza has already some previous works with multi-modal interface that should be adapted. Next step could be a presentation of the existing modules.
+\item GREYC has a module of estimating their destination of people according to their motion and the goal according to their behavior. These modules should be presented and adapted to the requirement of the use case 
+\end{itemize}
+\subsection*{Next meeting}
+A meeting between GREYC and Sapeinza when the first scenario is defined.
+
+\subsection{Workpackage WP4}
+\subsubsection*{Objectives}
+The goal of this work package is to provide a module of safe navigation and a robot coordination  module to share tasks. 
+
+\subsection*{Next steps of work}
+\begin{itemize}
+\item GREYC has several existing works on robot coordination techniques based on MDPs. An adaptation should be presented according to the requirements of the use case. 
+\item Sapiens will present the existing navigation module used in their current robot. 
+\end{itemize}
+\subsection*{Next meeting}
+January/February 
+\subsection{Workpackage WP5}
+This work page is focused in defining the set-up of robot, the architecture of the system and the use case. The use case is defined in the next section. 
+\section{Use Case}
+\begin{itemize}
+\item {\bf Scenario 1: simple interaction and advertising} The use case adopted consists of a smart advertisement mission. The robots should detect group of peoples, move toward this group, select a person to interact with and propose an appropriate advertisement according to the location and the interest expressed by the person. The robots should show a semantic map with appropriate shops with a path to head the shops. 
+\item {\bf Scenario 2: complex interaction during the guiding}
+Scenario 1 + guiding where the robot should guide the person to the destination. The customers should follow the robot to destination.
+\item {\bf Scenario 3: cooperation between robots}
+Scenario 3A : Scenario 2 + different person to guide to different destinations \\
+Scenario 3B : Scenario 2 + guiding a person from one building to another where one robot guide the customer to the exit of building 1 and then  assist him to reach the building 2 where the second robot wait him and guides him to the destination. 
+\item {\bf Scenario 4 : :detecting abnormal events}
+Scenario 4A : detecting an object at the wrong location, the robot moves towards the object and send a picture to an operator.
+Scenario 4B: motionless of a customers, the robot moves toward the person and then interact as in scenario 1. 
+\end{itemize}
+\section{Overall architecture}
+Bus of communication based on publish/subscribe principle and the use of a Decentralized ROS. Details will be sent in a separate document.
+\section{Communication of the project}
+coming soon in a separate document
+
+\end{document}
