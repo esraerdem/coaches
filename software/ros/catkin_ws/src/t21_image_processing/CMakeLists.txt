@@ -6,12 +6,12 @@ project(t21_image_processing)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   message_generation
-  message_runtime
   roscpp
   rospy
   std_msgs
   sensor_msgs
   geometry_msgs
+  shared
 )
 
 ## System dependencies are found with CMake's conventions
@@ -86,7 +86,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES t21_image_processing
-#  CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs
+CATKIN_DEPENDS message_runtime roscpp rospy std_msgs shared sensor_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -107,16 +107,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(t21_image_processing_node src/t21_image_processing_node.cpp)
+add_executable(t21 src/T21.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(t21_image_processing_node t21_image_processing_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(t21_image_processing_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(t21
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

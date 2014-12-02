@@ -3,22 +3,7 @@
  * Sends features and robot location.
  */
 
-#include "ros/ros.h"
-#include "sensor_msgs/LaserScan.h"
-#include "geometry_msgs/Pose2D.h"
-
-#include <sstream>
-#include <istream>
-
-void laserScanCallback(const sensor_msgs::LaserScan::ConstPtr& msg)
-{
-// TODO
-}
-
-void cameraImageCallback(const sensor_msgs::Image::ConstPtr& msg)
-{
-// TODO
-}
+#include "T21.h"
 
 int main(int argc, char **argv)
 {
@@ -26,12 +11,8 @@ int main(int argc, char **argv)
 
   ros::NodeHandle node;
 
-  ros::Publisher feature_pub = node.advertise<shared::Feature>("t21_features", 100);
-  ros::Publisher location_pub = node.advertise<geometry_msgs::Pose2D>("robot_location", 100);
-  ros::Subscriber laser_sub = node.subscribe("laser_scan", 100, laserScanCallback);
-  ros::Subscriber camera_sub = node.subscribe("camera_image", 10, cameraImageCallback);
-
-  ros::spin();
+  T21 t21(node);
+  t21.run();
 
   return 0;
 }
