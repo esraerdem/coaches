@@ -5,11 +5,10 @@ project(t22_situation_awareness)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  message_runtime
   roscpp
   rospy
   std_msgs
+  shared
 )
 
 ## System dependencies are found with CMake's conventions
@@ -84,7 +83,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES t22_situation_awareness
-#  CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs
+CATKIN_DEPENDS message_runtime roscpp rospy std_msgs shared
 #  DEPENDS system_lib
 )
 
@@ -105,16 +104,16 @@ include_directories(
 # )
 
 ## Declare a cpp executable
-# add_executable(t22_situation_awareness_node src/t22_situation_awareness_node.cpp)
+add_executable(t22 src/T22.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(t22_situation_awareness_node t22_situation_awareness_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(t22_situation_awareness_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(t22
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
