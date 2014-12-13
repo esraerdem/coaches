@@ -8,4 +8,7 @@ software/external/gradient_based_navigation/
 software/ros/catkin_ws/src/gradient_based_navigation
 software/external/PetriNetPlans/
 software/ros/catkin_ws/src/PNPros
+software/external/stage_environments/
+software/ros/catkin_ws/src/stage_environments
+
 

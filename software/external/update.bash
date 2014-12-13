@@ -26,3 +26,16 @@ else
 fi
 
 
+# Stage environments
+
+if [ ! -d stage_environments ]; then
+    svn co https://labrococo.dis.uniroma1.it/svn/software-open/trunk/rococo-ros/stage_environments/
+    cd ../ros/catkin_ws/src/
+    ln -sf ../../../external/stage_environments .
+    cd -
+# ../../../external/
+else
+    cd stage_environments; svn up; cd ..
+fi
+
+

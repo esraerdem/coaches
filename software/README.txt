@@ -63,6 +63,7 @@ After set up (as in the previous section), use:
   $ coaches_update.bash
 
 
+
 === Build the COACHES software environment ===
 
 After set up (as in the previous section), use:
@@ -70,8 +71,39 @@ After set up (as in the previous section), use:
   $ coaches_make.bash
 
 
-
   
+=== Test the COACHES software environment ===
 
+After set-up and build of the environment.
+
+1. Hello COACHES developers
+
+  $ rosrun hello_coaches_developers hello
+
+You will see a print out 'Hello COACHES developers!!!'
+
+2. Stage environment
+
+  $ roscd stage_environments/scripts/
+  $ ./start_simulation.py Rive1 diago 10 23 0 amcl move_base joystick rviz
+
+You can move the simulated robot with keyboard in the window 
+or through goal commands in Rviz
+When you want to close the simulation use the command
+
+  $ ./quit.sh
+
+Known problems: 
+
+1. sometimes the very first execution when you turn on the machine does not workspaces.
+Solution: retry or try to launch 'roscore' manually before starting the simulation
+
+2. sometimes Rviz shows a black window. 
+Solution: re-launch Rviz with the command
+  $ rosrun rviz rviz -d `rospack find stage_environments`/config/diago/rviz/diago.rviz
+  
+You can also use only the command
+  $ ./start_simulation.py 
+and select a proper combination in the GUI  
 
 
