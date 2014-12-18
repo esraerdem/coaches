@@ -12,9 +12,8 @@
 \newsavebox{\notenumber}
 \newsavebox{\notedate}
 
-%\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
-%\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
 \renewcommand{\title}[1]{\sbox{\notetitle}{\begin{minipage}{1.0\textwidth} \begin{center} \Large{\textbf{#1}} \end{center}\end{minipage} }}
+%\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
 \renewcommand{\author}[1]{\sbox{\noteauthor}{\begin{minipage}{1.0\textwidth} \begin{center} \large{#1} \end{center}\end{minipage}}}
 \renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
 \newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
@@ -69,7 +68,7 @@
 
 % NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{D5.2\\ Definition of the use cases for the demonstrations}
+\title{D5.1\\ Definition of internal architecture and interface between software modules}
 
 \author{Domenico D. Bloisi, Fabio Maria Carlucci, Luca Iocchi, Daniele Nardi\\
 Dept. of Computer, Control and Management Engineering\\
@@ -87,7 +86,7 @@ Sapienza University of Rome, Italy}
 \makemadtitle
 
 \begin{abstract}
-This document describes the scenario in which the robots will operate and a set of use cases that will be implemented, demonstrated and evaluated.  
+This document describes the software architecture of the entire project, showing the main software components, their connections and the interfaces between them.
 \end{abstract}
 
 \vspace*{4.0cm}
@@ -102,7 +101,25 @@ The copyright in this document is the property of the COACHES Consortium. This d
 }
 \newpage
 
-\input{UseCases_sapienza}
+\begin{figure}
+\includegraphics[width=0.95\textwidth]{COACHES_swarch.png}
+\caption{COACHES software architecture}
+\label{fig:swarch}
+\end{figure}
 
+\section{Introduction}
+
+In this document we describe the software architecture of the COACHES project.
+
+We describe our choice regarding the middleware chosen to implement the entire system.  Moreover,  we  precisely  define  the  interface 
+between  each  pair  of  modules  connected by  a  flow  of  information  as  depicted  in 
+Figure \ref{fig:swarch}. 
+Subsequent implementation of the software components during the project will follow  these  specifications,  thus  simplifying  their  integration  in  the demonstrators. 
+
+We will use an open architecture (hard/soft) and standard technologies available (such 
+as ROS for integrating robotic modules and DDS for communication) so that it will be 
+easy to extend and/or adapt the capabilities of the system during the whole length of 
+the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors).  Such 
+an open architecture will also simplify and optimize integration efficiency as well as re-use of assets in other projects or products. 
 
 \end{document}
