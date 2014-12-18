@@ -10,5 +10,7 @@ software/external/PetriNetPlans/
 software/ros/catkin_ws/src/PNPros
 software/external/stage_environments/
 software/ros/catkin_ws/src/stage_environments
-
-
+doc/*/*.pdf
+doc/*/*.aux
+doc/*/*.log
+doc/*/*.gz
