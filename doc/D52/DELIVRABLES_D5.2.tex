@@ -1,0 +1,144 @@
+\documentclass{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amssymb}
+
+% Figures
+\usepackage{graphicx}
+\usepackage{color}
+
+% Page formatting
+\newsavebox{\notetitle}
+\newsavebox{\noteauthor}
+\newsavebox{\notenumber}
+\newsavebox{\notedate}
+\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
+\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+\renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
+\newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
+\newcommand{\makemadtitle}{
+  \hrule
+  \vspace{.5em}
+  \noindent
+  \begin{center}
+  \textbf{
+  {\centering\includegraphics[height=3cm]{logoCHISTERA2014}}\\
+   {\centering\Large COACHES project, CHIST-ERA 2014 program}
+  }
+  \end{center}
+  \vspace{.5em}
+ 
+  \hrule
+  \vspace{3em}
+  \begin{center}
+    \begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
+    \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
+    \begin{large}\usebox{\noteauthor} --- \usebox{\notedate}\end{large}
+  \end{center}
+  \vspace{3em}
+}
+
+% Various macros and environments
+\newtheorem{prop}{Proposition}
+\newtheorem{proposition}[prop]{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{definition}[defn]{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{corollary}[cor]{Corollary}
+\newtheorem{exmp}{Example}
+\newtheorem{example}[exmp]{Example}
+\newtheorem{lem}{Lemma}
+\newtheorem{lemma}[lem]{Lemma}
+\newtheorem{fact}{Fact}
+\newtheorem{thm}{Theorem}
+\newtheorem{theorem}[thm]{Theorem}
+\newtheorem{prob}{Problem}
+\newtheorem{problem}[prob]{Problem}
+\newtheorem{rem}{Remark}
+\newtheorem{remark}[rem]{Remark}
+\newtheorem{conj}{Conjecture}
+\newtheorem{conjecture}[conj]{Conjecture}
+\newenvironment{pf}{{\bf Proof }}{\hfill$\Box$\par}
+\newenvironment{proof}{{\bf Proof }}{\hfill$\Box$\par}
+\newcommand{\spaceafterproof}{\vspace{1em}}
+
+% NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{ Use case definitions}
+\author{COACHES Consortium}
+\nb{: DELIVRABLE D5.2}
+
+\date{\today}
+
+\begin{document}
+
+\makemadtitle
+
+\vspace*{1.0in}
+\begin{abstract}
+ This document describes 4 use cases expected to develop for the final demonstration. 
+  \end{abstract}
+
+\vspace*{1.5in}
+
+\fbox{
+\begin{minipage}{1.0\textwidth}
+\begin{center}
+ $\copyright$, THE COACHES CONSORTIUM \\
+The copyright in this document is the property of the COACHES Consortium. This document is supplied by the COACHES consortium on the express terms that it is to be treated as confidential. This document is not external distribution without the project manager's permission. 
+\end{center}
+\end{minipage}
+}
+\newpage
+\section{Introduction}
+This document consists of describing different use cases considered in the project to show the overall functionalities of the system and the data flow between different modules as presented in Figure \ref{Fig-1}. 
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[height=10cm]{ArchitectureCoachesDF}
+\caption{Architecture and data flow }
+\label{Fig-1}
+\end{center}
+\end{figure}
+
+\section{Use Cases}
+In Task 5.2 of work package WP5, we develop 4 use cases for demonstration. 
+\subsection{Scenario 1: simple interaction and advertising} 
+The use case adopted consists of a smart advertisement mission. The robots receive point of interests and plan to visit these points and announce the appropriate advertising according to the location. The points of interests should be focused on populated area and group detection. The robots should detect group of peoples, move toward this group, select a person to interact with and propose an appropriate advertisement according to the location and the interest expressed by the person. The robots should show a semantic map with appropriate shops with a path to head the shops. This use case illustrate the results developed in tasks T21, T22, T11, T12, T42, T41. 
+
+The objective of this use case is to measure some performance indicators : percentage of good group detection for tasks T21 and T22 ; good expressiveness and message languages for T12 and map expressiveness T11 ; safe navigation and percentage of good advertisements according to the location. 
+
+\subsection {Scenario 2: complex interaction during the guiding}
+This use case consists in rendering scenario 1 more complexe by introducing the escorting and guiding services. The robot should guide the person to the destination, bu minting a permanent interaction during the escort or the guide. The customers should follow the robot to destination and the robot should adapt their behavior to the customers moving and behaviors.  The robots should be able to understand the abandon of the customers. This aspect allows us to assess the performance of  tasks T31 of estimating the need of the human. The human can also express their need via the multi-modal interface (Task T32).
+
+The objective of this use case is to measure the same performance indicators as in scenario 1 but also the performance of tasks T31, T32 on the percentage of good need estimation. 
+
+\subsection {Scenario 3: cooperation between robots}
+Thee objective of this scenario is to extend scenario 2 to a multi-robot system. In this scenario, we develop a use case to show the ability of robots to cooperate and to share tasks. The first use case consiste of scenario 2 with different persons to guide or escort to different destinations. The robots should, in decentralized way, share tasks (person or group to guide) and develop a coordinated strategy to assist all the persons, to delegate a task if any unexpected event during the assistance and to inform the other robots about other persons to assist. The other aspect we present in this use case is the ability of robots to share space. To this end,  
+
+we consider a scenario of guiding a person from one building to another where one robot guide the customer to the exit of building 1 and then  assist him to reach the building 2 where the second robot wait him and guides him to the destination. 
+
+The objective of this scenario is to evaluate the tasks of WP4 and task T21. 
+
+\subsection{ Scenario 4 : detecting abnormal events}
+This use case consists of assessing the modules developed in WP2 in terms of perception. To this end, we consider a use case where external cameras detect object at a location (Task T21), the robot should evaluate if the  object is at a right or wrong location and generate an event (task T22) and the module of task T12 generates a task of visiting the location where the object is located. The robot moves towards the object and send a picture to an operator. The other event, we want to detect is the motionless of a customers, the robot moves toward the person and then interact as in scenario 1. 
+\subsection {Demonstration}
+We propose to use the robots in the Rives De l'Orne Mall of the Caen city, in the collaboration of the city's representative and the Rive de l'Orne manager
+\newpage
+\section{Test facilities: Collaboration with the Mall Rives de l'Orne}
+The test facilities concerns the Mall Rives de l'Orne. « Rive de l’orne » is a new and modern mall at Caen city (France). It is composed of two face-to-face buildings separated by a large main square. At the first floor of the two buildings, there are many shops and restaurants. In the main square, there is a cinema. This space is surrounded by tramway stations and a train station. This mall is visited by more than 100,000 customers every year. In addition to that, several elderly people live in the new apartments at the other floors of the buildings. These people have their habit and there are frequent customers of the mall \ref{mall}. Two meetings have been organized ($23^th$ October and $12^th$ December 2014)to define the equipments to install interns of cameras and sensors (RFID) to send some information to robots about shops, the planning of the robot deployment in the mall and some local dissemination actions. A visit of all partners have been organized during the kickoff meeting. 
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[height=5cm]{InsideRivedelOrne}
+\caption{Inside the mall}
+\label{mall}
+\end{center}
+\end{figure}
+
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[height=5cm]{MapsRorne}
+\caption{The map}
+\label{default}
+\end{center}
+\end{figure}
+\end{document}
