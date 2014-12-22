@@ -122,4 +122,81 @@ easy to extend and/or adapt the capabilities of the system during the whole leng
 the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors).  Such 
 an open architecture will also simplify and optimize integration efficiency as well as re-use of assets in other projects or products. 
 
+In the following of this document, we will first describe the choice of the middleware, then the main software components and the  set-up of a 2D simulation environment for testing the developments, finally we describe the version management system that will be used to manage the development.
+
+\section{Middleware}
+
+For the development of the software robotics components, we use the Robot Operating System (ROS) (www.ros.org), which is the standard middleware for robotics applications.
+In particular, we will use the last stable version ROS Indigo and the last LTS (Long Term Support) version of the Linux/Ubuntu Operating System.
+
+ROS provides the middleware to share information among the many modules implementing various functionalities on each robot. Moreover, an interface (ROS-through-TCP) will be realized in order to share information among the robots and between each robot and other components of the system.
+
+\section{Main software components}
+
+In this section we describe the main robotic software components that will be development for the control, the reasoning and the interaction functionalities of the robot.
+
+\subsection{Robotic software components}
+
+The main robotic software components that will be realized within the COACHES project are related to the following project tasks.
+\begin{itemize}
+\item T1.1 KB modeling
+\item T1.2 KB reasoning
+\item T2.1 Image Processing
+\item T2.2 Situation Awareness
+\item T3.1 Multimodal HRI
+\item T3.2 Human needs estimation
+\item T4.1 Robust navigation
+\item T4.2 Multi-robot planning
+\end{itemize}
+
+Sapienza University is responsible for tasks T3.1 and T4.1.
+
+
+\section{2D Simulation Environment}
+
+
+\section{Version management system}
+
+In order to manage the development of the software by all the partners of the project, we have supported the team from University of Caen in the set up of a GIT repository for the software.
+The repository is accessible only by the project partners and it is organized as follows.
+
+The 'coaches/software' folder contains source code, libraries and binary code 
+divided in the following sub-folders:
+
+\begin{itemize}
+\item \emph{src}:       contains (non-ROS) source code maintained in the coaches repository
+\item \emph{ros}:       contains ros modules
+\item \emph{external}:  contains external software not maintained in the coaches repository
+\item \emph{bin}:       contains executable files
+\item \emph{include}:   contains include files 
+\item \emph{lib}:       contains libraries
+\end{itemize}
+
+Automated scripts for initializing, setting-up, updating, building and testing the software environment have been developed and described in the repository. These scripts will facilitate updates and testing and thus in  general the integration of functionalities developed by the different developers.
+
+The \emph{ros} folder contains a Catkin workspace (which is the standard building environment in ROS) and the following ROS packages, including the robotic software components described above.
+
+\begin{itemize}
+\item \emph{hello\_coaches\_developers}: a test package to check correct installation and set-up of the environment;
+\item \emph{t11\_kb\_modeling}: software developed for Task T1.1;
+\item \emph{t12\_kb\_reasoning}: software developed for Task T1.2;
+\item \emph{t21\_image\_processing}: software developed for Task T2.1;
+\item \emph{t22\_situation\_awareness}: software developed for Task T2.2;
+\item \emph{t31\_multimodal\_hri}: software developed for Task T3.1;
+\item \emph{t32\_human\_needs\_estimation}: software developed for Task T3.2;
+\item \emph{t41\_robust\_navigation}: software developed for Task T4.1;
+\item \emph{t42\_multi\_robot\_planning}: software developed for Task T4.2;
+\end{itemize}
+
+
+Moreover, additional packages developed outside the COACHES project are present in the \emph{external} directory and linked in the ROS Catkin workspace.
+Some examples of these external packages are:
+\begin{itemize}
+\item \emph{gradient\_based\_navigation}: a package for safe navigation and obstacle avoidance in dynamic environments;
+\item \emph{PetriNetPlans}: library and ROS bridge for plan execution;
+\item \emph{stage\_environments}: a package for 2D simulation.
+\end{itemize}
+
+
+
 \end{document}
