@@ -83,8 +83,25 @@ safely the environment. Navigation inside a populated environment, i.e., a mall
 during opening hours, must be done in order to avoid damage to people
 and goods.
 
+For each use case, the following data are provided:
+\begin{itemize}
+\item A brief textual description;
+\item One (or more) sequence diagrams;
+\item An optimistic sequence of actions.
+\end{itemize}
+
+Furthermore, a detailed overview of the preconditions and post-conditions for each
+used action is given at the end of this section.
+
 
 \subsection{Customers ask for help carrying bags}
+
+The objective of this use case is to highlight the social awareness
+of the robot in the completion of a given task. There are many ways
+to carry a bag for a customer, but only a few might be socially acceptable
+at a given moment. To perform good, the robot asks the customer about her/his priorities.
+
+\subsubsection{Use case description}
 
 The robot is called by a shop manager (or by a customer) to help
 in carrying bags. Bag loading operations take place in dedicated areas,
@@ -113,8 +130,35 @@ If the customer is in a hurry, the robot
 with interesting discounts.
 \end{enumerate}
 
+In any case the robot modulates its speed taking into account the number of detected people,
+to minimize the risk of collision.
+
+\subsubsection{Sequence diagram}
+
+\includegraphics[width=0.85\textwidth]{bagUseCase}
+
+
+\subsubsection{Optimistic robot action sequence}
+\begin{enumerate}
+\item Go to shop's loading area
+\item Approach customer
+\item Start conversation
+\item Ask to load bag
+\item Ask if customer wants to lead
+\item Follow customer
+\item Ask To Unload
+\item End conversation
+\end{enumerate}
+
 
 \subsection{Proposing an ice cream to a child}
+
+This use case serves to demonstrate the common sense reasoning capability
+of the robot. Since it is not socially acceptable for the robot to guide
+a child to a location without her/his parents permission, the robot
+asks for the parent's permission before completing the task.
+
+\subsubsection{Use case description}
 
 The manager of an ice cream shop asks the robot to inform children about
 a special discount. The robot looks around for children. When it detects
@@ -128,10 +172,50 @@ to the ice cream shop, the robot
 \end{enumerate}
 
 \noindent Once the parent agrees to allow the child to follow the robot, it proceeds
-to the ice cream shop. 
+to the ice cream shop.
 
+\subsubsection{Sequence diagrams}
+
+\begin{figure}[!h]
+\includegraphics[width=0.85\textwidth]{iceCreamA}
+\protect\caption{Option A: Parents are near the child.}
+\end{figure}
+
+
+\begin{figure}[!h]
+\includegraphics[width=0.85\textwidth]{iceCreamB}
+\protect\caption{Option B - Parents are not near the child.}
+\end{figure}
+
+
+
+\subsubsection{Optimistic robot action sequence}
+\begin{enumerate}
+\item Approach child
+\item Start conversation
+\item Offer ice cream discount
+\item Ask parents for permission
+\item Ask child to follow
+\item Go to IceCreamShop
+\item Inform customer destination has been reached
+\item End conversation
+\end{enumerate}
+
+\newpage
 
 \subsection{Customer refuses the first robot proposal and accepts a different one}
+
+This use case highlights how the robot is capable of
+recovering from a failure by exploiting automatic reasoning.
+Since the customer refuses the first offer proposed by the robot, it, instead of randomly proposing 
+a new offer to her/him, tries to understand the user's preferences.
+
+Moreover, in this use case, the proactive nature of the robot's behavior (when allowed by security
+concerns) is also underlined: When no people are
+moving around, the robot can decide to approach itself a potential
+customer.
+
+\subsubsection{Use case description}
 
 The sales manager of a cinema inside the mall needs to promote a special discount
 for a movie. The discount is loaded by the manager into the 
@@ -159,8 +243,40 @@ Once informed of the discount, the customer reveals
 that she is interested in it and she asks the robot for directions to reach the specific
 shop. The robot safely guides the customer to the shop.
 
+\newpage
+
+\subsubsection{Sequence diagram}
+
+\begin{figure}[!h]
+
+\includegraphics[width=0.75\textwidth]{offerReasoning}
+
+\end{figure}
+
+
+
+\subsubsection{Optimistic robot action sequence}
+\begin{enumerate}
+\item Approach customer
+\item Start conversation
+\item Propose main offer (in this use case we assume this fails)
+\item Ask for the customer to identify himself by swiping the card
+\item Find appropriate offer for user
+\item Propose new offer to user
+\item Ask customer to follow
+\item Go to appropriate shop
+\item Inform customer destination has been reached
+\item End conversation
+\end{enumerate}
+
 
 \subsection{Customer asks for directions in a crowded environment}
+
+The goal of this use case is to remark that the robot must always be
+aware of safety. The robot is not allowed to behave hazardously
+in presence of humans.
+
+\subsubsection{Use case description}
 
 The robot has the objective to inform customers of available discounts.
 The shopping mall is very crowded and, for safety
@@ -183,3 +299,154 @@ that can provide more specific information, if needed.
 
 \noindent The human thanks the robot and proceeding to the next one in order to
 receive further directions.
+
+\subsubsection{Sequence diagrams}
+
+\begin{figure}[!h]
+\fbox{\begin{minipage}[t]{0.48\columnwidth}%
+\begin{center}
+\includegraphics[width=1\textwidth]{crowdedCaseA}
+\par\end{center}
+
+\begin{center}
+\textit{Robot shows path on map}
+\par\end{center}%
+\end{minipage}}\hfill{}%
+\fbox{\begin{minipage}[t]{0.48\columnwidth}%
+\begin{center}
+\includegraphics[width=1\columnwidth]{crowdedCaseB}
+\par\end{center}
+
+\begin{center}
+\textit{Robot shows where next helper is}
+\par\end{center}%
+\end{minipage}}
+
+%\protect\caption{Customer asks for directions in crowded environment}
+
+
+\end{figure}
+
+
+
+\subsubsection{Optimistic robot action sequence}
+
+\textit{A human approaches the robot}
+\begin{enumerate}
+\item Start conversation
+\item Ask if interested in offer XYZ
+\item Ask if showing path on map is appropriate
+\item Show path to shop on tablet
+\item End conversation
+\end{enumerate}
+
+\section{Robot actions}
+
+In this section, the actions that the robot has to perform in order to
+accomplish its tasks are described.
+For each action, the preconditions and the post conditions that must hold are
+listed. 
+
+
+\subparagraph{Approach Human(Human)}
+
+:
+
+\textit{Prec}: The human has been detected by sensors and is reachable.
+
+\textit{Post}: The robot positions itself at a social distance from
+the user, possibly in plain view and facing the human.
+
+\textit{Description}: This action usually precedes starting a conversation
+
+
+\subparagraph{AskHumanIfInHurry(Human)}
+
+:
+
+\textit{Prec}: The robot is carrying something belonging to the human,
+the human asked to robot to lead
+
+\textit{Post}: The fact that the human is in a hurry or not, is added
+to the knowledge base.
+
+\textit{Description}: This question is asked to understand if the
+robot should move directly to the parking area or can show a few offers
+during the way
+
+
+\subparagraph{AskHumanToDeload(Human)}
+
+:
+
+\textit{Prec}: The robot is carrying something belonging to the human
+
+\textit{Post}: The human's object is removed from the robot
+
+\textit{Description}: If the human refuses to remove the object, a
+manager should be notified.
+
+
+\subparagraph{AskHumanToLoad(Human)}
+
+:
+
+\textit{Prec}: The robot is in conversation with the human
+
+\textit{Post}: The human's bag is on top of the robot
+
+\textit{Description}:
+
+
+\subparagraph{AskHumanWhoLeads(Human)}
+
+:
+
+\textit{Prec}: The robot is carrying something belonging to the human
+
+\textit{Post}: The fact that the human wants to lead, or the contrary,
+is added to the knowledge base.
+
+\textit{Description}: This question is asked to understand if the
+robot must lead or follow the human
+
+ 
+
+
+\subparagraph{End Conversation(Human)}
+
+:
+
+\textit{Prec}: Human and robot are engaged in conversation.
+
+\textit{Post}: Human and robot are no longer engaged in conversation.
+
+\textit{Description}: The robot follows a social protocol to end the
+conversation (es: ``See you next time!'')
+
+
+\subparagraph{Engage Conversation(Human)}
+
+:
+
+\textit{Prec}: Robot is in social range with human. Human can see
+robot, robot is facing human.
+
+\textit{Post}: Human and robot are engaged in conversation.
+
+\textit{Description}: The robot follows a social protocol to start
+the conversation (``Hello human'') and make sure the human is interested
+
+
+\subparagraph{Goto(Destination)}
+
+:
+
+\textit{Prec}: There is a path to the destination.
+
+\textit{Post}: The robot is now at(Destination)
+
+\textit{Description}: The robot navigate in a socially aware way to
+the desired location.
+
+
