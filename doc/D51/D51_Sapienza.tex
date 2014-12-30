@@ -68,9 +68,10 @@
 
 % NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{D5.1\\ Definition of internal architecture and interface between software modules}
+\title{D5.1-Sapienza\\ Definition of internal architecture and interface between software modules}
 
-\author{Domenico D. Bloisi, Fabio Maria Carlucci, Luca Iocchi, and Daniele Nardi\\
+\author{Domenico D. Bloisi, Fabio Maria Carlucci, Luca Iocchi, Daniele Nardi, and\\
+Andrea Pennisi\\
 \textit{Dept. of Computer, Control and Management Engineering\\
 Sapienza University of Rome\\
 via Ariosto, 25 00185 Rome, Italy}}
@@ -78,7 +79,7 @@ via Ariosto, 25 00185 Rome, Italy}}
 
 %\nb{of the kickoff meeting, $27^{th},28^{th}$ October }
 
-\date{December 30, 2014}
+\date{Version 1.0 - December 30, 2014}
 
 \begin{document}
 
@@ -113,10 +114,11 @@ The copyright in this document is the property of the COACHES Consortium. This d
 In this document the software architecture developed within the
 context of the COACHES project is described.
 
-Design solutions regarding the middleware chosen for implementing the entire system are discussed.  Moreover,  a  precise  definition of the  interface 
-between  each  pair  of  modules  connected by  a  flow  of  information (as shown in
-Fig. \ref{fig:swarch}) is provided. 
+Design solutions regarding the middleware chosen for implementing the entire system are discussed,
+according to the modules shown in Fig. \ref{fig:swarch}).
 Subsequent implementation of the software components during the project will follow  these  specifications,  thus  simplifying  their  integration  in  the demonstrators. 
+A detailed description of the interface between the modules will be developed at a later stage, where more details on the single components will be provided.
+
 
 An open architecture (hard/soft) and standard technologies available (such 
 as ROS for integrating robotic modules and DDS for communication) will be used,
@@ -127,12 +129,12 @@ an open architecture will also simplify and optimize integration efficiency as w
 
 The reminder of this document is organized as follows.
 First, the choice of the middleware is discussed, then the main software components and the
-set-up of a 2D simulation environment for testing the developments are described.
+set-up of a 2D simulation environment and the collection of data sets for testing the developments are described.
 Finally, the version management system that will be used to manage the development is illustrated.
 
 \section{Middleware}
 
-For the development of the software robotics components, the Robot Operating System (ROS) (www.ros.org), which is the standard middleware for robotics applications, has been selected.
+For the development of the software robotics components, the Robot Operating System (ROS)\footnote{www.ros.org}, which is the standard middleware for robotics applications, has been selected.
 In particular, the last stable version ROS Indigo and the last LTS (Long Term Support) version of the Linux/Ubuntu Operating System will be used.
 
 ROS provides the middleware to share information among the many modules implementing various functionalities on each robot. Moreover, an interface (ROS-through-TCP) will be realized in order to share information among the robots and between each robot and other components of the system.
@@ -160,6 +162,36 @@ Sapienza University is responsible for tasks T3.1 and T4.1.
 
 \section{2D Simulation Environment}
 
+The simulation environment is based on 2D Stage simulator, which is integrated in the ROS infrastructure. The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
+
+\begin{figure}
+\includegraphics[width=0.95\textwidth]{Rive1.png}
+\caption{2D map of the \emph{Rive de l'orne} shopping center.}
+\label{fig:stage}
+\end{figure}
+
+
+In the Stage simulator the following map of the \emph{Rive de l'orne} shopping center has been realized. In Figure \ref{fig:stage} a section of the shopping mall in which we will deploy the prototypes is shown.
+Additional maps have been realized for reproducing the environments of the partners in which some experiments will be performed.
+
+The Stage environment models one or more robots that have the same 2D sensor and actuator configurations of the real ones and some additional mobile obstacles that represent people moving in the environment. Several behaviors can be tested in this simulated environment such as: 2D perception of human behaviors, human-robot social navigation (e.g., following a person or guiding a person), safe navigation in the environment.
+
+The Stage environment has been fully realized and tested and this configuration will be used as a reference also for the development of the real robotic system.
+
+\section{Data sets}
+
+A number of data sets have been acquired in order to test sensor processing modules. In particular, data are collected from laser range finder and RGBD cameras mounted on the robot and represents people moving around and approaching the robot.
+
+\begin{figure}
+\includegraphics[width=0.95\textwidth]{diago.png}
+\caption{Diago robot at Sapienza University of Rome.}
+\label{fig:diago}
+\end{figure}
+
+
+The data sets have been captured with the mobile robot Diago in the Dept. of Computer, Control and Management Engineering, at Sapienza University of Rome (see Figure \ref{fig:diago}). Moreover, University of Caen will collect data in the same format with a similar robot in the \emph{Rive de l'orne} shopping mall.
+
+The data sets will be made available soon to the all the partners in order to develop and test sensor processing components.
 
 \section{Version management system}
 
@@ -178,7 +210,6 @@ divided in the following sub-folders:
 \item \emph{lib}:       contains libraries
 \end{itemize}
 
-Automated scripts for initializing, setting-up, updating, building and testing the software environment have been developed and described in the repository. These scripts will facilitate updates and testing and thus in  general the integration of functionalities developed by the different developers.
 
 The \emph{ros} folder contains a Catkin workspace (which is the standard building environment in ROS) and the following ROS packages, including the robotic software components described above.
 
@@ -203,6 +234,17 @@ Some examples of these external packages are:
 \item \emph{stage\_environments}: a package for 2D simulation.
 \end{itemize}
 
+Automated scripts for initializing, setting-up, updating, building and testing the software environment have been developed and described in the repository. These scripts facilitate updates and testing and thus in  general the integration of functionalities developed by the different developers.
 
+\begin{itemize}
+\item \emph{coaches\_init}: initialize the software development envorinment (to be run once in every computer used for development);
+\item \emph{coaches\_setup}:   set up all the system variables needed for development (to be run on every shell used for development);
+\item \emph{coaches\_update}:  update of all the software from the GIT repository to the local workspace;
+\item \emph{coaches\_make}:   build all the software
+\end{itemize}
+
+\section{Test}
+
+The software environment has been succesfully tested by different developers from different partners using different machines, including laptops running the software for the real robots.
 
 \end{document}

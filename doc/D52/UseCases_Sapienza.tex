@@ -64,7 +64,7 @@ A visit of all COACHES project partners have been organized during the kickoff m
 held on $27^{th}$ and $28^{th}$ October 2014 in Caen. 
 
 
-\section{Use cases for short-term interaction and navigation}
+\section{Use cases for short-term interaction and safe navigation}
 
 COACHES project envisages the implementation of a set of use cases
 to show the feasibility of the approach and to assess the effectiveness
@@ -76,11 +76,11 @@ components of the entire system:
 \item Safe navigation.
 \end{enumerate}
 
-Four use cases are described in the following. The use case are designed
-to allow a short-term interaction between the COACHES robot and the human users.
+Four use cases are described in the following. The use cases are designed
+to allow a short-term interaction between the COACHES robots and the human users.
 In order to accomplish the required tasks, the robot must navigate
-safely the environment. Navigation inside a populated environment, i.e., a mall
-during opening hours, must be done in order to avoid damage to people
+safely in the environment. Navigation inside a populated environment, i.e., a mall
+during opening hours, must be done in order to avoid damage and non-social behaviors to people
 and goods.
 
 For each use case, the following data are provided:
@@ -90,8 +90,7 @@ For each use case, the following data are provided:
 \item An optimistic sequence of actions.
 \end{itemize}
 
-Furthermore, a detailed overview of the preconditions and post-conditions for each
-used action is given at the end of this section.
+Furthermore, a detailed overview of the preconditions and post-conditions for each used action is given at the end of this section.
 
 
 \subsection{Customers ask for help carrying bags}
@@ -119,7 +118,7 @@ to load the bag in the bin carried by the robot.
 Once the bag is loaded, the robot asks the customer if she/he is in a hurry.
 If the customer is in a hurry, the robot
 \begin{enumerate}
-\item sets its speed to an high value;
+\item sets its speed to a high value;
 \item proceeds to the mall parking lot.
 \end{enumerate}
 
@@ -127,7 +126,7 @@ If the customer is in a hurry, the robot
 \begin{enumerate}
 \item sets its speed to a low value;
 \item proceeds to the mall parking lot, proposing intermediate stops to shops
-with interesting discounts.
+with possible interesting offers for the customer.
 \end{enumerate}
 
 In any case the robot modulates its speed taking into account the number of detected people,
@@ -161,13 +160,12 @@ asks for the parent's permission before completing the task.
 \subsubsection{Use case description}
 
 The manager of an ice cream shop asks the robot to inform children about
-a special discount. The robot looks around for children. When it detects
+a special offer. The robot looks around for children. When it detects
 a child, the robot approaches her/him and it informs her/him
-about the special discount. The child
-is passionate about having an ice cream, but before guiding her/him
-to the ice cream shop, the robot
+about the special offer. The child is passionate about having an ice cream, 
+but, before guiding her/him to the ice cream shop, the robot
 \begin{enumerate}
-\item asks for the parent's authorization.
+\item asks for the parent's authorization,
 \item waits for the positive parent's reply.
 \end{enumerate}
 
@@ -193,7 +191,7 @@ to the ice cream shop.
 \begin{enumerate}
 \item Approach child
 \item Start conversation
-\item Offer ice cream discount
+\item Describe ice cream offer
 \item Ask parents for permission
 \item Ask child to follow
 \item Go to IceCreamShop
@@ -448,5 +446,15 @@ the conversation (``Hello human'') and make sure the human is interested
 
 \textit{Description}: The robot navigate in a socially aware way to
 the desired location.
+
+\section{Testing the use cases}
+
+The use cases described above will be tested with the following procedure:
+\begin{enumerate}
+\item Description to shop keepers and managers to collect feedback and apply modifications or provide more details
+\item Test with real users using a mock-up implementation where the robot is driven by a user operator
+\item Implementation and test of the fully autonomous behavior in an incremental way, by allowing at intermediate phases the use of non-fully autonomous components.
+\item Final test of the fully autonomous behaviors with real users.
+\end{enumerate}
 
 
