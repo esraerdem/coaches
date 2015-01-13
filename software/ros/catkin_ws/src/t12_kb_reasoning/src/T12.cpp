@@ -1,0 +1,28 @@
+#include "T12.h"
+
+T12::T12(ros::NodeHandle node) {
+  goals_pub = node.advertise<shared::AllGoals>("t12_goals", 100);
+  env_events_sub = node.subscribe("t22_events", 10, &T12::envEventsCallback, this);
+  human_needs_sub = node.subscribe("t32_events", 10, &T12::humanNeedsCallback, this);
+  knowledge_sub = node.subscribe("t11_knowledge", 10, &T12::knowledgeCallback, this);
+}
+
+void T12::envEventsCallback(const shared::Event::ConstPtr& msg)
+{
+// TODO
+}
+
+void T12::humanNeedsCallback(const shared::Event::ConstPtr& msg)
+{
+// TODO
+}
+
+void T12::knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg)
+{
+// TODO
+}
+
+void T12::run() {
+  ros::spin();
+}
+

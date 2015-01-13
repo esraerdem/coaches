@@ -50,6 +50,8 @@ add_message_files(
   FILES
   Feature.msg
   Event.msg
+  Goal.msg
+  AllGoals.msg
 )
 
 ## Generate services in the 'srv' folder
