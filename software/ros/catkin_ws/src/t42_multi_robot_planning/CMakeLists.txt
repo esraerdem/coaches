@@ -5,11 +5,12 @@ project(t42_multi_robot_planning)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  message_runtime
   roscpp
   rospy
   std_msgs
+  shared
+  geometry_msgs
+  t12_kb_reasoning
 )
 
 ## System dependencies are found with CMake's conventions
@@ -99,22 +100,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-# add_library(t42_multi_robot_planning
-#   src/${PROJECT_NAME}/t42_multi_robot_planning.cpp
-# )
-
 ## Declare a cpp executable
-# add_executable(t42_multi_robot_planning_node src/t42_multi_robot_planning_node.cpp)
+add_executable(t42 src/T42.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 # add_dependencies(t42_multi_robot_planning_node t42_multi_robot_planning_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(t42_multi_robot_planning_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(t42
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

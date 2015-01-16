@@ -5,6 +5,7 @@ project(t12_kb_reasoning)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  message_generation
   roscpp
   rospy
   std_msgs
@@ -105,7 +106,7 @@ add_executable(t12 src/T12.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(t12 shared_generate_messages_cpp t11_kb_modeling_generate_messages_cpp t12_kb_reasoning_generate_messages_cpp)
+add_dependencies(t12 t12_kb_reasoning_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t12

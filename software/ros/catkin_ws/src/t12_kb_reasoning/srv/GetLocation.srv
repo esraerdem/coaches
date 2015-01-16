@@ -1,4 +1,8 @@
 # gets the location of the given interest point
+
 string loc # the unique id of this point
+
 ---
+
 geometry_msgs/Pose coords # the coordinates of this location
+

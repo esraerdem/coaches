@@ -1,0 +1,36 @@
+<launch>
+
+  <arg name="robot_name" default="diago" />
+
+  <master auto="start"/>
+
+  <group ns="$(arg robot_name)">
+    <param name="robot_name" value="$(arg robot_name)" />
+
+    <node pkg="t11_kb_modeling" type="t11" name="kb_modeling" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t12_kb_reasoning" type="t12" name="kb_reasoning" respawn="false" output="screen">
+    </node>
+  
+    <node pkg="t21_image_processing" type="t21" name="image_processing" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t22_situation_awareness" type="t22" name="situation_awareness" respawn="false" output="screen">
+    </node>
+  
+    <node pkg="t31_multimodal_hri" type="t31" name="multimodal_hri" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t32_human_needs_estimation" type="t32" name="human_needs_estimation" respawn="false" output="screen">
+    </node>
+  
+    <node pkg="t41_robust_navigation" type="t41" name="robust_navigation" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t42_multi_robot_planning" type="t42" name="multi_robot_planning" respawn="false" output="screen">
+    </node>
+
+  </group>
+
+</launch>

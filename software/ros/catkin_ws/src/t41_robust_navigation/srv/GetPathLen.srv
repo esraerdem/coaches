@@ -1,0 +1,8 @@
+# Requests the length of the given path
+
+geometry_msgs/PoseStamped    from  # the path origin
+geometry_msgs/PoseStamped    to    # the path destination
+
+---
+
+float32     length	# the path length
