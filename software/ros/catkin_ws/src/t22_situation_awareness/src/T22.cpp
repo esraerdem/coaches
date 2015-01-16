@@ -1,8 +1,8 @@
 #include "T22.h"
 
 T22::T22(ros::NodeHandle node) {
-  event_pub = node.advertise<shared::Event>("t22_events", 100);
-  feature_sub = node.subscribe("t21_features", 10, &T22::featureCallback, this);
+  event_pub = node.advertise<shared::Event>("t22_event", 100);
+  feature_sub = node.subscribe("t21_feature", 10, &T22::featureCallback, this);
 }
 
 void T22::featureCallback(const shared::Feature::ConstPtr& msg)

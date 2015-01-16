@@ -7,6 +7,7 @@
 #include "shared/Goal.h"
 #include "shared/AllGoals.h"
 #include "geometry_msgs/PoseStamped.h"
+#include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "nav_msgs/Path.h"
 #include "t12_kb_reasoning/GetLocation.h"
 
@@ -18,8 +19,10 @@ class T42 {
   ros::Publisher hri_goal_pub;
   ros::Publisher nav_goal_pub;
   ros::Subscriber goal_set_sub;
+  ros::Subscriber location_sub;
 
   void goalSetCallback(const shared::AllGoals::ConstPtr& msg);
+  void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
 
   public:
   T42(ros::NodeHandle node);

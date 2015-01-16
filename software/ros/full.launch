@@ -33,6 +33,7 @@
     </node>
 
     <node pkg="t42_multi_robot_planning" type="t42" name="multi_robot_planning" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
     </node>
 
   </group>

@@ -1,9 +1,9 @@
 #include "T12.h"
 
 T12::T12(ros::NodeHandle node) {
-  goals_pub = node.advertise<shared::AllGoals>("t12_goals", 100);
-  env_events_sub = node.subscribe("t22_events", 10, &T12::envEventsCallback, this);
-  human_needs_sub = node.subscribe("t32_events", 10, &T12::humanNeedsCallback, this);
+  goals_pub = node.advertise<shared::AllGoals>("t12_goals_set", 100);
+  env_events_sub = node.subscribe("t22_event", 10, &T12::envEventsCallback, this);
+  human_needs_sub = node.subscribe("t32_event", 10, &T12::humanNeedsCallback, this);
   knowledge_sub = node.subscribe("t11_knowledge", 10, &T12::knowledgeCallback, this);
 
   service_get_location = node.advertiseService("get_location", &T12::getLocation, this);
