@@ -4,7 +4,7 @@
 
   <master auto="start"/>
 
-  <include file="simple.launch" />
+  <include file="sim.launch" />
 
   <group ns="$(arg robot_name)">
     <param name="robot_name" value="$(arg robot_name)" />
