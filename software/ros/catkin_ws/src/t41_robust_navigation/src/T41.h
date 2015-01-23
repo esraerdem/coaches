@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "nav_msgs/Path.h"
+#include "nav_msgs/GetPlan.h"
 #include "t41_robust_navigation/GetPathLen.h"
 
 #include <sstream>
@@ -13,6 +14,7 @@
 
 class T41 {
   private:
+  ros::NodeHandle node;
   ros::Publisher low_level_pub;
   ros::Subscriber nav_goal_sub;
   ros::ServiceServer service_path_len;
