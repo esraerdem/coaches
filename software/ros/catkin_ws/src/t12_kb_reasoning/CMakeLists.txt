@@ -103,15 +103,16 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(t12 src/T12.cpp src/main.cpp)
+add_executable(mockSites src/mockSites.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(t12 t12_kb_reasoning_generate_messages_cpp)
+add_dependencies(mockSites t12_kb_reasoning_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(t12
-  ${catkin_LIBRARIES}
-)
+target_link_libraries(t12 ${catkin_LIBRARIES} )
+target_link_libraries(mockSites ${catkin_LIBRARIES} )
 
 #############
 ## Install ##
