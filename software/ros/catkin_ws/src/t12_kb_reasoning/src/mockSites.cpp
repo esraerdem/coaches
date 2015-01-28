@@ -21,18 +21,21 @@ typedef std::map<std::string, float> cmap;
 
 class MockSites {
   private:
+  ros::NodeHandle node;
   ros::Publisher goals_pub;
   ros::Subscriber position_sub;
   ros::ServiceServer service_get_location;
+  ros::Timer tim;
   pmap locations;
   cmap visits;
+  std::string onSite;
 
   void positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
 
   bool getLocation(t12_kb_reasoning::GetLocation::Request  &req,
 		   t12_kb_reasoning::GetLocation::Response &res);
 
-  void sendGoals();
+  void sendGoals(const ros::TimerEvent&);
 
   public:
   MockSites(ros::NodeHandle node);
@@ -48,6 +51,7 @@ static inline geometry_msgs::Point mkPoint(float x,float y) {
 }
 
 MockSites::MockSites(ros::NodeHandle node) {
+  this->node = node;
   goals_pub = node.advertise<shared::AllGoals>("t12_goals_set", 100);
 
   position_sub = node.subscribe("t21_robot_location", 100, &MockSites::positionCallback, this);
@@ -60,6 +64,8 @@ MockSites::MockSites(ros::NodeHandle node) {
   locations["phone"]=mkPoint(89,31);
   locations["restaurant"]=mkPoint(10,23);
   locations["carPark"]=mkPoint(27,20);
+  
+  onSite = "";
 
   pmap::iterator it = locations.begin(); 
   while (it != locations.end()) {
@@ -74,9 +80,11 @@ void MockSites::positionCallback(const geometry_msgs::PoseWithCovarianceStamped:
   geometry_msgs::Point robot = msg->pose.pose.position;
   ROS_INFO("Robot at %f %f",robot.x, robot.y);
   pmap::iterator it = locations.begin(); 
+  onSite = "";
   while (it != locations.end()) {
     if (sq(robot.x - it->second.x)+sq(robot.y - it->second.y) < 1) {
       visits[it->first] = 0;
+      onSite = it->first;
       ROS_INFO("Visited site %s",it->first.c_str());
     } /*else
 	ROS_INFO("Site %s distant of %f",it->first.c_str(), sq(robot.x - it->second.y)+sq(robot.y - it->second.y) );*/
@@ -96,23 +104,29 @@ bool MockSites::getLocation(t12_kb_reasoning::GetLocation::Request  &req,
     res.coords.orientation.y = 0;
     res.coords.orientation.z = 0;
     res.coords.orientation.w = 1;
+    res.fixed = true;
     return true;
   } else {
     ROS_WARN("location %s is unknown",id.c_str());
     return false;
   }
 }
-
+// r t21_robot_location:=/diago/amcl_pose
 void MockSites::run() {
+  //node.createTimer(ros::Duration(1./RATE), &MockSites::sendGoals, this, false).start();
+  tim = node.createTimer(ros::Duration(1.0/RATE), &MockSites::sendGoals, this);
+  std::cout << "created Timer\n";
+  ros::spin();/*
   ros::Rate loop_rate(RATE);
   while (ros::ok()) {
     loop_rate.sleep();
     ros::spinOnce();
     sendGoals();
-  }
+    }*/
 }
 
-void MockSites::sendGoals() {
+void MockSites::sendGoals(const ros::TimerEvent&) {
+  std::cout << "sG!" << std::endl;
   shared::Goal g;
   shared::AllGoals all;
   cmap::iterator it = visits.begin();
@@ -122,12 +136,14 @@ void MockSites::sendGoals() {
     g.kind = "look";
     g.value = it->second;
     all.goals.push_back(g);
-    it->second ++;
+    if (it->first != onSite)
+      it->second ++; // prevent increasing the reward where the robot is
     ++it;
   }
   all.header.stamp.sec = ros::Time::now().sec;
   all.header.stamp.nsec = ros::Time::now().nsec;
   goals_pub.publish(all);
+  ROS_INFO("send patrol goals");
 }
 
 int main(int argc, char **argv)

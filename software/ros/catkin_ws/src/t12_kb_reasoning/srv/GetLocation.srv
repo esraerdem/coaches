@@ -5,4 +5,4 @@ string loc # the unique id of this point
 ---
 
 geometry_msgs/Pose coords # the coordinates of this location
-
+bool 		   fixed  # false iff this location can move
