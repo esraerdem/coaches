@@ -117,7 +117,12 @@ void T42::positionTimerCallback(const ros::TimerEvent&) {
       if (pathLen.call(srv2)) {
 	robot2siteDistance[i] = srv2.response.length;
 	for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
-	  float estimation = itA->second - srv2.response.length;
+	  float estimation = 0;
+	  if (itA->first == "look")
+	    estimation = itA->second / sqrt(srv2.response.length);
+	  else {
+	    // TODO other actions
+	  }
 	  if (estimation > expect) {
 	    best = *it;
 	    bestAction = itA->first;

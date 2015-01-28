@@ -78,7 +78,7 @@ static inline double sq(double x) {return x*x;}
 
 void MockSites::positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
   geometry_msgs::Point robot = msg->pose.pose.position;
-  ROS_INFO("Robot at %f %f",robot.x, robot.y);
+  ROS_DEBUG("Robot at %f %f",robot.x, robot.y);
   pmap::iterator it = locations.begin(); 
   onSite = "";
   while (it != locations.end()) {
@@ -86,8 +86,10 @@ void MockSites::positionCallback(const geometry_msgs::PoseWithCovarianceStamped:
       visits[it->first] = 0;
       onSite = it->first;
       ROS_INFO("Visited site %s",it->first.c_str());
-    } /*else
-	ROS_INFO("Site %s distant of %f",it->first.c_str(), sq(robot.x - it->second.y)+sq(robot.y - it->second.y) );*/
+    } else {
+      /*ROS_INFO("Site %s distant of %f",it->first.c_str(), sq(robot.x - it->second.y)+sq(robot.y - it->second.y) );*/
+      ++visits[it->first];
+    }
     ++it;
   }
 }
@@ -95,7 +97,7 @@ void MockSites::positionCallback(const geometry_msgs::PoseWithCovarianceStamped:
 bool MockSites::getLocation(t12_kb_reasoning::GetLocation::Request  &req,
 		      t12_kb_reasoning::GetLocation::Response &res)
 {
-  std::cout << "Requesting " << req.loc << std::endl;
+  ROS_DEBUG("Requesting %s", req.loc.c_str());
   std::string id(req.loc);
   pmap::iterator it = locations.find(id);
   if (it != locations.end()) {
@@ -113,9 +115,7 @@ bool MockSites::getLocation(t12_kb_reasoning::GetLocation::Request  &req,
 }
 // r t21_robot_location:=/diago/amcl_pose
 void MockSites::run() {
-  //node.createTimer(ros::Duration(1./RATE), &MockSites::sendGoals, this, false).start();
   tim = node.createTimer(ros::Duration(1.0/RATE), &MockSites::sendGoals, this);
-  std::cout << "created Timer\n";
   ros::spin();/*
   ros::Rate loop_rate(RATE);
   while (ros::ok()) {
@@ -126,7 +126,6 @@ void MockSites::run() {
 }
 
 void MockSites::sendGoals(const ros::TimerEvent&) {
-  std::cout << "sG!" << std::endl;
   shared::Goal g;
   shared::AllGoals all;
   cmap::iterator it = visits.begin();
@@ -136,14 +135,16 @@ void MockSites::sendGoals(const ros::TimerEvent&) {
     g.kind = "look";
     g.value = it->second;
     all.goals.push_back(g);
+    /*
     if (it->first != onSite)
       it->second ++; // prevent increasing the reward where the robot is
+     */
     ++it;
   }
   all.header.stamp.sec = ros::Time::now().sec;
   all.header.stamp.nsec = ros::Time::now().nsec;
   goals_pub.publish(all);
-  ROS_INFO("send patrol goals");
+  ROS_DEBUG("send patrol goals");
 }
 
 int main(int argc, char **argv)
