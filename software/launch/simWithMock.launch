@@ -14,9 +14,16 @@
 
     <node pkg="t12_kb_reasoning" type="t12" name="kb_reasoning" respawn="false" output="screen">
     </node>
-  
+ 
+    <node pkg="t12_kb_reasoning" type="mockSites" name="mockSites" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+ 
     <node pkg="t21_image_processing" type="t21" name="perception" respawn="false" output="screen">
       <remap from="laser_scan" to="LASER_TOPIC" /> 
+    </node>
+
+    <node pkg="t21_image_processing" type="mockPeople" name="mockPeople" respawn="false" output="screen">
     </node>
 
     <node pkg="t22_situation_awareness" type="t22" name="situation_awareness" respawn="false" output="screen">

@@ -27,7 +27,7 @@ class MockPeople {
 
 MockPeople::MockPeople(ros::NodeHandle node) {
   feature_pub = node.advertise<shared::Feature>("t21_feature", 100);
-  people_sub = node.subscribe("people", 100, &MockPeople::peopleCallback, this);
+  people_sub = node.subscribe("/people", 100, &MockPeople::peopleCallback, this);
 }
 
 int32_t MockPeople::getUID (std::string id) {  

@@ -1,0 +1,21 @@
+<launch>
+
+  <arg name="world_file" default="../maps/AUTOGEN_Rive1_diago.world" />
+  <arg name="base_frame" default="base_frame" />
+  <arg name="laser_topic" default="LASER_TOPIC" />
+  <arg name="laser_frame" default="LASER_FRAME" />
+
+  <arg name="robot_name" default="diago" />
+  <arg name="map_name" default="Rive1" />
+  <arg name="map_server" default="true" />
+  <arg name="initial_pose_x" default="10.0" />
+  <arg name="initial_pose_y" default="23.0" />
+  <arg name="initial_pose_a" default="0.0" />
+  <arg name="use_amcl" default="true" />
+  <arg name="use_glocalizer" default="false" />
+  <arg name="use_move_base" default="true" />
+  <arg name="use_gradient_based_navigation" default="false" />
+
+  <node pkg="rviz" name="rviz" type="rviz" args="-d `rospack find stage_environments`/config/diago/rviz/diago.rviz" required="true" />
+
+</launch>
