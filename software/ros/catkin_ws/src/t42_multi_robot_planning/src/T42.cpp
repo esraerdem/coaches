@@ -24,6 +24,7 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
     else
       siteID = locIt->second;
     siteActionReward[siteID][std::string(it->kind)] = it->value;
+    siteActionParam[siteID][std::string(it->kind)] = it->param;
     ++it;
   }
   positionTimer.start(); // reactivates the robot if it was sleeping
@@ -70,6 +71,7 @@ int T42::newFixedSite(std::string site) {
     } // for i
     site2siteDistance.push_back(dist);
     siteActionReward.push_back(std::map<std::string,float>());
+    siteActionParam.push_back(std::map<std::string,std::string>());
     return fixedSites.size()-1;
   } else {
     ROS_WARN("Unable to obtain location of %s",site.c_str());
@@ -83,63 +85,113 @@ void T42::locationCallback(const geometry_msgs::PoseWithCovarianceStamped::Const
   positionTimer.start();
 }
 
+double inline sq(double x) { return x*x; }
+
 void T42::positionTimerCallback(const ros::TimerEvent&) {
   if (positionUpdated) {
     positionUpdated = false;
   } else {
-    // TODO plan for a new objective ?
     positionTimer.stop();
-    int i=0;
-    ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
-    Point best = robot;
-    int bestSite = -1;
-    std::string bestSiteName = "here";
-    std::string bestAction = "nothing";
-    float expect = 0;
-    for (std::vector<Point>::iterator it = sitesLocation.begin();
-	 it != sitesLocation.end(); ++it, ++i) {
-      t41_robust_navigation::GetPathLen srv2;
-      srv2.request.from.header.frame_id="map";
-      srv2.request.from.pose.position.x = robot.x;
-      srv2.request.from.pose.position.y = robot.y;
-      srv2.request.from.pose.position.z = robot.z;
-      srv2.request.from.pose.orientation.x = 0;
-      srv2.request.from.pose.orientation.y = 0;
-      srv2.request.from.pose.orientation.z = 0;
-      srv2.request.from.pose.orientation.w = 1;
-      srv2.request.to.pose.position.x = it->x;
-      srv2.request.to.pose.position.y = it->y;
-      srv2.request.to.pose.position.z = it->z;
-      srv2.request.to.pose.orientation.x = 0;
-      srv2.request.to.pose.orientation.y = 0;
-      srv2.request.to.pose.orientation.z = 0;
-      srv2.request.to.pose.orientation.w = 1;
-      if (pathLen.call(srv2)) {
-	robot2siteDistance[i] = srv2.response.length;
-	for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
-	  float estimation = 0;
-	  if (itA->first == "look")
-	    estimation = itA->second / sqrt(srv2.response.length);
-	  else {
-	    // TODO other actions
-	  }
-	  if (estimation > expect) {
-	    best = *it;
-	    bestAction = itA->first;
-	    bestSite = i;
-	    expect = estimation;
-	  }
-	} // for itA in siteActionReward[i]
-      }
-    } // for it in sitesLocation
-    for (std::map<std::string, int>::iterator it = fixedSites.begin();
-	 it != fixedSites.end(); ++it) {
-      if (it->second == bestSite) {
-	bestSiteName = it->first;
-	break;
-      }
+    if (plannedAction != "")
+      if (sqrt(sq(robot.x-plannedPosition.x)+sq(robot.y-plannedPosition.y)) < 2) {
+	// arrived at planned location
+	if (plannedAction == GOAL_PATROL) {
+	  // Nothing to do here, let's replan
+	} else if (plannedAction == GOAL_INTERACT) {
+	  shared::Goal msg;
+	  msg.loc = plannedSite;
+	  msg.kind = plannedAction;
+	  msg.param = plannedParam;
+	  msg.value = 0;
+	  hri_goal_pub.publish(msg);
+	  return;
+	} else if (plannedAction == GOAL_ADVERTISE) {
+	  shared::Goal msg;
+	  msg.loc = plannedSite;
+	  msg.kind = plannedAction;
+	  msg.param = plannedParam;
+	  msg.value = 0;
+	  hri_goal_pub.publish(msg);
+	  return;
+	} else if (plannedAction == GOAL_INSPECT) {
+	  // TODO take a picture
+	  return;
+	} else if (plannedAction == GOAL_ESCORT) {
+	  shared::Goal msg;
+	  msg.loc = plannedSite;
+	  msg.kind = GOAL_FOLLOW;
+	  msg.param = plannedParam;
+	  msg.value = 0;
+	  hri_goal_pub.publish(msg);
+	  return;
+	} else if (plannedAction == GOAL_ESCORT2) {
+	  shared::Goal msg;
+	  msg.loc = plannedSite;
+	  msg.kind = GOAL_DONE;
+	  msg.param = plannedParam;
+	  msg.value = 0;
+	  hri_goal_pub.publish(msg);
+	  return;
+	}
+      } // if target reached
+    // TODO plan for a new objective ?
+    plan();
+  } // if position not updated
+} // positionTimerCallback(...)
+
+void T42::plan() {
+  int i=0;
+  ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
+  Point best = robot;
+  int bestSite = -1;
+  std::string bestSiteName = "here";
+  std::string bestAction = "nothing";
+  std::string bestParam = "";
+  float expect = 0;
+  for (std::vector<Point>::iterator it = sitesLocation.begin();
+       it != sitesLocation.end(); ++it, ++i) {
+    t41_robust_navigation::GetPathLen srv2;
+    srv2.request.from.header.frame_id="map";
+    srv2.request.from.pose.position.x = robot.x;
+    srv2.request.from.pose.position.y = robot.y;
+    srv2.request.from.pose.position.z = robot.z;
+    srv2.request.from.pose.orientation.x = 0;
+    srv2.request.from.pose.orientation.y = 0;
+    srv2.request.from.pose.orientation.z = 0;
+    srv2.request.from.pose.orientation.w = 1;
+    srv2.request.to.pose.position.x = it->x;
+    srv2.request.to.pose.position.y = it->y;
+    srv2.request.to.pose.position.z = it->z;
+    srv2.request.to.pose.orientation.x = 0;
+    srv2.request.to.pose.orientation.y = 0;
+    srv2.request.to.pose.orientation.z = 0;
+    srv2.request.to.pose.orientation.w = 1;
+    if (pathLen.call(srv2)) {
+      robot2siteDistance[i] = srv2.response.length;
+      for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
+	float estimation = itA->second;
+	if (srv2.response.length >= 1)
+	  estimation /= sqrt(srv2.response.length);
+
+	if (estimation > expect) {
+	  best = *it;
+	  bestAction = itA->first;
+	  bestParam = siteActionParam[i][bestAction];
+	  bestSite = i;
+	  expect = estimation;
+	}
+      } // for itA in siteActionReward[i]
     }
-    ROS_INFO("Going to %s for %s (%f)",bestSiteName.c_str(),bestAction.c_str(),expect);
+  } // for it in sitesLocation
+  for (std::map<std::string, int>::iterator it = fixedSites.begin();
+       it != fixedSites.end(); ++it) {
+    if (it->second == bestSite) {
+      bestSiteName = it->first;
+      break;
+    }
+  }
+  if (bestAction != GOAL_ESCORT) {
+    ROS_INFO("Going to %s for %s %s (%f)", bestSiteName.c_str(), bestAction.c_str(), bestParam.c_str(), expect);
     geometry_msgs::PoseStamped msg;
     msg.header.frame_id="map";
     msg.header.stamp = ros::Time::now();
@@ -149,8 +201,20 @@ void T42::positionTimerCallback(const ros::TimerEvent&) {
     msg.pose.orientation.z = 0;
     msg.pose.orientation.w = 1;
     nav_goal_pub.publish(msg);
-  } // if position not updated
-} // positionTimerCallback(...)
+    plannedPosition = best;
+    plannedAction = bestAction;
+    plannedParam = bestParam;
+    plannedSite = bestSiteName;
+  } else {
+    shared::Goal msg;
+    ROS_INFO("Inviting %s to follow us to %s (%f)", bestParam.c_str(), bestSiteName.c_str(), expect);
+    msg.loc = bestSiteName;
+    msg.kind = GOAL_FOLLOW;
+    msg.param = plannedParam;
+    msg.value = 0;
+    hri_goal_pub.publish(msg);
+  }
+}
 
 void T42::run() {
   ros::spin();

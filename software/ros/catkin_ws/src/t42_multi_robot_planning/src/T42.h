@@ -6,6 +6,7 @@
 #include "ros/ros.h"
 #include "shared/Goal.h"
 #include "shared/AllGoals.h"
+#include "shared/goalKind.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
@@ -38,12 +39,20 @@ class T42 {
   std::vector<std::vector<float> > site2siteDistance; // distances from site to site : a vector for each fixed site
   std::vector<float> robot2siteDistance; // distances from the robot to each fixed site
   std::vector<std::map<std::string,float> > siteActionReward; // a map action->reward for each fixed site
+  std::vector<std::map<std::string,std::string> > siteActionParam; // a map action->param for each fixed site
+
+  Point       plannedPosition;
+  std::string plannedSite;
+  std::string plannedAction;
+  std::string plannedParam;
 
   int newFixedSite(std::string site);
   void positionTimerCallback(const ros::TimerEvent&);
 
   void goalSetCallback(const shared::AllGoals::ConstPtr& msg);
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+
+  void plan();
 
   public:
   T42(ros::NodeHandle node);

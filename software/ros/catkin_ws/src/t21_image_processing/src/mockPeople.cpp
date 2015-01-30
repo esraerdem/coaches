@@ -47,6 +47,8 @@ void MockPeople::peopleCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
   data.header = msg->header;
   data.header.frame_id = "/map";
   data.kind = "person";
+  data.location = msg->pose;
+  /*
   data.location.x = msg->pose.position.x;
   data.location.y = msg->pose.position.y;
   double q0 = msg->pose.orientation.x;
@@ -56,6 +58,7 @@ void MockPeople::peopleCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
   //  double yaw = atan2(2*(q0*q3 + q1*q2), 1-2*(q2*q2 + q3*q3));
   double yaw = atan2(2*(q0*q1 + q2*q3), 1-2*(q1*q1 + q2*q2));
   data.location.theta = yaw;
+  */
   data.uid = getUID(std::string(msg->header.frame_id));
   feature_pub.publish(data);
 }

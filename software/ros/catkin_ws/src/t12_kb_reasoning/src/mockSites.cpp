@@ -6,6 +6,7 @@
 
 #include "ros/ros.h"
 #include "shared/AllGoals.h"
+#include "shared/goalKind.h"
 #include "t12_kb_reasoning/GetLocation.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
@@ -132,7 +133,7 @@ void MockSites::sendGoals(const ros::TimerEvent&) {
   all.mode = "patrol";
   while (it != visits.end()) {
     g.loc = it->first;
-    g.kind = "look";
+    g.kind = GOAL_PATROL;
     g.value = it->second;
     all.goals.push_back(g);
     /*

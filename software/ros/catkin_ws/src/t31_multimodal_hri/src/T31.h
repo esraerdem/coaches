@@ -1,6 +1,6 @@
 /**
- * Receives Laser scans and camera images.
- * Sends features and robot location.
+ * Receives HRI Goals
+ * Sends HRI features and actions
  */
 
 #include "ros/ros.h"
