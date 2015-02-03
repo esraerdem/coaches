@@ -32,9 +32,9 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
 
 int T42::newFixedSite(std::string site) {
   //  std::string site(name);
-  t12_kb_reasoning::GetLocation srv;
+  t11_kb_modeling::GetLocation srv;
   srv.request.loc = site;
-  ros::ServiceClient siteLoc = node.serviceClient<t12_kb_reasoning::GetLocation>("/diago/get_location");
+  ros::ServiceClient siteLoc = node.serviceClient<t11_kb_modeling::GetLocation>("/diago/get_location");
   ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   if (siteLoc.call(srv)) {
     fixedSites[site] = sitesLocation.size();

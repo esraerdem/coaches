@@ -104,8 +104,8 @@ add_executable(mockHRI src/mockHRI.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(t31 t31_generate_messages_cpp)
-add_dependencies(mockHRI t31_generate_messages_cpp)
+add_dependencies(t31 t31_multimodal_hri_generate_messages_cpp shared)
+add_dependencies(mockHRI t31_multimodal_hri_generate_messages_cpp shared)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t31 ${catkin_LIBRARIES} )

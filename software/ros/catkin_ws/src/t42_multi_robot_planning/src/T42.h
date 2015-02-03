@@ -11,7 +11,7 @@
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "t41_robust_navigation/GetPathLen.h"
-#include "t12_kb_reasoning/GetLocation.h"
+#include "t11_kb_modeling/GetLocation.h"
 
 #include <sstream>
 #include <istream>

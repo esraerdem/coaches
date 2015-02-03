@@ -9,6 +9,8 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  shared
+  geometry_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -58,16 +60,17 @@ add_message_files(
 # )
 
 ## Generate actions in the 'action' folder
-# add_action_files(
-#   FILES
-#   Action1.action
-#   Action2.action
-# )
+add_service_files(
+  FILES
+  GetLocation.srv
+  GetAllSites.srv
+)
 
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
   std_msgs
+  geometry_msgs
 )
 
 ###################################
@@ -80,9 +83,10 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
+  INCLUDE_DIRS include
 #  INCLUDE_DIRS include
 #  LIBRARIES t11_kb_modeling
-  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs shared
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs shared geometry_msgs
 #  DEPENDS system_lib
 )
 
@@ -94,20 +98,22 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp executable
 add_executable(t11 src/T11.cpp src/main.cpp)
+add_executable(mockModel src/mockModel.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(t11 t11_kb_modeling_generate_messages_cpp shared_generate_messages_cpp)
+add_dependencies(t11 ${catkin_EXPORTED_TARGETS} )
+add_dependencies(mockModel ${catkin_EXPORTED_TARGETS} )
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(t11
-  ${catkin_LIBRARIES}
-)
+target_link_libraries(t11 ${catkin_LIBRARIES} )
+target_link_libraries(mockModel ${catkin_LIBRARIES} )
 
 #############
 ## Install ##

@@ -1,13 +1,20 @@
 /**
- * Mock-up module that sends shop-sites with random values every minute
- * Implements the get_location service
+ * Mock-up module that sends shop-sites with patrol values every 15s
+ * Receives people events and builds goals from them
  * Sends goals
  */
 
 #include "ros/ros.h"
+#include "shared/Feature.h"
+#include "shared/Event.h"
 #include "shared/AllGoals.h"
 #include "shared/goalKind.h"
-#include "t12_kb_reasoning/GetLocation.h"
+#include "shared/featureKind.h"
+#include "shared/eventKind.h"
+#include "t11_kb_modeling/GetAllSites.h"
+#include "t11_kb_modeling/GetLocation.h"
+#include "t11_kb_modeling/Knowledge.h"
+#include "t11_kb_modeling/knowledgeKind.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 
@@ -15,28 +22,36 @@
 #include <istream>
 #include <map>
 
-#define RATE (1/15.)
+#define PATROL_RATE (1/15.)
 
-typedef std::map<std::string, geometry_msgs::Point> pmap;
+enum State { detected, request, escort, follow, escort2 };
+
+struct people {
+  enum State currentState;
+  std::string param;
+};
+
+typedef struct people People;
 typedef std::map<std::string, float> cmap;
+typedef std::map<std::string, People> pmap;
 
 class MockSites {
   private:
   ros::NodeHandle node;
   ros::Publisher goals_pub;
-  ros::Subscriber position_sub;
-  ros::ServiceServer service_get_location;
-  ros::Timer tim;
-  pmap locations;
+  ros::Subscriber knowledge_sub, need_sub, event_sub;
+
+  ros::Timer timPatrol;
   cmap visits;
+  pmap peoples;
   std::string onSite;
 
-  void positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+  void knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg);
+  void needCallback(const shared::Event::ConstPtr& msg);
+  void eventCallback(const shared::Event::ConstPtr& msg);
 
-  bool getLocation(t12_kb_reasoning::GetLocation::Request  &req,
-		   t12_kb_reasoning::GetLocation::Response &res);
-
-  void sendGoals(const ros::TimerEvent&);
+  void sendPatrols(const ros::TimerEvent&);
+  void sendInteractGoals();
 
   public:
   MockSites(ros::NodeHandle node);
@@ -50,83 +65,138 @@ static inline geometry_msgs::Point mkPoint(float x,float y) {
   res.z = 0;
   return res;
 }
-
 MockSites::MockSites(ros::NodeHandle node) {
   this->node = node;
-  goals_pub = node.advertise<shared::AllGoals>("t12_goals_set", 100);
-
-  position_sub = node.subscribe("t21_robot_location", 100, &MockSites::positionCallback, this);
-
-  service_get_location = node.advertiseService("get_location", &MockSites::getLocation, this);
-
-  locations["doorWest"]=mkPoint(6,19);
-  locations["doorEast"]=mkPoint(93.69,29.75);
-  locations["monoprix"]=mkPoint(78,24);
-  locations["phone"]=mkPoint(89,31);
-  locations["restaurant"]=mkPoint(10,23);
-  locations["carPark"]=mkPoint(27,20);
-  
-  onSite = "";
-
-  pmap::iterator it = locations.begin(); 
-  while (it != locations.end()) {
-    visits[it->first] = 0;
+  ros::ServiceClient service_get_all_sites = node.serviceClient<t11_kb_modeling::GetAllSites>("get_all_sites");
+  t11_kb_modeling::GetAllSites srv;
+  if (! service_get_all_sites.call(srv)) {
+    ROS_WARN("Unable to get sites");
+    exit(1);
+  }
+  std::vector<std::string>::const_iterator it = srv.response.ids.begin();
+  while (it != srv.response.ids.end()) {
+    visits[*it] = 0;
     ++it;
   }
+
+  goals_pub = node.advertise<shared::AllGoals>("t12_goals_set", 100);
+
+  knowledge_sub = node.subscribe("t11_knowledge", 100, &MockSites::knowledgeCallback, this);
+  need_sub = node.subscribe("t32_event", 100, &MockSites::needCallback, this);
+  event_sub = node.subscribe("t22_event", 100, &MockSites::eventCallback, this);
+  
+  onSite = "";
 }
 
 static inline double sq(double x) {return x*x;}
 
-void MockSites::positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
-  geometry_msgs::Point robot = msg->pose.pose.position;
-  ROS_DEBUG("Robot at %f %f",robot.x, robot.y);
-  pmap::iterator it = locations.begin(); 
-  onSite = "";
-  while (it != locations.end()) {
-    if (sq(robot.x - it->second.x)+sq(robot.y - it->second.y) < 1) {
-      visits[it->first] = 0;
-      onSite = it->first;
-      ROS_INFO("Visited site %s",it->first.c_str());
-    } else {
-      /*ROS_INFO("Site %s distant of %f",it->first.c_str(), sq(robot.x - it->second.y)+sq(robot.y - it->second.y) );*/
-      ++visits[it->first];
+void MockSites::knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg) {
+  if (msg->category==KB_VISIT) {
+    cmap::iterator it = visits.begin(); 
+    onSite = "";
+    while (it != visits.end()) {
+      if (it->first == msg->knowledge) {
+	it->second = 0;
+	onSite = it->first;
+      } else {
+	++ it->second;
+      }
+      ++it;
     }
-    ++it;
+  } else if (msg->category==KB_ROBOT_AT) {
+    cmap::iterator it = visits.begin(); 
+    onSite = "";
+    while (it != visits.end()) {
+      ++ it->second;
+      ++it;
+    }
+  } else if (msg->category==KB_PEOPLE) {
+    peoples[msg->knowledge].currentState = detected;
   }
 }
 
-bool MockSites::getLocation(t12_kb_reasoning::GetLocation::Request  &req,
-		      t12_kb_reasoning::GetLocation::Response &res)
-{
-  ROS_DEBUG("Requesting %s", req.loc.c_str());
-  std::string id(req.loc);
-  pmap::iterator it = locations.find(id);
-  if (it != locations.end()) {
-    res.coords.position = it->second;
-    res.coords.orientation.x = 0;
-    res.coords.orientation.y = 0;
-    res.coords.orientation.z = 0;
-    res.coords.orientation.w = 1;
-    res.fixed = true;
-    return true;
-  } else {
-    ROS_WARN("location %s is unknown",id.c_str());
-    return false;
+void MockSites::needCallback(const shared::Event::ConstPtr& msg) {
+  if (msg->kind == INTERACTION_COMPLETE) {
+    // TODO
+    switch (peoples[msg->uid].currentState) {
+    case request:
+      peoples[msg->uid].currentState = detected; 
+      return; // interaction complete, don't generate a new goal
+    case escort:
+      peoples[msg->uid].currentState = follow; break;
+    case follow:
+      peoples[msg->uid].currentState = escort2; break;
+    case escort2:
+      peoples[msg->uid].currentState = detected; break;
+    }
+    sendInteractGoals();
+  } else if (msg->kind == NEED_ESCORT) {
+    peoples[msg->uid].currentState = escort;
+    peoples[msg->uid].param = msg->param;
+    sendInteractGoals();
   }
 }
+
+void MockSites::eventCallback(const shared::Event::ConstPtr& msg) {
+  if (msg->kind == EVENT_REQUEST) {
+    peoples[msg->uid].currentState = request;
+    sendInteractGoals();
+  }
+}
+
 // r t21_robot_location:=/diago/amcl_pose
 void MockSites::run() {
-  tim = node.createTimer(ros::Duration(1.0/RATE), &MockSites::sendGoals, this);
+  timPatrol = node.createTimer(ros::Duration(1.0/PATROL_RATE), &MockSites::sendPatrols, this);
   ros::spin();/*
-  ros::Rate loop_rate(RATE);
+  ros::Rate loop_rate(PATROL_RATE);
   while (ros::ok()) {
     loop_rate.sleep();
     ros::spinOnce();
-    sendGoals();
+    sendPatrols();
     }*/
 }
 
-void MockSites::sendGoals(const ros::TimerEvent&) {
+void MockSites::sendInteractGoals() {
+  shared::Goal g;
+  shared::AllGoals all;
+  all.mode = "interact";
+  pmap::iterator it = peoples.begin();
+  while (it != peoples.end()) {
+    switch (it->second.currentState) {
+    case detected: break;
+    case request:
+      g.kind = GOAL_INTERACT;
+      g.loc = "_P_"+it->first;
+      g.param = it->first;
+      g.value = 1000;
+      all.goals.push_back(g);
+      break;
+    case escort:
+      g.kind = GOAL_ESCORT;
+      g.loc = it->second.param;
+      g.param = it->first;
+      g.value = 2000;
+      all.goals.push_back(g);
+      break;
+    case follow:
+      g.kind = GOAL_FOLLOW;
+      g.loc = "_P_"+it->first;
+      g.param = it->first;
+      g.value = 20000;
+      all.goals.push_back(g);
+      break;
+    case escort2:
+      g.kind = GOAL_ESCORT2;
+      g.loc = it->second.param;
+      g.param = it->first;
+      g.value = 2000;
+      all.goals.push_back(g);
+      break;
+    }
+  }
+}
+
+void MockSites::sendPatrols(const ros::TimerEvent&) {
   shared::Goal g;
   shared::AllGoals all;
   cmap::iterator it = visits.begin();

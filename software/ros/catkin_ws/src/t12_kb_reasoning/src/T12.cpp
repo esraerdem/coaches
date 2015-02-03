@@ -24,8 +24,8 @@ void T12::knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg)
 // TODO
 }
 
-bool T12::getLocation(t12_kb_reasoning::GetLocation::Request  &req,
-		      t12_kb_reasoning::GetLocation::Response &res)
+bool T12::getLocation(t11_kb_modeling::GetLocation::Request  &req,
+		      t11_kb_modeling::GetLocation::Response &res)
 {
 // TODO
   return false;

@@ -8,7 +8,7 @@
 #include "t11_kb_modeling/Knowledge.h"
 #include "shared/Event.h"
 #include "shared/AllGoals.h"
-#include "t12_kb_reasoning/GetLocation.h"
+#include "t11_kb_modeling/GetLocation.h"
 
 #include <sstream>
 #include <istream>
@@ -25,8 +25,8 @@ class T12 {
   void humanNeedsCallback(const shared::Event::ConstPtr& msg);
   void knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg);
 
-  bool getLocation(t12_kb_reasoning::GetLocation::Request  &req,
-		   t12_kb_reasoning::GetLocation::Response &res);
+  bool getLocation(t11_kb_modeling::GetLocation::Request  &req,
+		   t11_kb_modeling::GetLocation::Response &res);
 
   public:
   T12(ros::NodeHandle node);

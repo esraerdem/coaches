@@ -107,7 +107,7 @@ add_executable(t42 src/T42.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(t42_multi_robot_planning_node t42_multi_robot_planning_generate_messages_cpp)
+add_dependencies(t42 ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t42

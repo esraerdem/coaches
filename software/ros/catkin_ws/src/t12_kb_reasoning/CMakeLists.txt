@@ -5,7 +5,7 @@ project(t12_kb_reasoning)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
+#  message_generation
   roscpp
   rospy
   std_msgs
@@ -55,10 +55,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate services in the 'srv' folder
-add_service_files(
-  FILES
-  GetLocation.srv
-)
+#add_service_files(
+#  FILES
+#  GetLocation.srv
+#)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -68,11 +68,11 @@ add_service_files(
 # )
 
 ## Generate added messages and services with any dependencies listed here
-generate_messages(
-  DEPENDENCIES
-  std_msgs
-  geometry_msgs
-)
+#generate_messages(
+#  DEPENDENCIES
+#  std_msgs
+#  geometry_msgs
+#)
 
 ###################################
 ## catkin specific configuration ##
@@ -107,8 +107,8 @@ add_executable(mockSites src/mockSites.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(t12 t12_kb_reasoning_generate_messages_cpp)
-add_dependencies(mockSites t12_kb_reasoning_generate_messages_cpp)
+add_dependencies(t12 ${catkin_EXPORTED_TARGETS})
+add_dependencies(mockSites ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t12 ${catkin_LIBRARIES} )
