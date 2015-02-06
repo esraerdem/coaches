@@ -92,52 +92,56 @@ void T42::positionTimerCallback(const ros::TimerEvent&) {
   if (positionUpdated) {
     positionUpdated = false;
   } else {
-    positionTimer.stop();
-    if (plannedAction != "")
-      if (sqrt(sq(robot.x-plannedPosition.x)+sq(robot.y-plannedPosition.y)) < 2) {
-	// arrived at planned location
-	if (plannedAction == GOAL_PATROL) {
-	  // Nothing to do here, let's replan
-	} else if (plannedAction == GOAL_INTERACT) {
-	  shared::Goal msg;
-	  msg.loc = plannedSite;
-	  msg.kind = plannedAction;
-	  msg.param = plannedParam;
-	  msg.value = 0;
-	  hri_goal_pub.publish(msg);
-	  return;
-	} else if (plannedAction == GOAL_ADVERTISE) {
-	  shared::Goal msg;
-	  msg.loc = plannedSite;
-	  msg.kind = plannedAction;
-	  msg.param = plannedParam;
-	  msg.value = 0;
-	  hri_goal_pub.publish(msg);
-	  return;
-	} else if (plannedAction == GOAL_INSPECT) {
-	  // TODO take a picture
-	  return;
-	} else if (plannedAction == GOAL_ESCORT) {
-	  shared::Goal msg;
-	  msg.loc = plannedSite;
-	  msg.kind = GOAL_FOLLOW;
-	  msg.param = plannedParam;
-	  msg.value = 0;
-	  hri_goal_pub.publish(msg);
-	  return;
-	} else if (plannedAction == GOAL_ESCORT2) {
-	  shared::Goal msg;
-	  msg.loc = plannedSite;
-	  msg.kind = GOAL_DONE;
-	  msg.param = plannedParam;
-	  msg.value = 0;
-	  hri_goal_pub.publish(msg);
-	  return;
-	}
-      } // if target reached
-    // TODO plan for a new objective ?
-    plan();
-  } // if position not updated
+    noMoveCallBack();
+  }
+}
+
+void T42::noMoveCallBack() {
+  positionTimer.stop();
+  if (plannedAction != "")
+    if (sqrt(sq(robot.x-plannedPosition.x)+sq(robot.y-plannedPosition.y)) < 2) {
+      // arrived at planned location
+      if (plannedAction == GOAL_PATROL) {
+	// Nothing to do here, let's replan
+      } else if (plannedAction == GOAL_INTERACT) {
+	shared::Goal msg;
+	msg.loc = plannedSite;
+	msg.kind = plannedAction;
+	msg.param = plannedParam;
+	msg.value = 0;
+	hri_goal_pub.publish(msg);
+	return;
+      } else if (plannedAction == GOAL_ADVERTISE) {
+	shared::Goal msg;
+	msg.loc = plannedSite;
+	msg.kind = plannedAction;
+	msg.param = plannedParam;
+	msg.value = 0;
+	hri_goal_pub.publish(msg);
+	return;
+      } else if (plannedAction == GOAL_INSPECT) {
+	// TODO take a picture
+	return;
+      } else if (plannedAction == GOAL_ESCORT) {
+	shared::Goal msg;
+	msg.loc = plannedSite;
+	msg.kind = GOAL_FOLLOW;
+	msg.param = plannedParam;
+	msg.value = 0;
+	hri_goal_pub.publish(msg);
+	return;
+      } else if (plannedAction == GOAL_ESCORT2) {
+	shared::Goal msg;
+	msg.loc = plannedSite;
+	msg.kind = GOAL_DONE;
+	msg.param = plannedParam;
+	msg.value = 0;
+	hri_goal_pub.publish(msg);
+	return;
+      }
+    } // if target reached
+  // TODO plan for a new objective ?
+  plan();
 } // positionTimerCallback(...)
 
 void T42::plan() {

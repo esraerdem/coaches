@@ -23,7 +23,7 @@
 typedef geometry_msgs::Point Point;
 
 class T42 {
-  private:
+  protected:
   ros::NodeHandle node;
   ros::Publisher hri_goal_pub;
   ros::Publisher nav_goal_pub;
@@ -52,7 +52,8 @@ class T42 {
   void goalSetCallback(const shared::AllGoals::ConstPtr& msg);
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
 
-  void plan();
+  virtual void noMoveCallBack();
+  virtual void plan();
 
   public:
   T42(ros::NodeHandle node);
