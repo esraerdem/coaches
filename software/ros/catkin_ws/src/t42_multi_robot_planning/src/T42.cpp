@@ -7,7 +7,7 @@ T42::T42(ros::NodeHandle node) {
   goal_set_sub = node.subscribe("t12_goals_set", 10, &T42::goalSetCallback, this);
   location_sub = node.subscribe("t21_robot_location", 10, &T42::locationCallback, this);
 
-  positionTimer = node.createTimer(ros::Duration(3), &T42::positionTimerCallback, this);
+  positionTimer = node.createTimer(ros::Duration(1), &T42::positionTimerCallback, this);
   positionUpdated = false;
   positionTimer.stop(); // not enabled till first location is received
 }
@@ -28,6 +28,7 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
     ++it;
   }
   positionTimer.start(); // reactivates the robot if it was sleeping
+  plan();
 }
 
 int T42::newFixedSite(std::string site) {
@@ -140,6 +141,7 @@ void T42::positionTimerCallback(const ros::TimerEvent&) {
 } // positionTimerCallback(...)
 
 void T42::plan() {
+  ROS_INFO("Planning...");
   int i=0;
   ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   Point best = robot;
@@ -166,7 +168,9 @@ void T42::plan() {
     srv2.request.to.pose.orientation.y = 0;
     srv2.request.to.pose.orientation.z = 0;
     srv2.request.to.pose.orientation.w = 1;
-    if (pathLen.call(srv2)) {
+    if (! pathLen.call(srv2)) 
+      return;
+    {
       robot2siteDistance[i] = srv2.response.length;
       for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
 	float estimation = itA->second;
