@@ -70,8 +70,8 @@
 
 \title{D5.1-Sapienza\\ Definition of internal architecture and interface between software modules}
 
-\author{Domenico D. Bloisi, Fabio Maria Carlucci, Luca Iocchi, Daniele Nardi, and\\
-Andrea Pennisi\\
+\author{Roberto Capobianco, Fabio Maria Carlucci, Giorgio Grisetti, Luca Iocchi, \\
+Daniele Nardi, and Andrea Pennisi\\
 \textit{Dept. of Computer, Control and Management Engineering\\
 Sapienza University of Rome\\
 via Ariosto, 25 00185 Rome, Italy}}
@@ -157,7 +157,22 @@ The main robotic software components that will be realized within the COACHES pr
 \item T4.2 Multi-robot planning
 \end{itemize}
 
-Sapienza University is responsible for tasks T3.1 and T4.1.
+Sapienza University is responsible for tasks T3.1 and T4.1. In Task T3.1 milti-modal human-robot interaction techniques will be implemented, including speech recognition and synthesis, people detection and tracking, people identification through the use of special markers (e.g., RFID or bar code reading).
+In Task 4.1 techniques for safe navigation in a populated environment will be developed. Safety is of course of utmost importance in the project and thus we have defined different levels of security for the COACHES robots, as follows.
+
+\begin{enumerate}
+\item Hardware Emergency Stop button. Each robot is provided with two easy-to-access emergency stop button that will immediately cut current to motors in order to stop it.
+\item Software Remote Emergency Stop. A wireless device (e.g., a wireless joystick) is configured to disable motor commands immediately, upon pushing a button, in the low-level software module.
+\item Obstacle avoidance module. A software module using artificial potential fields for obstacle avoidance is always active.
+\item Protection from hardware and software failures. All the low-level software modules are configured in order to immediately stop sending commands to the robot, if they detect any anomaly, such as a sensor not sending data or another software module not working properly. 
+\end{enumerate}
+
+\subsection{Interfaces between software components}
+
+The main interfaces between the modules developed by Sapienza University and other modules in the system are the information collected through human-robot interaction (T3.1) to be used for the semantic map in Task T1.1. To this end, we have defined a specification of the semantic map, that will be used withing the reasoning system.
+
+The semantic map of the environment is formed by two components: a metric map and a set of semantic annotations related to the metric map. The semantic annotations are expressed as predicates in a Prolog-like language. 
+%An example of such a map is provided below.
 
 
 \section{2D Simulation Environment}
