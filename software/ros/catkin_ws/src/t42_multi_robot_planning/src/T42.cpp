@@ -38,6 +38,7 @@ int T42::newFixedSite(std::string site) {
   ros::ServiceClient siteLoc = node.serviceClient<t11_kb_modeling::GetLocation>("/diago/get_location");
   ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   if (siteLoc.call(srv)) {
+    //    std::cout << "adding site " << site << " at " << srv.response.coords.position.x << " x " <<  srv.response.coords.position.y << std::endl;
     fixedSites[site] = sitesLocation.size();
     sitesLocation.push_back(srv.response.coords.position);
     std::vector<float> dist;
@@ -62,6 +63,11 @@ int T42::newFixedSite(std::string site) {
       if (pathLen.call(srv2)) {
 	dist.push_back(srv2.response.length);
 	site2siteDistance[i].push_back(srv2.response.length); // suppose the path is reflexive
+	//	std::cout << "dist from new to " << i << " is "<<srv2.response.length<<"\n";
+      } else {
+	//	std::cout << "dist from new to " << i << " is 0\n";
+	dist.push_back(0);
+	site2siteDistance[i].push_back(0);
       }
       srv2.request.to.pose.position.x = robot.x;
       srv2.request.to.pose.position.y = robot.y;
@@ -70,6 +76,7 @@ int T42::newFixedSite(std::string site) {
 	robot2siteDistance.push_back(srv2.response.length);
       }
     } // for i
+    dist.push_back(0); // no distance between i and i
     site2siteDistance.push_back(dist);
     siteActionReward.push_back(std::map<std::string,float>());
     siteActionParam.push_back(std::map<std::string,std::string>());
@@ -144,10 +151,75 @@ void T42::noMoveCallBack() {
   plan();
 } // positionTimerCallback(...)
 
+bool T42::updateDistances(int &closestSite) {
+  int bestSite = -1;
+  float bestDist = 1000000000; // too much
+  int i=0;
+  for (std::vector<Point>::iterator it = sitesLocation.begin();
+       it != sitesLocation.end(); ++it, ++i) {
+    float d = sq(robot.x - it->x) + sq(robot.y - it->y);
+    if (d < bestDist) {
+      bestSite = i;
+      bestDist = d;
+    }
+  }
+  if (bestDist <= 1) { // less than 1 meter away for a known site
+    bestDist = sqrtf(bestDist);
+    closestSite = bestSite;
+    /*    std::string bestSiteName="none";
+    for (std::map<std::string, int>::iterator it = fixedSites.begin();
+	 it != fixedSites.end(); ++it) {
+      if (it->second == bestSite) {
+	bestSiteName = it->first;
+	break;
+      }
+    }
+    std::cout << "Reusing distance based on " << bestSiteName << "(" <<bestDist<< ")\n";*/
+    for (std::map<std::string,int>::iterator it = fixedSites.begin();
+	 it != fixedSites.end(); ++it) {
+      i = it->second;
+      robot2siteDistance[i] = bestDist + site2siteDistance[i][bestSite];
+      //      std::cout << "Distance to " << it->first << " approx " << robot2siteDistance[i] <<"\n";
+    }
+  } else {
+    closestSite = -1;
+    ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
+    int i=0;
+    for (std::vector<Point>::iterator it = sitesLocation.begin();
+	 it != sitesLocation.end(); ++it, ++i) {
+      t41_robust_navigation::GetPathLen srv2;
+      srv2.request.from.header.frame_id="map";
+      srv2.request.from.pose.position.x = robot.x;
+      srv2.request.from.pose.position.y = robot.y;
+      srv2.request.from.pose.position.z = robot.z;
+      srv2.request.from.pose.orientation.x = 0;
+      srv2.request.from.pose.orientation.y = 0;
+      srv2.request.from.pose.orientation.z = 0;
+      srv2.request.from.pose.orientation.w = 1;
+      srv2.request.to.pose.position.x = it->x;
+      srv2.request.to.pose.position.y = it->y;
+      srv2.request.to.pose.position.z = it->z;
+      srv2.request.to.pose.orientation.x = 0;
+      srv2.request.to.pose.orientation.y = 0;
+      srv2.request.to.pose.orientation.z = 0;
+      srv2.request.to.pose.orientation.w = 1;
+      if (! pathLen.call(srv2)) 
+	return false;
+      robot2siteDistance[i] = srv2.response.length;
+      //      std::cout << "Distance to site " << i << " is " << robot2siteDistance[i] << "\n";
+    } // for it in sitesLocation
+  } // if unknown position
+  //  std::cout << std::endl;
+  return true;
+} // updateDistances(int&)
+
 void T42::plan() {
   ROS_INFO("Planning...");
   int i=0;
-  ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
+  int closestSite;
+  if (!updateDistances(closestSite))
+    return;
+  //  ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   Point best = robot;
   int bestSite = -1;
   std::string bestSiteName = "here";
@@ -156,6 +228,7 @@ void T42::plan() {
   float expect = 0;
   for (std::vector<Point>::iterator it = sitesLocation.begin();
        it != sitesLocation.end(); ++it, ++i) {
+    /*
     t41_robust_navigation::GetPathLen srv2;
     srv2.request.from.header.frame_id="map";
     srv2.request.from.pose.position.x = robot.x;
@@ -175,11 +248,11 @@ void T42::plan() {
     if (! pathLen.call(srv2)) 
       return;
     {
-      robot2siteDistance[i] = srv2.response.length;
+    robot2siteDistance[i] = srv2.response.length;*/
       for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
 	float estimation = itA->second;
-	if (srv2.response.length >= 1)
-	  estimation /= sqrt(srv2.response.length);
+	if (robot2siteDistance[i] >= 1)
+	  estimation /= sqrt(robot2siteDistance[i]);
 
 	if (estimation > expect) {
 	  best = *it;
@@ -189,15 +262,9 @@ void T42::plan() {
 	  expect = estimation;
 	}
       } // for itA in siteActionReward[i]
-    }
+    //}
   } // for it in sitesLocation
-  for (std::map<std::string, int>::iterator it = fixedSites.begin();
-       it != fixedSites.end(); ++it) {
-    if (it->second == bestSite) {
-      bestSiteName = it->first;
-      break;
-    }
-  }
+  bestSiteName = look4name(bestSite);
   if (bestAction != GOAL_ESCORT) {
     ROS_INFO("Going to %s for %s %s (%f)", bestSiteName.c_str(), bestAction.c_str(), bestParam.c_str(), expect);
     geometry_msgs::PoseStamped msg;
@@ -222,7 +289,20 @@ void T42::plan() {
     msg.value = 0;
     hri_goal_pub.publish(msg);
   }
+} // plan()
+
+std::string T42::look4name(int siteIdx) {
+  std::string name = "unknown";
+  for (std::map<std::string, int>::iterator it = fixedSites.begin();
+       it != fixedSites.end(); ++it) {
+    if (it->second == siteIdx) {
+      name = it->first;
+      break;
+    }
+  }
+  return name;
 }
+
 
 void T42::run() {
   ros::spin();

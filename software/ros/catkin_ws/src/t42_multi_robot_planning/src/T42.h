@@ -41,6 +41,8 @@ class T42 {
   std::vector<std::map<std::string,float> > siteActionReward; // a map action->reward for each fixed site
   std::vector<std::map<std::string,std::string> > siteActionParam; // a map action->param for each fixed site
 
+  std::string look4name(int siteIdx); // gets the site name from its index
+
   Point       plannedPosition;
   std::string plannedSite;
   std::string plannedAction;
@@ -51,6 +53,7 @@ class T42 {
 
   void goalSetCallback(const shared::AllGoals::ConstPtr& msg);
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
+  bool updateDistances(int& closestSite);
 
   virtual void noMoveCallBack();
   virtual void plan();
