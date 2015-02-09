@@ -1,0 +1,5 @@
+# gets the name of all the availables fixed sites
+
+---
+
+string[] ids  # a vector of the sites' name

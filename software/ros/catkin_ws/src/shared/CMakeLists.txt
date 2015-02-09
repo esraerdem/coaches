@@ -6,7 +6,6 @@ project(shared)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   message_generation
-  message_runtime
   roscpp
   rospy
   std_msgs
@@ -51,6 +50,8 @@ add_message_files(
   FILES
   Feature.msg
   Event.msg
+  Goal.msg
+  AllGoals.msg
 )
 
 ## Generate services in the 'srv' folder
@@ -84,9 +85,9 @@ generate_messages(
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES shared
-#  CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
 

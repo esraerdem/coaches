@@ -1,0 +1,41 @@
+<launch>
+
+  <arg name="robot_name" default="diago" />
+
+  <master auto="start"/>
+
+  <include file="sim.launch" />
+
+  <group ns="$(arg robot_name)">
+    <param name="robot_name" value="$(arg robot_name)" />
+
+    <node pkg="t11_kb_modeling" type="mockModel" name="mockModel" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+
+    <node pkg="t12_kb_reasoning" type="mockSites" name="mockSites" respawn="false" output="screen">
+    </node>
+ 
+    <node pkg="t21_image_processing" type="mockPeople" name="mockPeople" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t22_situation_awareness" type="t22" name="situation_awareness" respawn="false" output="screen">
+    </node>
+  
+    <node pkg="t31_multimodal_hri" type="mockHRI" name="mockHRI" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t32_human_needs_estimation" type="t32" name="human_needs_estimation" respawn="false" output="screen">
+    </node>
+  
+    <node pkg="t41_robust_navigation" type="t41" name="robust_navigation" respawn="false" output="screen">
+      <remap from="t41_low_level" to="move_base_simple/goal" />
+    </node>
+
+    <node pkg="t42_multi_robot_planning" type="t42" name="multi_robot_planning" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+
+  </group>
+
+</launch>

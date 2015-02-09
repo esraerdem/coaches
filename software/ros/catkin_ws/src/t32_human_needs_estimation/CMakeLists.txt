@@ -5,11 +5,10 @@ project(t32_human_needs_estimation)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
-  message_generation
-  message_runtime
   roscpp
   rospy
   std_msgs
+  shared
 )
 
 ## System dependencies are found with CMake's conventions
@@ -84,7 +83,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES t32_human_needs_estimation
-#  CATKIN_DEPENDS message_generation message_runtime roscpp rospy std_msgs
+  CATKIN_DEPENDS message_runtime roscpp rospy std_msgs shared
 #  DEPENDS system_lib
 )
 
@@ -99,22 +98,17 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-## Declare a cpp library
-# add_library(t32_human_needs_estimation
-#   src/${PROJECT_NAME}/t32_human_needs_estimation.cpp
-# )
-
 ## Declare a cpp executable
-# add_executable(t32_human_needs_estimation_node src/t32_human_needs_estimation_node.cpp)
+add_executable(t32 src/T32.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(t32_human_needs_estimation_node t32_human_needs_estimation_generate_messages_cpp)
+add_dependencies(t32 shared_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(t32_human_needs_estimation_node
-#   ${catkin_LIBRARIES}
-# )
+target_link_libraries(t32
+  ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##

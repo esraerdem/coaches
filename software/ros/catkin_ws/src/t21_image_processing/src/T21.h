@@ -6,7 +6,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "sensor_msgs/Image.h"
-#include "geometry_msgs/Pose2D.h"
+#include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "shared/Feature.h"
 
 #include <sstream>

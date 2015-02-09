@@ -108,7 +108,7 @@ add_executable(t22 src/T22.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-# add_dependencies(t22_situation_awareness_node t22_situation_awareness_generate_messages_cpp)
+add_dependencies(t22 shared_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t22

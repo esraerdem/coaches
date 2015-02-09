@@ -16,7 +16,7 @@ make install
 
 # make ROS src 
 cd $COACHES_HOME/ros/catkin_ws
-catkin_make
+catkin_make -DCMAKE_BUILD_TYPE=RELWITHDEBINFO
 
 cd $DIR
 
