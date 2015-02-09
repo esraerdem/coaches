@@ -1,0 +1,107 @@
+\section{Introduction}
+
+Execution monitoring and interleaving planning and execution are crucial features for an autonomous robot acting in a real environment, specially when human interaction is involved, 
+as for the COACHES robots. Indeed, in complex scenarios, it is not possible to model and foresee all the possible situations that may occur and plans generated at planning time, when several information about the real environment are not known, may not be optimal or feasible at execution time.
+
+It is thus necessary to explicitly model and consider possible plan failures and to devise a mechanism that is able to properly reach to these failures.
+
+In this report, we describe a framework for representing possible causes of action failures and for revising the model of the system, in order to find better plans for the current situation.
+
+\section{Overview of the proposed framework}
+
+In classical on-line planning, execution monitoring is used to determine the correct execution of the planned action. When some action fails the execution monitoring is able to determine a new initial state and request for a re-planning to the planner component from this new initial state.
+In general, this mechanism does not change the model of the domain (i.e., the domain description), therefore this approach is suitable as soon as the cause of the failure is somewhat modeled in the domain description, in such a way that a new re-planning will avoid this situation.
+
+However, very often, it is not possible to anticipate and model all the possible causes of failures for the actions. In these cases, the planner may not be able to find for alternative solutions with respect to the ones that failed. For example, in a domain in which a robot can open doors with its arms and in which the fact that doors may be locked is not modeled in the domain description, a plan can be generated containing an action to open a door. When this action fails, the planner would re-plan to open this door again. Since the fact that it must be unlocked is not modeled in the preconditions of this action.
+
+
+The general approach that we will follow in this work includes three general modules: a planner, an executor, and a model updater. The three modules will cooperate during the execution of a complex task for a robot, including many failures of the planned actions, providing for a feedback mechanism from execution to planning.
+More specifically, the following interactions are devised:
+1) the planner notifies on-line to the executor the best plan (policy) to be executed according to the current model of the world; 2) the executor executes this plan (policy) and determines success or failures of the actions; 3) each failure is reported to the model updater that will follow some rules (either automatic domain dependent or manual domain dependent) to modify the current model, so that the planner can generate a new plan that is more suitable for the current situation as detected by the executor.
+
+It is important to remark that the update of the model must be done in such a way to not increase the size and the complexity of the model at every cycle and for every failure situation encountered. Indeed, this would easily bring to a too large and not scalable model update process. Instead, our proposal is to separate the representations at the model level and at the execution level, in order to have a more abstract representation at the model level and a finer representation at execution level.
+In other words, not all the causes of failure will be represented at the model level. This guarantees scalability of the overall system to many possible reasons of action failures,
+since they will not increase the size and the complexity of the model.
+
+In order to implement this approach we have chosen Markov Decision Processes (MDP) as planning formalism, Petri Net Plans (PNP) as execution formalism, and a rule based system as the model updater formalism.
+
+\section{Preliminaries}
+
+\subsection{MDP}
+
+\subsection{PNP}
+
+\subsection{Rule based system}
+
+\section{Activity Descriptions}
+
+The overall description of robot's goals and activities is formed by two parts:
+1) Progressive Processing Units (PRU) \cite{CaMoZi01}, denoting the tasks to be executed;
+2) Execution Rules (ER), denoting execution conditions, action failures and recovery procedures for these tasks.
+
+The overall procedure of the working system is the following:
+\begin{enumerate}
+\item From a PRU, a first MDP $M$ is generated 
+\item Given the model $M$, the best policy $\pi$ is computed through a Value-iteration algorithm
+\item The best policy $\pi$ is transformed in a PNP and it is executed in a real setting
+\item If some failure occurs, information about this failure are computed and sent to the model updater component
+\item The model updater component generates an updated model $M'$, given the current model $M$, the outcome of the execution of the current policy $\pi$ and the Execution Rules
+\item $M \leftarrow M'$ and goto step 2. 
+\end{enumerate}
+
+
+
+\subsection{Progressive Processing Units (PRU)}
+
+What is a PRU, how an MDP is generated, how an optimal policy is found ...
+
+\subsection{Execution Rules (ER)}
+
+Execution rules contains several different types of rules that are listed below.
+
+\vspace{0.5cm}
+
+1. Execution conditions for actions:
+
+\[ \mathbf{do} \;\; \emph{action} \;\; \mathbf{while} \;\; ( \emph{condition} ) \]
+
+\noindent
+the action can be executed as long as \emph{condition} is verified.
+If \emph{condition} is false, the action might fail or its performance or probability of success might degrade.
+A special condition, \emph{user\_interrupt}, is used to model the possibility for a user to interrupt the action.
+
+\vspace{0.5cm}
+
+2. Recovery procedures
+
+\[ \mathbf{if} \;\; \emph{action} \;\; \mathbf{fails, try} \;\; \emph{recovery} \;\; \]
+
+\noindent
+if the action fails a recovery procedure (i.e., a pre-defined PNP) is tried, typically in order to bring the system back to a known safe state.
+
+
+\vspace{0.5cm}
+
+3. Update procedures
+
+\[ \mathbf{if} \;\; \emph{action} \;\; \mathbf{fails, then} \;\; \emph{drop\_action} \;\; \]
+\[ \mathbf{if} \;\; \emph{action} \;\; \mathbf{fails, then} \;\; \emph{reduce\_transition\_probability} \;\; \]
+\[ \mathbf{if} \;\; \emph{action} \;\; \mathbf{fails, then} \;\; \emph{reduce\_reward} \;\; \]
+
+
+
+\noindent
+if the action fails, the MDP will be modified according to one or more of these rules.
+
+
+
+
+
+
+\subsection{Algorithm for Model Update}
+
+
+\section{Examples: Assistance and Escorting Tasks}
+
+
+
