@@ -15,6 +15,24 @@ divided in the following sub-folders:
  - lib       contains libraries
 
 
+=== Download the COACHES software environment ===
+
+COACHES software is maintained in a GIT repository at greyc.fr
+
+Download:
+
+  $ git clone https://<username>@forge.greyc.fr/git/coaches
+  
+If you want to avoid to enter your password at any time, you can apply 
+the following settings:
+
+  $ git config --global credential.helper cache
+  # Set git to use the credential memory cache
+
+  $ git config --global credential.helper 'cache --timeout=3600'
+  # Set the cache to timeout after 1 hour (setting is in seconds)
+
+
 
 === Initialize the COACHES software environment ===
 
@@ -26,7 +44,8 @@ you need to run the following steps:
 
    export COACHES_HOME=<PATH>/coaches/software
 
-2. run the following command from the 'software' directory
+2. open a new terminal (so that the above setting is applied) and 
+   run the following commands
 
   $ cd $COACHES_HOME
   $ bin/coaches_init.bash
@@ -71,7 +90,7 @@ After set up (as in the previous section), use:
   $ coaches_make.bash
 
 
-  
+
 === Test the COACHES software environment ===
 
 After set-up and build of the environment.
