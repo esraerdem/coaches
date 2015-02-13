@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   shared
   geometry_msgs
   t12_kb_reasoning
+  t41_robust_navigation
 )
 
 ## System dependencies are found with CMake's conventions

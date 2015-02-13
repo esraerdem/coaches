@@ -69,16 +69,14 @@ int T42::newFixedSite(std::string site) {
 	dist.push_back(0);
 	site2siteDistance[i].push_back(0);
       }
-      srv2.request.to.pose.position.x = robot.x;
-      srv2.request.to.pose.position.y = robot.y;
-      srv2.request.to.pose.position.z = robot.z;
-      if (pathLen.call(srv2)) {
-	robot2siteDistance.push_back(srv2.response.length);
-      }
     } // for i
     dist.push_back(0); // no distance between i and i
     site2siteDistance.push_back(dist);
     siteActionReward.push_back(std::map<std::string,float>());
+    robot2siteDistance.push_back(0); // will be computed when necessary
+    if (robot2siteDistance.size() != fixedSites.size()) {
+      std::cerr << "Robot-site : " << robot2siteDistance.size() << " != nb-site : " << fixedSites.size() << std::endl;
+    }
     siteActionParam.push_back(std::map<std::string,std::string>());
     return fixedSites.size()-1;
   } else {

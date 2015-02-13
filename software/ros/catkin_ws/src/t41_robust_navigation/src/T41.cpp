@@ -23,7 +23,7 @@ void T41::navGoalCallback(const geometry_msgs::PoseStamped::ConstPtr& msg)
   srv.request.goal = *msg;
   srv.request.goal.header.frame_id="map";
   srv.request.tolerance = 2.1;
-  ros::ServiceClient planner = node.serviceClient<nav_msgs::GetPlan>("/diago/move_base_node/make_plan");
+  ros::ServiceClient planner = node.serviceClient<nav_msgs::GetPlan>("/diago/planner/planner/make_plan");
   if (planner.call(srv)) {
     if (srv.response.plan.poses.empty())
       low_level_pub.publish(msg); // mock-up : sends to move_base_simple/goal

@@ -36,6 +36,10 @@
       <remap from="t21_robot_location" to="amcl_pose" />
     </node>
 
+    <node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+
     <group ns="planner">
         <node pkg="move_base" type="move_base" respawn="false" name="planner" output="screen">
                 <remap from="map" to="/map" />

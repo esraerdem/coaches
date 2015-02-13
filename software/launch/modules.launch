@@ -28,6 +28,9 @@
     <node pkg="t41_robust_navigation" type="t41" name="robust_navigation" respawn="false" output="screen">
     </node>
 
+    <node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+    </node>
+
     <node pkg="t42_multi_robot_planning" type="t42" name="multi_robot_planning" respawn="false" output="screen">
     </node>
 
