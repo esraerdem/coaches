@@ -1,5 +1,5 @@
 #include "T42.h"
-#include "t41_robust_navigation/policyResult.h"
+#include "t41_robust_navigation/policyResults.h"
 #include "t41_robust_navigation/PolicyResult.h"
 #include "t41_robust_navigation/Policy.h"
 
@@ -104,6 +104,9 @@ void PRUplanner::plan() {
     durations.push_back(initDur);
   }
   
+  if (val.size() <= 1)
+    return; // no action to plan yet
+  
   for (int h=0; h<horizon; h++) { // TODO change horizon ?
     bool changed = false;
     std::cout << "h="<<h<<" A=";
@@ -131,30 +134,45 @@ void PRUplanner::plan() {
   for (int s=0; s<fixedSites.size(); s++) {
     std::string site = look4name(s);
     t41_robust_navigation::StatePolicy stateAction;
-    stateAction.location = site;
-    if (s != TARGET)
-      stateAction.onsite_action = GOAL_ADVERTISE;
-    else
-      stateAction.onsite_action = GOAL_INTERACT;
-    stateAction.next_location = look4name(act[s]);
+    stateAction.state = "location( " + site + " )";
+    if (s == TARGET)
+      stateAction.action = std::string(GOAL_INTERACT) + "( "+msg.final_state+" )";
+    else {
+      if (act[s] == TARGET)
+	stateAction.action = GOAL_INTERACT;
+      else
+	stateAction.action = GOAL_ADVERTISE;
+      stateAction.action += "( " + look4name(act[s]) + " )";
+    }
     pol.push_back(stateAction);
     std::cout << "Location " << s << " (" << look4name(s) << ", " 
 	      << sitesLocation[s].x << " x " << sitesLocation[s].y
 	      << ") : Goto " << act[s] << " (" << val[s] << ")" << std::endl;
   }
   t41_robust_navigation::StatePolicy stateAction;
-  stateAction.location = "CURRENT";
-  stateAction.onsite_action = "none";
+  stateAction.state = "location( RobotPos )";
   if (closestSite<0) {
     // If robot not on a site
-    stateAction.next_location = look4name(act.back());
+    int s = act.back();
+    if (s == TARGET)
+      stateAction.action = GOAL_INTERACT;
+    else
+      stateAction.action = GOAL_ADVERTISE;
+    stateAction.action += "( " + look4name(s) + " )";
+    
     std::cout << "Robot at " << robot.x << " x " << robot.y
-	      << " : Goto " << act.back() << " (" << val.back() << ")" << std::endl;
+	      << " : Goto " << s << " (" << val.back() << ")" << std::endl;
   } else {
-    stateAction.next_location = look4name(act[closestSite]);
     if (closestSite == TARGET)
-      stateAction.onsite_action = GOAL_INTERACT;
-
+      stateAction.action = std::string(GOAL_INTERACT) + "( " + msg.final_state + " )";
+    else { // closest site is not the target
+      int s = act[closestSite];
+      if (s == TARGET)
+	stateAction.action = GOAL_INTERACT;
+      else
+	stateAction.action = GOAL_ADVERTISE;
+      stateAction.action += "( " + look4name(s) + " )";
+    }
     std::cout << "Robot is at location " << closestSite << " ("
 	      << look4name(closestSite) << ")" << std::endl;
   }

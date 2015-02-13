@@ -1,6 +1,4 @@
-# represents a pair of (location-name, action) for PRU policies
+# represents a pair of (state, action) for MDP policies
 
-string location         # the location name of this state
-string onsite_action    # the action the robot may implement in this state
-#string parameter # the action may require some parameter
-string next_location	# the name of the next location to go
+string state     # the description of this state
+string action    # the action to implement in this state
