@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   shared
   geometry_msgs
   t12_kb_reasoning
+  t41_robust_navigation
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,15 +105,16 @@ include_directories(
 
 ## Declare a cpp executable
 add_executable(t42 src/T42.cpp src/main.cpp)
+add_executable(pruPlanner src/T42.cpp src/PRUplanner.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(t42 ${catkin_EXPORTED_TARGETS})
+add_dependencies(pruPlanner ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(t42
-  ${catkin_LIBRARIES}
-)
+target_link_libraries(t42 ${catkin_LIBRARIES} )
+target_link_libraries(pruPlanner ${catkin_LIBRARIES} )
 
 #############
 ## Install ##

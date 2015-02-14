@@ -36,6 +36,33 @@
       <remap from="t21_robot_location" to="amcl_pose" />
     </node>
 
+    <node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+
+    <group ns="planner">
+        <node pkg="move_base" type="move_base" respawn="false" name="planner" output="screen">
+                <remap from="map" to="/map" />
+                <remap from="odom" to="dummy" />
+                <remap from="cmd_vel" to="dummy2" />
+
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/move_base_params.yaml" command="load" />
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/costmap_common_params.yaml" command="load" ns="global_costmap" />
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/costmap_common_params.yaml" command="load" ns="local_costmap" />
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/local_costmap_params.yaml" command="load" />
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/global_costmap_params.yaml" command="load" />
+                <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/base_local_planner_params.yaml" command="load" />
+
+                <!-- Override MOVE_BASE Frame Params to include prefix -->
+                <param name="global_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robot_name)/LASER_FRAME"/>
+                <param name="global_costmap/laser_scan_sensor/topic" value="/$(arg robot_name)/LASER_TOPIC"/>
+                <param name="global_costmap/robot_base_frame" value="/$(arg robot_name)/base_frame"/>   
+                <param name="local_costmap/global_frame" value="/$(arg robot_name)/odom"/>
+                <param name="local_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robot_name)/LASER_FRAME"/>
+                <param name="local_costmap/laser_scan_sensor/topic" value="/$(arg robot_name)/LASER_TOPIC"/>
+                <param name="local_costmap/robot_base_frame" value="/$(arg robot_name)/base_frame"/> 
+        </node>
+    </group>
   </group>
 
 </launch>

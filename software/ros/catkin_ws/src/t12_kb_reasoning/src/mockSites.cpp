@@ -75,7 +75,7 @@ MockSites::MockSites(ros::NodeHandle node) {
   }
   std::vector<std::string>::const_iterator it = srv.response.ids.begin();
   while (it != srv.response.ids.end()) {
-    visits[*it] = 0;
+    visits[*it] = 500;
     ++it;
   }
 
@@ -93,11 +93,17 @@ static inline double sq(double x) {return x*x;}
 void MockSites::knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg) {
   if (msg->category==KB_VISIT) {
     cmap::iterator it = visits.begin(); 
+    std::string old = onSite;
     onSite = "";
     while (it != visits.end()) {
       if (it->first == msg->knowledge) {
 	it->second = 0;
 	onSite = it->first;
+	if (old != onSite) {
+          old = onSite;
+          ros::TimerEvent dummy;
+          sendPatrols(dummy);
+        }
       } else {
 	++ it->second;
       }
@@ -193,10 +199,15 @@ void MockSites::sendInteractGoals() {
       all.goals.push_back(g);
       break;
     }
-  }
-}
+    ++it;
+  } // while *it in peoples
+  all.header.stamp = ros::Time::now();
+  goals_pub.publish(all);
+  ROS_DEBUG("send interact goals");  
+} // sendInteractGoals()
 
 void MockSites::sendPatrols(const ros::TimerEvent&) {
+  if (ros::Time::now().sec<1) return;
   shared::Goal g;
   shared::AllGoals all;
   cmap::iterator it = visits.begin();

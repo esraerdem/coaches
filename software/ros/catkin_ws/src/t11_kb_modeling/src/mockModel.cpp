@@ -123,15 +123,17 @@ bool MockModel::getLocation(t11_kb_modeling::GetLocation::Request  &req,
 {
   ROS_DEBUG("Requesting %s", req.loc.c_str());
   std::string id(req.loc);
-  lmap::iterator it;
+  lmap::iterator it,end;
   if (id.substr(0, 3) == "_P_") {
     it = peoples.find(id);
     res.fixed = false;
+    end = peoples.end();
   } else {
     it = locations.find(id);
     res.fixed = true;
+    end = locations.end();
   }
-  if (it != locations.end()) {
+  if (it != end) {
     res.coords.position = it->second;
     res.coords.orientation.x = 0;
     res.coords.orientation.y = 0;
@@ -152,18 +154,18 @@ void MockModel::hriFeatureCallback(const shared::Feature::ConstPtr& msg)
 void MockModel::envFeatureCallback(const shared::Feature::ConstPtr& msg)
 {
   if (msg->kind == DETECT_PEOPLE) {
-    peoples[msg->uid] = msg->location.position; // TODO deal with deletion of people ?
+    peoples["_P_"+msg->uid] = msg->location.position; // TODO deal with deletion of people ?
     t11_kb_modeling::Knowledge kb;
     kb.header.frame_id="diago";
     kb.header.stamp = ros::Time::now();
     kb.category = KB_PEOPLE;
-    kb.knowledge = "_P_"+msg->uid;
+    kb.knowledge = msg->uid;
     knowledge_pub.publish(kb);
   }
 }
 
 
-// r t21_robot_location:=/diago/amcl_pose
+// r t21_robot_location:=/diago/amcl_pose __ns:=/diago
 
 void MockModel::run() {
   ros::spin();
