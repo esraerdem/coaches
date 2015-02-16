@@ -43,8 +43,9 @@ struct act {
 };
 
 void PRUplanner::plan() {
-  // Let's focus at first on going to site 3 (phone shop)
-  const int TARGET = 3;
+  int TARGET = 3;
+  float targetReward = 0;
+
   int closestSite;
   if (! updateDistances(closestSite))
     return; // unable to update distances
@@ -59,9 +60,15 @@ void PRUplanner::plan() {
       cur.state = j;
       cur.action = &it->first;
       cur.reward = it->second;
+      if (cur.reward>targetReward) {
+	targetReward = cur.reward;
+	TARGET = actions.size();
+      }
       actions.push_back(cur);
     } // for it
   } // for j
+
+  int TARGETstate = actions[TARGET].state;
 
   std::vector<std::vector<float> > durations; // durations[i][j] for acting  j  in state  i
   std::vector<std::vector<float> > rewards; // rewards[i][j] for going action  j  in state i
@@ -79,22 +86,22 @@ void PRUplanner::plan() {
 	// act *it
       int j = it->state;
       if (i==j) { 
-	if (i==TARGET) {
-	  rew.push_back(GOAL_REWARD); // stay here
+	if (i==TARGETstate) {
+	  rew.push_back(it->reward); // stay here
 	  dur.push_back(60); // 1 minute of interaction
 	} else {
 	  rew.push_back(0);
 	  dur.push_back(60); // 1 minute of do-nothing
 	}
-      } else if (i==TARGET) {
+      } else if (i==TARGETstate) {
 	rew.push_back(-GOAL_REWARD); // don't leave target
 	if (robotSite)
 	  dur.push_back(60+robot2siteDistance[j]); // 1 minute of do-nothing + path
 	else
 	  dur.push_back(60+site2siteDistance[i][j]); // 1 minute of do-nothing + path
       } else {
-	if (j==TARGET) {
-	  rew.push_back(GOAL_REWARD);
+	if (j==TARGETstate) {
+	  rew.push_back(it->reward);
 	  if (robotSite)
 	    dur.push_back(60+robot2siteDistance[j]); // 1 minute of interaction + path
 	  else
@@ -139,7 +146,7 @@ void PRUplanner::plan() {
     std::cout << std::endl;
   } // for each horizon h
   t41_robust_navigation::Policy msg;
-  msg.final_state = look4name(TARGET);
+  msg.final_state = look4name(TARGETstate);
   std::vector<t41_robust_navigation::StatePolicy> pol;
   std::cout << "Optimal plan is \n";
   for (int s=0; s<=fixedSites.size(); s++) {
@@ -150,10 +157,10 @@ void PRUplanner::plan() {
     else
       site = look4name(s);
     stateAction.state = "location( " + site + " )";
-    if (s == TARGET)
+    /*    if (s == TARGET)
       stateAction.action = std::string(GOAL_INTERACT) + "( "+msg.final_state+" )";
-    else 
-      stateAction.action = *actions[act[s]].action + "( " + look4name(actions[act[s]].state) + " )";
+      else*/ 
+    stateAction.action = *actions[act[s]].action + "( " + look4name(actions[act[s]].state) + " )";
     
     pol.push_back(stateAction);
     std::cout << "Location " << s << " (" << site << ", ";
@@ -165,6 +172,7 @@ void PRUplanner::plan() {
   } // for s in sites
 
   msg.policy = pol;
+  msg.goal_name = *actions[TARGET].action + "( " + msg.final_state + " )";
   policy_pub.publish(msg);
 } // plan()
 

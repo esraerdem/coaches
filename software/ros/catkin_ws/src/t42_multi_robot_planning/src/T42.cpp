@@ -27,8 +27,8 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
     siteActionParam[siteID][std::string(it->kind)] = it->param;
     ++it;
   }
-  siteActionReward[3]["interact"] = 20000;
-  siteActionParam[3]["interact"]="people";
+  /*  siteActionReward[3]["interact"] = 20000;
+      siteActionParam[3]["interact"]="people";*/
   positionTimer.start(); // reactivates the robot if it was sleeping
   plan();
 }
