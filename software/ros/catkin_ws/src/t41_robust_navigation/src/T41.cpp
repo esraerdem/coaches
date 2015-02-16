@@ -20,11 +20,12 @@ T41::T41(ros::NodeHandle node) {
   this->node = node;
   low_level_pub = node.advertise<geometry_msgs::PoseStamped>("t41_low_level", 100);
   nav_goal_sub = node.subscribe("t42_nav_goal", 10, &T41::navGoalCallback, this);
-  // location_sub = node.subscribe("t21_robot_location", 10, &T41::locationCallback, this);
   location_sub = node.subscribe("amcl_pose", 10, &T41::amclposeCallback, this);
+  pnpstatus_sub = node.subscribe("currentActivePlaces", 10, &T41::PNPplacesCallback, this);
 
   policy_sub = node.subscribe("t42_policy", 10, &T41::policyCallback, this);
   plantoexec_pub = node.advertise<std_msgs::String>("planToExec", 100);
+  policyresult_pub = node.advertise<t41_robust_navigation::PolicyResult>("t41_policy_result", 100);
 
   service_path_len = node.advertiseService("get_path_len", &T41::getPathLen, this);
 
@@ -63,10 +64,13 @@ string extractParams(string s) {
 void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
     std::map<string,string> policy;
+    std::map<string,string> visited;
     std::map<std::pair<string,string>,string> transition_fn;
-    string initial_state = "RobotPos", final_state = msg->final_state;
+    string initial_state = "RobotPos";
+    final_state = msg->final_state;
+    goalname = msg->goal_name;
 
-    ROS_INFO("Received policy. Initial state: %s Final state: %s", initial_state.c_str(), final_state.c_str());
+    ROS_INFO("Received policy for goal %s. Initial state: %s Final state: %s", goalname.c_str(), initial_state.c_str(), final_state.c_str());
     std::vector<t41_robust_navigation::StatePolicy> p = msg->policy;
     t41_robust_navigation::StatePolicy sa;
     std::vector<t41_robust_navigation::StatePolicy>::iterator it = p.begin();
@@ -90,9 +94,19 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     PNP pnp("policy");
     Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
     string current_state = initial_state;
+    bool cyclic_policy = false;
 
     while (current_state!=final_state) {
-        Place *p1 = pnp.addCondition("["+current_state+"]",p0);
+        Place *p1;
+        if (visited[current_state]=="") {
+            p1 = pnp.addCondition("["+current_state+"]",p0);
+            visited[current_state]="true";
+        }
+        else {
+            std::cerr << "ERROR. Cyclic policy!!!" << std::endl;
+            cyclic_policy = true;
+            break;
+        }
         std::cout << "PNPgen::  " << current_state << ": ";
         string action = policy[current_state];
         if (action=="") {
@@ -112,6 +126,16 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     Place *p1 = pnp.addCondition("["+current_state+"]",p0);
     p1->setName("goal");
 
+    if (cyclic_policy) {
+        t41_robust_navigation::PolicyResult res;
+        res.goal_name = goalname;
+        res.feedback = "FAILURE: cyclic policy";
+        res.state = initial_state;
+        policyresult_pub.publish(res);
+        return;
+    }
+
+
     string planname = "AUTOGENpolicy";
     string pnpfilename = planfolder+"/"+planname+".pnml";
     std::ofstream of(pnpfilename.c_str());
@@ -126,6 +150,20 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     plantoexec_pub.publish(s);
 
 }
+
+
+void T41::PNPplacesCallback(const std_msgs::String::ConstPtr& msg) {
+    string current_places = msg->data;
+    if (current_places.find("goal")!=string::npos) {
+        t41_robust_navigation::PolicyResult res;
+        res.goal_name = goalname;
+        res.feedback = "SUCCESS";
+        res.state = final_state;
+        policyresult_pub.publish(res);
+    }
+}
+
+
 
 /*
 void T41::locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
