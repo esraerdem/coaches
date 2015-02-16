@@ -1,9 +1,12 @@
 *~
 *.swp
+CMakeLists.txt.user
+*.wav
+AUTOGEN*
 software/ros/catkin_ws/.catkin_workspace
-software/ros/catkin_ws/build/
+software/ros/catkin_ws/*build/
 software/ros/catkin_ws/devel/
-software/ros/catkin_ws/src/CMakeLists.txt
+software/ros/catkin_ws/src/CMakeLists.txt*
 software/external/gradient_based_navigation/
 software/ros/catkin_ws/src/gradient_based_navigation
 software/external/PetriNetPlans/

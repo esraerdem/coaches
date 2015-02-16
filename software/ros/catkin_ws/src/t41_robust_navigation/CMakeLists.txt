@@ -11,6 +11,9 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   geometry_msgs
   nav_msgs
+  pnp_ros
+  tf
+  t11_kb_modeling
 )
 
 ## System dependencies are found with CMake's conventions
@@ -99,18 +102,24 @@ catkin_package(
 ## Your package locations should be listed before other locations
 include_directories(include)
 include_directories(
+  ${pnp_ros_INCLUDE_DIRS}
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a cpp executable
-add_executable(t41 src/T41.cpp src/main.cpp)
+add_executable(t41 src/T41.cpp src/pnpgenerator.cpp src/main.cpp)
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(t41 t41_robust_navigation_generate_messages_cpp)
+add_dependencies(t41 ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t41 ${catkin_LIBRARIES} )
+
+add_executable(test_genPNP src/test_genPNP.cpp src/pnpgenerator.cpp)
+
+add_executable(t41_pnpas src/T41PNPAS.cpp src/T41Actions.cpp)
+target_link_libraries(t41_pnpas ${pnp_ros_LIBRARIES} ${catkin_LIBRARIES})
 
 #############
 ## Install ##
