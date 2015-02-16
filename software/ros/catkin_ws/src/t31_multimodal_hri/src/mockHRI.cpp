@@ -32,6 +32,7 @@ class MockHRI {
 
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void hriGoalCallback(const shared::Goal::ConstPtr& msg);
+  void doSay(std_msgs::String msg);
   
   void intTimerCallback(const ros::TimerEvent&);
   void adTimerCallback(const ros::TimerEvent&);
@@ -78,9 +79,21 @@ void MockHRI::hriGoalCallback(const shared::Goal::ConstPtr& msg)
     interactionTimer.start();
   }
   currentInteraction = msg->param;
-  say_pub.publish(msgOut);
+  doSay(msgOut);
 }
 
+void MockHRI::doSay(std_msgs::String msg) {
+  say_pub.publish(msg);  // received by stage to print out say message
+  if (msg.data!="") {
+      std::stringstream ss; ss << "pico2wave -w /tmp/say_out.wav \"" << msg.data << "\"";
+      int r1=system(ss.str().c_str());
+      int r2=system("aplay /tmp/say_out.wav");
+      if (r1<0 || r2<0) {
+	  std::cerr << "ERROR in Say procedure (pico2wave+aplay)" << std::endl;
+      }
+  }
+}
+  
 void MockHRI::intTimerCallback(const ros::TimerEvent&) {
   shared::Feature msg;
   msg.header.stamp = ros::Time::now();
@@ -89,9 +102,10 @@ void MockHRI::intTimerCallback(const ros::TimerEvent&) {
   msg.location = robot;
   msg.uid = currentInteraction;
   feature_pub.publish(msg);
+  
   std_msgs::String msgOut;
   msgOut.data = "";
-  say_pub.publish(msgOut);
+  doSay(msgOut);   // to delete the say message in stage
   currentInteraction = "";
 }
 
@@ -105,7 +119,7 @@ void MockHRI::adTimerCallback(const ros::TimerEvent&) {
   feature_pub.publish(msg);
   std_msgs::String msgOut;
   msgOut.data = "";
-  say_pub.publish(msgOut);
+  doSay(msgOut);  // to delete the say message in stage
   currentInteraction = "";
 }
 

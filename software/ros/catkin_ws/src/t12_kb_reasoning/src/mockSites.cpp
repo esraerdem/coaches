@@ -152,7 +152,7 @@ void MockSites::eventCallback(const shared::Event::ConstPtr& msg) {
 
 // r t21_robot_location:=/diago/amcl_pose
 void MockSites::run() {
-  timPatrol = node.createTimer(ros::Duration(1.0/PATROL_RATE), &MockSites::sendPatrols, this);
+  timPatrol = node.createTimer(ros::Duration(1.0/PATROL_RATE), &MockSites::sendPatrols, this, true);
   ros::spin();/*
   ros::Rate loop_rate(PATROL_RATE);
   while (ros::ok()) {

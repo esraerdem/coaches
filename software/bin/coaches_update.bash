@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# install new packages
+if ! hash pico2wave 2>/dev/null; then
+  sudo apt-get install libttspico-utils
+fi
+
 # update external modules
 cd $COACHES_HOME/external
 ./update.bash

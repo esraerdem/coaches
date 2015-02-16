@@ -29,11 +29,11 @@ void PRUplanner::resultCallback(const t41_robust_navigation::PolicyResult::Const
 }
 
 void PRUplanner::noMoveCallBack() {
-  plan();
+  //plan();
 }
 
 #define GOAL_REWARD 200
-#define ADV_REWARD 10
+#define ADV_REWARD 50
 #define PATIENCE 0.999
 
 void PRUplanner::plan() {

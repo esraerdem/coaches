@@ -15,3 +15,4 @@ export PNP_INCLUDE=$COACHES_HOME/external/PetriNetPlans/PNP/include
 export PNP_LIB=$COACHES_HOME/external/PetriNetPlans/PNP/lib
 
 
+echo "COACHES setup completed."
