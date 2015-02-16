@@ -32,9 +32,15 @@ void PRUplanner::noMoveCallBack() {
   plan();
 }
 
-#define GOAL_REWARD 200
-#define ADV_REWARD 10
+#define GOAL_REWARD 20000
+//#define ADV_REWARD 15
 #define PATIENCE 0.999
+
+struct act {
+  int state;
+  const std::string *action;
+  float reward;
+};
 
 void PRUplanner::plan() {
   // Let's focus at first on going to site 3 (phone shop)
@@ -43,17 +49,36 @@ void PRUplanner::plan() {
   if (! updateDistances(closestSite))
     return; // unable to update distances
 
-  std::vector<std::vector<float> > durations; // durations[i][j] for going from i to j
-  std::vector<std::vector<float> > rewards; // rewards[i][j] for going from i to j
+  std::vector<struct act> actions;
+  for (int j=0; j<fixedSites.size(); j++) {
+    // go to site j
+    for (std::map<std::string,float>::iterator it=siteActionReward[j].begin(); 
+	 it != siteActionReward[j].end(); ++it) {
+      // and act *it
+      struct act cur;
+      cur.state = j;
+      cur.action = &it->first;
+      cur.reward = it->second;
+      actions.push_back(cur);
+    } // for it
+  } // for j
+
+  std::vector<std::vector<float> > durations; // durations[i][j] for acting  j  in state  i
+  std::vector<std::vector<float> > rewards; // rewards[i][j] for going action  j  in state i
   std::vector<float> init;
   std::vector<float> initDur;
   std::vector<float> val;
   std::vector<int> act;
-  for (int i=0; i<fixedSites.size(); i++) {
+  for (int i=0; i<=fixedSites.size(); i++) {
+    // from each site i
     std::vector<float> rew;
     std::vector<float> dur;
-    for (int j=0; j<fixedSites.size(); j++) {
-      if (i==j) 
+    bool robotSite = (i==fixedSites.size());
+    for (std::vector<struct act>::iterator it=actions.begin(); 
+	   it != actions.end(); ++it) {
+	// act *it
+      int j = it->state;
+      if (i==j) { 
 	if (i==TARGET) {
 	  rew.push_back(GOAL_REWARD); // stay here
 	  dur.push_back(60); // 1 minute of interaction
@@ -61,48 +86,34 @@ void PRUplanner::plan() {
 	  rew.push_back(0);
 	  dur.push_back(60); // 1 minute of do-nothing
 	}
-      else if (i==TARGET) {
+      } else if (i==TARGET) {
 	rew.push_back(-GOAL_REWARD); // don't leave target
-	dur.push_back(60+site2siteDistance[i][j]); // 1 minute of do-nothing + path
+	if (robotSite)
+	  dur.push_back(60+robot2siteDistance[j]); // 1 minute of do-nothing + path
+	else
+	  dur.push_back(60+site2siteDistance[i][j]); // 1 minute of do-nothing + path
       } else {
 	if (j==TARGET) {
 	  rew.push_back(GOAL_REWARD);
-	  dur.push_back(60+site2siteDistance[i][j]); // 1 minute of interaction + path
+	  if (robotSite)
+	    dur.push_back(60+robot2siteDistance[j]); // 1 minute of interaction + path
+	  else
+	    dur.push_back(60+site2siteDistance[i][j]); // 1 minute of interaction + path
 	} else {
-	  rew.push_back(ADV_REWARD);
-	  dur.push_back(3+site2siteDistance[i][j]); // 3 seconds of advertisement + path
+	  rew.push_back(it->reward);
+	  if (robotSite)
+	    dur.push_back(3+robot2siteDistance[j]); // 3 seconds of advertisement + path
+	  else
+	    dur.push_back(3+site2siteDistance[i][j]); // 3 seconds of advertisement + path
 	}
-      } // if (i!=j)
-    } // for each fixedSites j
-    if (closestSite<0) {
-      // If robot not on a site
-      if (i==TARGET) {
-	rew.push_back(-GOAL_REWARD); // leaving the goal to go at robot's
-	dur.push_back(60+robot2siteDistance[i]); // 1 minute of do-nothing + path
-	init.push_back(GOAL_REWARD);
-	initDur.push_back(60+robot2siteDistance[i]); // 1 minute of interaction + path
-      } else {
-	rew.push_back(0); // not going back to start!
-	dur.push_back(60+robot2siteDistance[i]); // 1 minute of do-nothing + path
-	init.push_back(ADV_REWARD);
-	initDur.push_back(3+robot2siteDistance[i]); // 3 seconds of adertisement + path
-      }
-    }
+      } // if (i!=j) and (i!=TARGET)
+    } // for each it in actions
     val.push_back(0);
     act.push_back(-1);
     rewards.push_back(rew);
     durations.push_back(dur);
   } // for each fixedSites i
-  int horizon = val.size(); // at most one execution step for each site to visit, excluding current location of the robot
-  if (closestSite<0) {
-    // If robot not on a site
-    init.push_back(0);
-    initDur.push_back(60); // 1 minute of do-nothing
-    val.push_back(0);
-    act.push_back(-1);
-    rewards.push_back(init); // last state is current position
-    durations.push_back(initDur);
-  }
+  int horizon = val.size()-1; // at most one execution step for each site to visit, excluding current location of the robot
   
   if (val.size() <= 1)
     return; // no action to plan yet
@@ -113,17 +124,17 @@ void PRUplanner::plan() {
     for (int s=0; s<val.size(); s++) {
       float bestR = -1000000;
       float bestS = -1;
-      for (int s2=0; s2<val.size(); s2++) {
-	float r = rewards[s][s2] + val[s2];
-	r = r * pow(PATIENCE,durations[s][s2]);
+      for (int a=0; a<actions.size(); a++) {
+	float r = rewards[s][a] + val[actions[a].state];
+	r = r * pow(PATIENCE,durations[s][a]);
 	if (r > bestR) {
 	  bestR = r;
-	  bestS = s2;
+	  bestS = a;
 	}
-      } // for each state s2
+      } // for each action a
       val[s] = bestR;
       act[s] = bestS;
-      std::cout << bestS << "(" << bestR <<") \t";
+      std::cout << *actions[bestS].action << " in "<<actions[bestS].state << "(" << bestR <<") \t";
     } // for each state s
     std::cout << std::endl;
   } // for each horizon h
@@ -131,52 +142,28 @@ void PRUplanner::plan() {
   msg.final_state = look4name(TARGET);
   std::vector<t41_robust_navigation::StatePolicy> pol;
   std::cout << "Optimal plan is \n";
-  for (int s=0; s<fixedSites.size(); s++) {
-    std::string site = look4name(s);
+  for (int s=0; s<=fixedSites.size(); s++) {
     t41_robust_navigation::StatePolicy stateAction;
+    std::string site;
+    if (s==fixedSites.size())
+      site = "RobotPos";
+    else
+      site = look4name(s);
     stateAction.state = "location( " + site + " )";
     if (s == TARGET)
       stateAction.action = std::string(GOAL_INTERACT) + "( "+msg.final_state+" )";
-    else {
-      if (act[s] == TARGET)
-	stateAction.action = GOAL_INTERACT;
-      else
-	stateAction.action = GOAL_ADVERTISE;
-      stateAction.action += "( " + look4name(act[s]) + " )";
-    }
-    pol.push_back(stateAction);
-    std::cout << "Location " << s << " (" << look4name(s) << ", " 
-	      << sitesLocation[s].x << " x " << sitesLocation[s].y
-	      << ") : Goto " << act[s] << " (" << val[s] << ")" << std::endl;
-  }
-  t41_robust_navigation::StatePolicy stateAction;
-  stateAction.state = "location( RobotPos )";
-  if (closestSite<0) {
-    // If robot not on a site
-    int s = act.back();
-    if (s == TARGET)
-      stateAction.action = GOAL_INTERACT;
-    else
-      stateAction.action = GOAL_ADVERTISE;
-    stateAction.action += "( " + look4name(s) + " )";
+    else 
+      stateAction.action = *actions[act[s]].action + "( " + look4name(actions[act[s]].state) + " )";
     
-    std::cout << "Robot at " << robot.x << " x " << robot.y
-	      << " : Goto " << s << " (" << val.back() << ")" << std::endl;
-  } else {
-    if (closestSite == TARGET)
-      stateAction.action = std::string(GOAL_INTERACT) + "( " + msg.final_state + " )";
-    else { // closest site is not the target
-      int s = act[closestSite];
-      if (s == TARGET)
-	stateAction.action = GOAL_INTERACT;
-      else
-	stateAction.action = GOAL_ADVERTISE;
-      stateAction.action += "( " + look4name(s) + " )";
-    }
-    std::cout << "Robot is at location " << closestSite << " ("
-	      << look4name(closestSite) << ")" << std::endl;
-  }
-  pol.push_back(stateAction);
+    pol.push_back(stateAction);
+    std::cout << "Location " << s << " (" << site << ", ";
+    if (s==fixedSites.size())
+      std::cout << robot.x << " x " << robot.y;
+    else
+      std::cout << sitesLocation[s].x << " x " << sitesLocation[s].y;
+    std::cout << ") : " << *actions[act[s]].action << " in "  << look4name(actions[act[s]].state) << " (" << val[s] << ")" << std::endl;
+  } // for s in sites
+
   msg.policy = pol;
   policy_pub.publish(msg);
 } // plan()
