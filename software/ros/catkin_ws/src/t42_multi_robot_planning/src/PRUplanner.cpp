@@ -157,11 +157,9 @@ void PRUplanner::plan() {
     else
       site = look4name(s);
     stateAction.state = "location( " + site + " )";
-    /*    if (s == TARGET)
-      stateAction.action = std::string(GOAL_INTERACT) + "( "+msg.final_state+" )";
-      else*/ 
     stateAction.action = *actions[act[s]].action + "( " + look4name(actions[act[s]].state) + " )";
-    
+
+    stateAction.successors.push_back(look4name(actions[act[s]].state));
     pol.push_back(stateAction);
     std::cout << "Location " << s << " (" << site << ", ";
     if (s==fixedSites.size())
