@@ -211,11 +211,11 @@ void MockSites::sendPatrols(const ros::TimerEvent&) {
   shared::Goal g;
   shared::AllGoals all;
   cmap::iterator it = visits.begin();
-  all.mode = "patrol";
+  all.mode = "advertise";
   while (it != visits.end()) {
     g.loc = it->first;
-    g.kind = GOAL_PATROL;
-    g.value = it->second;
+    g.kind = GOAL_ADVERTISE;
+    g.value = it->second / 100;
     all.goals.push_back(g);
     /*
     if (it->first != onSite)
