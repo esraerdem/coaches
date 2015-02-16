@@ -8,6 +8,7 @@
 #include "ros/ros.h"
 #include "shared/Feature.h"
 #include "shared/featureKind.h"
+#include "shared/topics_name.h"
 #include "t11_kb_modeling/GetLocation.h"
 #include "t11_kb_modeling/GetAllSites.h"
 #include "t11_kb_modeling/Knowledge.h"
@@ -58,7 +59,7 @@ MockModel::MockModel(ros::NodeHandle node) {
   this->node = node;
   knowledge_pub = node.advertise<t11_kb_modeling::Knowledge>("t11_knowledge", 100);
 
-  position_sub = node.subscribe("t21_robot_location", 100, &MockModel::positionCallback, this);
+  position_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 100, &MockModel::positionCallback, this);
   hri_feature_sub = node.subscribe("t31_feature", 10, &MockModel::hriFeatureCallback, this);
   env_feature_sub = node.subscribe("t21_feature", 10, &MockModel::envFeatureCallback, this);
   

@@ -8,6 +8,7 @@
 #include "sensor_msgs/Image.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "shared/Feature.h"
+#include "shared/topics_name.h"
 
 #include <sstream>
 #include <istream>

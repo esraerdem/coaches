@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   shared
   t11_kb_modeling
+  t41_robust_navigation
   geometry_msgs
 )
 

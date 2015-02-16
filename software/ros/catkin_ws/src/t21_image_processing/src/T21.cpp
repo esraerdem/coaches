@@ -2,7 +2,7 @@
 
 T21::T21(ros::NodeHandle node) {
   feature_pub = node.advertise<shared::Feature>("t21_feature", 100);
-  location_pub = node.advertise<geometry_msgs::PoseWithCovarianceStamped>("t21_robot_location", 100);
+  location_pub = node.advertise<geometry_msgs::PoseWithCovarianceStamped>(TOPIC_ROBOT_LOCATION, 100);
   laser_sub = node.subscribe("laser_scan", 100, &T21::laserScanCallback, this);
   camera_sub = node.subscribe("camera_image", 10, &T21::cameraImageCallback, this);
 }

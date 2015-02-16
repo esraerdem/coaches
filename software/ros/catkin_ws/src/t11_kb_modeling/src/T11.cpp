@@ -2,7 +2,7 @@
 
 T11::T11(ros::NodeHandle node) {
   knowledge_pub = node.advertise<t11_kb_modeling::Knowledge>("t11_knowledge", 100);
-  position_sub = node.subscribe("t21_robot_location", 100, &T11::positionCallback, this);
+  position_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 100, &T11::positionCallback, this);
   hri_feature_sub = node.subscribe("t31_feature", 10, &T11::hriFeatureCallback, this);
   env_feature_sub = node.subscribe("t21_feature", 10, &T11::envFeatureCallback, this);
   service_get_location = node.advertiseService("get_location", &T11::getLocation, this);

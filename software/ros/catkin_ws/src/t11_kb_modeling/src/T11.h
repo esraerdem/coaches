@@ -7,10 +7,11 @@
 #include "ros/ros.h"
 #include "shared/Feature.h"
 #include "shared/featureKind.h"
+#include "shared/topics_name.h"
 #include "t11_kb_modeling/GetLocation.h"
 #include "t11_kb_modeling/GetAllSites.h"
 #include "t11_kb_modeling/Knowledge.h"
-#include "t11_kb_modeling/knowledgeKind.h"
+#include "t11_kb_modeling/knowledgeKind.h" 
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 

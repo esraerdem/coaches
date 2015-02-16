@@ -11,16 +11,20 @@
 #include "shared/goalKind.h"
 #include "shared/featureKind.h"
 #include "shared/eventKind.h"
+#include "shared/topics_name.h"
 #include "t11_kb_modeling/GetAllSites.h"
 #include "t11_kb_modeling/GetLocation.h"
 #include "t11_kb_modeling/Knowledge.h"
 #include "t11_kb_modeling/knowledgeKind.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
+#include "t41_robust_navigation/policyResults.h"
+#include "t41_robust_navigation/PolicyResult.h"
 
 #include <sstream>
 #include <istream>
 #include <map>
+#include <boost/algorithm/string.hpp>
 
 #define PATROL_RATE (1/15.)
 
@@ -39,7 +43,7 @@ class MockSites {
   private:
   ros::NodeHandle node;
   ros::Publisher goals_pub;
-  ros::Subscriber knowledge_sub, need_sub, event_sub;
+  ros::Subscriber knowledge_sub, need_sub, event_sub, result_sub;
 
   ros::Timer timPatrol;
   cmap visits;
@@ -49,6 +53,7 @@ class MockSites {
   void knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg);
   void needCallback(const shared::Event::ConstPtr& msg);
   void eventCallback(const shared::Event::ConstPtr& msg);
+  void resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg);
 
   void sendPatrols(const ros::TimerEvent&);
   void sendInteractGoals();
@@ -84,6 +89,7 @@ MockSites::MockSites(ros::NodeHandle node) {
   knowledge_sub = node.subscribe("t11_knowledge", 100, &MockSites::knowledgeCallback, this);
   need_sub = node.subscribe("t32_event", 100, &MockSites::needCallback, this);
   event_sub = node.subscribe("t22_event", 100, &MockSites::eventCallback, this);
+  result_sub = node.subscribe("t41_policy_result", 10, &MockSites::resultCallback, this);
   
   onSite = "";
 }
@@ -150,16 +156,22 @@ void MockSites::eventCallback(const shared::Event::ConstPtr& msg) {
   }
 }
 
+void MockSites::resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg) {
+  // some action has completed or failed
+  if (msg->feedback == POLICY_SUCCESS) {
+    // that was success
+    // let's remove the corresponding reward and replan
+    std::vector<std::string> tokens;
+    boost::split( tokens, msg->feedback, boost::is_any_of("( )"), boost::token_compress_on );
+    // here tokens should contain 'action','location' [, parameters]
+
+  } // if policy has succeeded
+}
+
 // r t21_robot_location:=/diago/amcl_pose
 void MockSites::run() {
   timPatrol = node.createTimer(ros::Duration(1.0/PATROL_RATE), &MockSites::sendPatrols, this, true);
-  ros::spin();/*
-  ros::Rate loop_rate(PATROL_RATE);
-  while (ros::ok()) {
-    loop_rate.sleep();
-    ros::spinOnce();
-    sendPatrols();
-    }*/
+  ros::spin();
 }
 
 void MockSites::sendInteractGoals() {

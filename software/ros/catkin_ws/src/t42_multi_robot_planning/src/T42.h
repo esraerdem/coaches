@@ -7,6 +7,7 @@
 #include "shared/Goal.h"
 #include "shared/AllGoals.h"
 #include "shared/goalKind.h"
+#include "shared/topics_name.h"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/PoseStamped.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
@@ -18,7 +19,7 @@
 #include <map>
 #include <vector>
 
-// r t21_robot_location:=/diago/amcl_pose get_path_len:=/diago/get_path_len __name:=multi_robot_planning __ns:=diago
+// r amcl_pose:=/diago/amcl_pose get_path_len:=/diago/get_path_len __name:=multi_robot_planning __ns:=diago
 
 typedef geometry_msgs::Point Point;
 

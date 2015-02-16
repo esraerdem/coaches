@@ -8,6 +8,7 @@
 #include "shared/Goal.h"
 #include "shared/goalKind.h"
 #include "shared/featureKind.h"
+#include "shared/topics_name.h"
 #include "t31_multimodal_hri/HRIActuation.h"
 #include "std_msgs/String.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
@@ -44,7 +45,7 @@ class MockHRI {
 
 MockHRI::MockHRI(ros::NodeHandle node) {
   hri_goal_sub = node.subscribe("t42_hri_goal", 10, &MockHRI::hriGoalCallback, this);
-  location_sub = node.subscribe("t21_robot_location", 10, &MockHRI::locationCallback, this);
+  location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &MockHRI::locationCallback, this);
 
   feature_pub = node.advertise<shared::Feature>("t31_feature", 100);
   hri_act_pub = node.advertise<t31_multimodal_hri::HRIActuation>("hri_actuation", 100);
