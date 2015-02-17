@@ -17,8 +17,8 @@ public:
 };
 
 PRUplanner::PRUplanner(ros::NodeHandle node) : T42(node) {
-  policy_pub = node.advertise<t41_robust_navigation::Policy>("t42_policy", 100);
-  result_sub = node.subscribe("t41_policy_result", 10, &PRUplanner::resultCallback, this);
+  policy_pub = node.advertise<t41_robust_navigation::Policy>(TOPIC_POLICY, 100);
+  result_sub = node.subscribe(TOPIC_POLICY_RESULT, 10, &PRUplanner::resultCallback, this);
 }
 
 void PRUplanner::resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg)
@@ -26,6 +26,7 @@ void PRUplanner::resultCallback(const t41_robust_navigation::PolicyResult::Const
   if (msg->feedback != POLICY_SUCCESS) {
     // TODO update taboo and replan
   } // if policy has failed
+  plan();
 }
 
 void PRUplanner::noMoveCallBack() {
