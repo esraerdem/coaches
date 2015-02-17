@@ -233,12 +233,12 @@ void MockSites::sendPatrols(const ros::TimerEvent&) {
     if (rand()<RAND_MAX/4) {
       g.kind = GOAL_ADVERTISE_COMPLEX;
       g.param = GOAL_SWIPE;
-      g.value = it->second / 100;
+      g.value = 120;
       g.duration = 5;
     } else {
       g.kind = GOAL_ADVERTISE;
       g.param = "ad";
-      g.value = it->second / 100;
+      g.value = 100;
       g.duration = 3;
     }
     all.goals.push_back(g);

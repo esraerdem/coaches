@@ -23,9 +23,11 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
       siteID = newFixedSite(it->loc);
     else
       siteID = locIt->second;
-    siteActionReward[siteID][std::string(it->kind)] = it->value;
-    siteActionParam[siteID][std::string(it->kind)] = it->param;
-    siteActionDuration[siteID][std::string(it->kind)] = it->duration;
+    if (siteID != -1) {
+      siteActionReward[siteID][std::string(it->kind)] = it->value;
+      siteActionParam[siteID][std::string(it->kind)] = it->param;
+      siteActionDuration[siteID][std::string(it->kind)] = it->duration;
+    }
     ++it;
   }
   /*  siteActionReward[3]["interact"] = 20000;
