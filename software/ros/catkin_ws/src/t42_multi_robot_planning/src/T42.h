@@ -40,6 +40,7 @@ class T42 {
   std::vector<std::vector<float> > site2siteDistance; // distances from site to site : a vector for each fixed site
   std::vector<float> robot2siteDistance; // distances from the robot to each fixed site
   std::vector<std::map<std::string,float> > siteActionReward; // a map action->reward for each fixed site
+  std::vector<std::map<std::string,float> > siteActionDuration; // a map action->duration for each fixed site
   std::vector<std::map<std::string,std::string> > siteActionParam; // a map action->param for each fixed site
 
   std::string look4name(int siteIdx); // gets the site name from its index

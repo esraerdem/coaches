@@ -25,6 +25,7 @@ void T42::goalSetCallback(const shared::AllGoals::ConstPtr& msg)
       siteID = locIt->second;
     siteActionReward[siteID][std::string(it->kind)] = it->value;
     siteActionParam[siteID][std::string(it->kind)] = it->param;
+    siteActionDuration[siteID][std::string(it->kind)] = it->duration;
     ++it;
   }
   /*  siteActionReward[3]["interact"] = 20000;
@@ -75,6 +76,7 @@ int T42::newFixedSite(std::string site) {
     dist.push_back(0); // no distance between i and i
     site2siteDistance.push_back(dist);
     siteActionReward.push_back(std::map<std::string,float>());
+    siteActionDuration.push_back(std::map<std::string,float>());
     robot2siteDistance.push_back(0); // will be computed when necessary
     if (robot2siteDistance.size() != fixedSites.size()) {
       std::cerr << "Robot-site : " << robot2siteDistance.size() << " != nb-site : " << fixedSites.size() << std::endl;
