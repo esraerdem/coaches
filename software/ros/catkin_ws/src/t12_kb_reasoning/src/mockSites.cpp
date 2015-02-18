@@ -187,7 +187,7 @@ void MockSites::sendInteractGoals() {
       g.loc = "_P_"+it->first;
       g.param = it->first;
       g.value = 1000;
-      g.duration = 60;
+      g.duration = 0;
       all.goals.push_back(g);
       break;
     case escort:
@@ -195,23 +195,7 @@ void MockSites::sendInteractGoals() {
       g.loc = it->second.param;
       g.param = it->first;
       g.value = 2000;
-      g.duration = 300;
-      all.goals.push_back(g);
-      break;
-    case follow:
-      g.kind = GOAL_FOLLOW;
-      g.loc = "_P_"+it->first;
-      g.param = it->first;
-      g.value = 20000;
-      g.duration = 3;
-      all.goals.push_back(g);
-      break;
-    case escort2:
-      g.kind = GOAL_ESCORT2;
-      g.loc = it->second.param;
-      g.param = it->first;
-      g.value = 2000;
-      g.duration = 300;
+      g.duration = 1000;
       all.goals.push_back(g);
       break;
     }
@@ -233,7 +217,7 @@ void MockSites::sendPatrols(const ros::TimerEvent&) {
     if (rand()<RAND_MAX/4) {
       g.kind = GOAL_ADVERTISE_COMPLEX;
       g.param = GOAL_SWIPE;
-      g.value = 120;
+      g.value = 110;
       g.duration = 5;
     } else {
       g.kind = GOAL_ADVERTISE;
