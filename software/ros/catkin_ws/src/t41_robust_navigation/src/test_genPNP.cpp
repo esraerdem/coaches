@@ -27,7 +27,8 @@ int main(int argc, char **argv)
     string current_state = initial_state;
 
     while (current_state!=final_state) {
-        Place *p1 = pnp.addCondition("["+current_state+"]",p0);
+        std::pair<Transition*,Place*> pa = pnp.addCondition("["+current_state+"]",p0);
+        Place *p1 = pa.second;
         // std::cout << "curr: " << current_state << std::endl;
         string action = policy[current_state];
         if (action=="") {
@@ -44,8 +45,8 @@ int main(int argc, char **argv)
         // std::cout << "next: " << current_state << std::endl << std::endl;
         p0 = p2;
     }
-    Place *p1 = pnp.addCondition("["+current_state+"]",p0);
-    p1->setName("goal");
+    std::pair<Transition*,Place*> pa = pnp.addCondition("["+current_state+"]",p0);
+    pa.second->setName("goal");
 
 
 /*

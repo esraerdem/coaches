@@ -57,7 +57,7 @@ static inline geometry_msgs::Point mkPoint(float x,float y) {
 }
 MockModel::MockModel(ros::NodeHandle node) {
   this->node = node;
-  knowledge_pub = node.advertise<t11_kb_modeling::Knowledge>("t11_knowledge", 100);
+  knowledge_pub = node.advertise<t11_kb_modeling::Knowledge>(TOPIC_KB, 100);
 
   position_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 100, &MockModel::positionCallback, this);
   hri_feature_sub = node.subscribe("t31_feature", 10, &MockModel::hriFeatureCallback, this);
@@ -83,7 +83,7 @@ void MockModel::positionCallback(const geometry_msgs::PoseWithCovarianceStamped:
   bool sent = false;
   while (it != locations.end()) {
     if (sq(robot.x - it->second.x)+sq(robot.y - it->second.y) < 1) {
-      ROS_INFO("Visited site %s",it->first.c_str());
+      ROS_INFO("KB: Visited site %s",it->first.c_str());
       t11_kb_modeling::Knowledge kb;
       kb.header.frame_id="diago";
       kb.header.stamp = ros::Time::now();

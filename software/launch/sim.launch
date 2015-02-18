@@ -9,7 +9,7 @@
   <arg name="map_name" default="Rive1" />
   <arg name="map_server" default="true" />
   <arg name="initial_pose_x" default="10.0" />
-  <arg name="initial_pose_y" default="23.0" />
+  <arg name="initial_pose_y" default="18.0" />
   <arg name="initial_pose_a" default="0.0" />
   <arg name="use_amcl" default="true" />
   <arg name="use_glocalizer" default="false" />

@@ -34,6 +34,8 @@ public:
         //position_sub = handle.subscribe("odom", 10, &MyPNPActionServer::odom_callback, this);
 
         register_action("advertise",&advertise);
+        register_action("advertiseComplex",&advertise);
+        register_action("swipe",&fake);
         register_action("interact",&interact);
 
         handle.param("robot_name",robotname,string("diago"));
@@ -42,10 +44,12 @@ public:
 
     virtual int evalCondition(string cond) {
 
+        // printf("-- Evaluating condition %s \n",cond.c_str());
+
         if (cond=="RobotPos")
             return 1; // the robot is in its own position -> always true
 
-        return 1;   // Test, all conditions are true!!!
+        // return 1;   // Test, all conditions are true!!!
 
         return PNPActionServer::evalCondition(cond);  // default returns -1
 
