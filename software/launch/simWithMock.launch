@@ -35,7 +35,7 @@
       <param name="plan_folder" value="$(arg plan_folder)" />
     </node>
     
-    <node pkg="t41_robust_navigation" type="conditionsGUI.py" name="condition_sim" respawn="false" output="screen">
+    <node pkg="t41_robust_navigation" type="conditionsGUI.py" name="condition_sim" respawn="false" output="screen" required="true">
     </node>
 
     
