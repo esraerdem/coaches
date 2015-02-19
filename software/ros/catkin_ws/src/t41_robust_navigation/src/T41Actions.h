@@ -25,6 +25,7 @@ using namespace std;
 
 void advertise(string params, bool *run);
 void interact(string params, bool *run);
+void fake(string params, bool *run);
 
 #endif
 

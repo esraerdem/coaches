@@ -9,7 +9,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-static int dx=60, dy=60, offx=20, offy=200;  // draw parameters
+static int dx=60, dy=100, offx=20, offy=200;  // draw parameters
 
 extern int node_id;  // unique id of the nodes
 extern int arc_id;   // unique id of the arcs
@@ -120,7 +120,8 @@ public:
     Place* addPlace(string name);
     Transition* addTransition(string name);
     void connect(Node* n1, Node* n2);
-    Place* addCondition(string name, Place* p0);
+    std::pair<Transition*,Place*> addCondition(string name, Place* p0, int dy=0);
+    void addConditionBack(string name, Place* pfrom, Place *pto, int dy=0);
     Place* addAction(string name, Place* p0);
 
     friend std::ostream& operator<< (std::ostream& stream, const PNP& pnp);

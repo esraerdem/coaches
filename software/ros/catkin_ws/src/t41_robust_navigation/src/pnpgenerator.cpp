@@ -147,11 +147,20 @@ void PNP::connect(Node* n1, Node* n2) {
     E.push_back(e);
 }
 
-Place* PNP::addCondition(string name, Place* p0) {
+std::pair<Transition*,Place*> PNP::addCondition(string name, Place* p0, int dy) {
     Transition *t = addTransition(name);
     Place *p1 = addPlace("X");
+    t->setY(p0->getY()+dy); p1->setY(p0->getY()+dy); // same line as p0 + dy
+    t->setX(p0->getX()+1);  p1->setX(p0->getX()+2);  // X pos after p0
     connect(p0,t); connect(t,p1);
-    return p1;
+    return std::make_pair(t,p1);
+}
+
+void PNP::addConditionBack(string name, Place* pfrom, Place *pto, int dy) {
+    Transition *t = addTransition(name);
+    t->setY(pfrom->getY()+dy); // same line as p0 + dy
+    t->setX(pfrom->getX()+1);  // X pos after p0
+    connect(pfrom,t); connect(t,pto);
 }
 
 Place* PNP::addAction(string name, Place* p0) {
@@ -159,6 +168,10 @@ Place* PNP::addAction(string name, Place* p0) {
     Place *pe = addPlace(name+".exec");
     Transition *te = addTransition(name+".end");
     Place *pf = addPlace("X");
+    ts->setY(p0->getY()); pe->setY(p0->getY()); // same line as p0
+    te->setY(p0->getY()); pf->setY(p0->getY());
+    ts->setX(p0->getX()+1);  pe->setX(p0->getX()+2); // X pos after p0
+    te->setX(p0->getX()+3);  pf->setX(p0->getX()+4);
     connect(p0,ts); connect(ts,pe); connect(pe,te); connect(te,pf);
     return pf;
 }

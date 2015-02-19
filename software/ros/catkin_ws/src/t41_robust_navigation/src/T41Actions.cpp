@@ -1,4 +1,5 @@
 #include <tf/transform_listener.h>
+#include <shared/topics_name.h>
 
 #include "T41Actions.h"
 
@@ -18,7 +19,7 @@ bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
     }
 
     string src_frame = "/map";
-    string dest_frame = "/" + robotname + "/base_link";
+    string dest_frame = "/" + robotname + "/base_frame";
     if (robotname=="") { // local trasnformation
         src_frame = "map";
         dest_frame = "base_link";
@@ -44,7 +45,7 @@ bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
 
 
 
-std::string movebase_topic = "move_base";
+
 
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;
 
@@ -117,7 +118,7 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
 
   if (ac_movebase==NULL) { //create the client only once
     // Define the action client (true: we want to spin a thread)
-    ac_movebase = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>(movebase_topic, true);  
+    ac_movebase = new actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction>(TOPIC_MOVE_BASE, true);
 
     // Wait for the action server to come up
     while(!ac_movebase->waitForServer(ros::Duration(5.0))){
@@ -145,7 +146,7 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
   goal.target_pose.pose.orientation.w = cos(RAD(GTh_DEG)/2);
 
   // Send the goal
-  ROS_INFO("Sending goal");
+  // ROS_INFO("Sending goal");
   ac_movebase->sendGoal(goal);
 
   // Wait for termination (check distance every delay seconds
@@ -158,6 +159,7 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
       d = fabs(GX-RX)+fabs(GY-RY);
   }
 
+#if 0
   // Print result
   if (!(*run))
     ROS_INFO("External interrupt!!!");
@@ -167,6 +169,7 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
     ROS_INFO("The base failed to reach the move_base goal for some reason");
   else
     ROS_INFO("!move_base goal reached!");
+#endif
 
   // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
   ac_movebase->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
@@ -245,16 +248,15 @@ void advertise(string params, bool *run) {
 
   double GX,GY;
   if (getLocationPosition(params,GX,GY)) {
-      boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
-
+      do_movebase(GX,GY,0,run);
   }
-
+  else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
 
 
   if (*run)
-      cout << "### Finished " << endl;
+      cout << "### Finished Advertise " << params << endl;
   else
-      cout << "### Aborted " << endl;
+      cout << "### Aborted Advertise " << params << endl;
 }
 
 void interact(string params, bool *run)
@@ -272,6 +274,21 @@ void interact(string params, bool *run)
     else
         cout << "### Aborted " << endl;
 }
+
+
+
+void fake(string params, bool *run)
+{
+    cout << "### Executing Fake action " << params << " ... " << endl;
+
+    boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+
+    if (*run)
+        cout << "### Finished " << endl;
+    else
+        cout << "### Aborted " << endl;
+}
+
 
 
 #if 0
