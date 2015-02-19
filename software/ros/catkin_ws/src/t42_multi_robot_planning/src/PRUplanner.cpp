@@ -422,7 +422,7 @@ void PRUplanner::planStochastic() {
   } else {
     msg.final_state = states[TARGETstate].name;
   }
-  std::string *initialState;
+  std::string initialState;
 
   std::vector<t41_robust_navigation::StatePolicy> pol;
   std::cout << "Optimal plan is \n";
@@ -430,7 +430,7 @@ void PRUplanner::planStochastic() {
   for (int s=0; s<states.size(); ++s) {
     t41_robust_navigation::StatePolicy stateAction;
     stateAction.state = str(boost::format("location( %s, %d )") %look4name(states[s].location) %steps); //"location( "+look4name(states[s].location)+", "+stepsStr+" )";
-    initialState = & stateAction.state; // The robot position is always the last one
+    initialState = stateAction.state; // The robot position is always the last one
     struct act *a;
     if (act[steps][s] >= 0)
       a = &actions[act[steps][s]];
@@ -489,7 +489,8 @@ void PRUplanner::planStochastic() {
   } // for horizon h
 
   msg.policy = pol;
-  msg.initial_state = *initialState;
+
+  msg.initial_state = str(boost::format("location( %s, %d )") %look4name(states.back().location) %(horizon-1)); // RobotPos is the last "fixed" state
   if (TARGETaction<0)
     msg.goal_name = *specialActions[-1-TARGETaction].action;
   else
