@@ -296,6 +296,9 @@ void T42::plan() {
 } // plan()
 
 std::string T42::look4name(int siteIdx) {
+  if (siteIdx==-1) return "RobotPos";
+  if (siteIdx==-2) return "goal";
+
   std::string name = "unknown";
   for (std::map<std::string, int>::iterator it = fixedSites.begin();
        it != fixedSites.end(); ++it) {

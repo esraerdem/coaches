@@ -3,6 +3,9 @@
 #include "t41_robust_navigation/PolicyResult.h"
 #include "t41_robust_navigation/Policy.h"
 
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
+
 #define DEBUG_VI
 
 #define GOAL_REWARD 20000
@@ -50,9 +53,9 @@ private:
 		    std::vector<struct state>& states, std::vector<struct sstate>& specialStates, int currentState);
   int look4target(std::vector<struct act>& actions, std::vector<struct act>& specialActions, 
 		  std::vector<float>& values, std::vector<float>& specialValues,
-		  std::vector<int>& policy, std::vector<int>& specialPolicy,
+		  std::vector<std::vector<int> >& policy, std::vector<std::vector<int> >& specialPolicy,
 		  std::vector<struct state>& states, std::vector<struct sstate>& specialStates,
-		  std::set<int> &reachableStates, int startState, 
+		  std::set<int> &reachableStates, int startState, int stepsLeft,
 		  float accReward, int lastAction, float &bestReward, int &bestAction);
 public:
   PRUplanner (ros::NodeHandle node);
@@ -281,9 +284,7 @@ void PRUplanner::planStochastic() {
   std::vector<struct act> specialActions; // a struct act for each special state
 
   std::vector<float> val[2];
-  std::vector<int> act;
   std::vector<float> sval[2];
-  std::vector<int> sact;
 
   for (int j=0; j<fixedSites.size(); j++) {
     // go to site j
@@ -304,7 +305,6 @@ void PRUplanner::planStochastic() {
 	specialStates.push_back(st2);
 	sval[0].push_back(0); // value 0
 	sval[1].push_back(0); // value 0
-	sact.push_back(0); // action 0
 	cur.outcomes.push_back(res2);	
 	cur.outcomes.push_back(res1);
 	struct act spec;
@@ -319,7 +319,6 @@ void PRUplanner::planStochastic() {
 	specialStates.push_back(st2);
 	sval[0].push_back(0); // value 0
 	sval[1].push_back(0); // value 0
-	sact.push_back(0); // action 0
 	cur.outcomes.push_back(res);
 	struct act spec;
 	spec.action = &skipStr;
@@ -335,17 +334,15 @@ void PRUplanner::planStochastic() {
     } // for it
     val[0].push_back(0); // value 0
     val[1].push_back(0); // value 0
-    act.push_back(0); // action 0
   } // for j
 
-  if (act.size() <= 0)
+  if (actions.size() <= 0)
     return; // no action to plan yet
 
   struct state st = {-1, "location( RobotPos )"};
   states.push_back(st);
   val[0].push_back(0); // value 0
   val[1].push_back(0); // value 0
-  act.push_back(0); // action 0
 
   int horizon = 10; // 10 actions long ?
 
@@ -370,18 +367,23 @@ void PRUplanner::planStochastic() {
   std::cout << std::endl;
 #endif
 
+  std::vector<std::vector<int> > act;
+  std::vector<std::vector<int> > sact;
+
   for (int h=horizon-1; h>=0; --h) {
     int s;
 #ifdef DEBUG_VI
     std::cout << "H"<<h<<":";
 #endif
+    act.push_back(std::vector<int>());
+    sact.push_back(std::vector<int>());
     // updates the value of fixed states
     for (s=0; s<=fixedSites.size(); ++s) {
       float bestV = -1000000;
       int bestA = 0;
       chooseAction(bestA,bestV,actions,val[1-h%2],sval[1-h%2],states,specialStates,s);
       val[h%2][s] = bestV;
-      act[s] = bestA;
+      act.back().push_back(bestA);
 #ifdef DEBUG_VI
       std::cout << " "<<bestA<<"("<<bestV<<")";
 #endif
@@ -399,7 +401,7 @@ void PRUplanner::planStochastic() {
       if (bestA>=actions.size())
 	bestA = -1 - s;
       sval[h%2][s] = bestV;
-      sact[s] = bestA;
+      sact.back().push_back(bestA);
 #ifdef DEBUG_VI
       std::cout << " "<<bestA<<"("<<bestV<<")";
 #endif
@@ -413,7 +415,7 @@ void PRUplanner::planStochastic() {
   float bestReward = 0;
   int TARGETaction = 0;
   std::set<int> reachableStates;
-  int TARGETstate = look4target(actions,specialActions,val[0],sval[0],act,sact, states, specialStates, reachableStates, fixedSites.size(), 0, 0, bestReward, TARGETaction);
+  int TARGETstate = look4target(actions,specialActions,val[0],sval[0],act,sact, states, specialStates, reachableStates, fixedSites.size(), horizon-1, 0, 0, bestReward, TARGETaction);
 
   if (TARGETstate<0) {
     msg.final_state = specialStates[-1-TARGETstate].name;
@@ -423,14 +425,15 @@ void PRUplanner::planStochastic() {
 
   std::vector<t41_robust_navigation::StatePolicy> pol;
   std::cout << "Optimal plan is \n";
-  for (int s=0; s<states.size(); s++) {
+  for (int steps=0; steps<horizon; ++steps) {
+  for (int s=0; s<states.size(); ++s) {
     t41_robust_navigation::StatePolicy stateAction;
-    stateAction.state = states[s].name;
+    stateAction.state = str(boost::format("location( %s, %d )") %look4name(states[s].location) %steps); //"location( "+look4name(states[s].location)+", "+stepsStr+" )";
     struct act *a;
-    if (act[s] >= 0)
-      a = &actions[act[s]];
+    if (act[steps][s] >= 0)
+      a = &actions[act[steps][s]];
     else
-      a = &specialActions[-1-act[s]];
+      a = &specialActions[-1-act[steps][s]];
       
     int dest = a->outcomes[0].s;
     if (dest < 0)
@@ -443,9 +446,9 @@ void PRUplanner::planStochastic() {
     for (std::vector<struct outcome>::const_iterator itRes=a->outcomes.begin();
 	 itRes != a->outcomes.end(); ++itRes) {
       if (itRes->s < 0)
-	stateAction.successors.push_back(specialStates[-1-itRes->s].name);
+	stateAction.successors.push_back(str(boost::format("location( %s, %d )") %look4name(specialStates[-1-itRes->s].location) %(steps+1))); //"location( "+look4name(specialStates[-1-itRes->s].location)+", "+stepsStr1+" )");
       else
-	stateAction.successors.push_back(states[itRes->s].name);
+	stateAction.successors.push_back(str(boost::format("location( %s, %d )") %look4name(states[itRes->s].location) %(steps+1)));// "location( "+look4name(states[itRes->s].location+", "+stepsStr1+" )");
     } // for *itRes in successors of a
     pol.push_back(stateAction);
     std::cout << s << " - " << stateAction.state ;
@@ -453,12 +456,14 @@ void PRUplanner::planStochastic() {
   } // for s in sites
   for (int s=0; s<specialStates.size(); s++) {
     t41_robust_navigation::StatePolicy stateAction;
-    stateAction.state = specialStates[s].name;
+    std::vector<std::string> elts;
+    boost::split(elts, specialStates[s].name, boost::is_any_of("( ,)"), boost::token_compress_on);
+    stateAction.state = str(boost::format("special_location( %s, %d, %s )") %elts[1] %steps %elts[2]);//specialStates[s].name;
     struct act *a;
-    if (sact[s] >= 0)
-      a = &actions[sact[s]];
+    if (sact[steps][s] >= 0)
+      a = &actions[sact[steps][s]];
     else
-      a = &specialActions[-1-sact[s]];
+      a = &specialActions[-1-sact[steps][s]];
 
     int dest = a->outcomes[0].s;
     if (dest < 0)
@@ -471,15 +476,15 @@ void PRUplanner::planStochastic() {
     for (std::vector<struct outcome>::const_iterator itRes=a->outcomes.begin();
 	 itRes != a->outcomes.end(); ++itRes) {
       if (itRes->s < 0)
-	stateAction.successors.push_back(specialStates[-1-itRes->s].name);
+	stateAction.successors.push_back(str(boost::format("location( %s, %d )") %look4name(specialStates[-1-itRes->s].location) %(steps+1)));//look4name(specialStates[-1-itRes->s].location+", "+stepsStr1+" )");
       else
-	stateAction.successors.push_back(states[itRes->s].name);
+	stateAction.successors.push_back(str(boost::format("location( %s, %d )") %look4name(states[itRes->s].location) %(steps+1)));//look4name(states[itRes->s].location+", "+stepsStr1+" )");
     } // for *itRes in successors of a
     pol.push_back(stateAction);
     std::cout << (-1-s) << " - " << stateAction.state ;
     std::cout << ": " << stateAction.action << " (" << sval[0][s] << ")" << std::endl;
   } // for s in sites
-
+  } // for horizon h
 
   msg.policy = pol;
   if (TARGETaction<0)
@@ -496,9 +501,9 @@ void PRUplanner::planStochastic() {
 
 int PRUplanner::look4target(std::vector<struct act>& actions, std::vector<struct act>& specialActions, 
 			    std::vector<float>& values, std::vector<float>& specialValues, 
-			    std::vector<int>& policy, std::vector<int>& specialPolicy,
+			    std::vector<std::vector<int> >& policy, std::vector<std::vector<int> >& specialPolicy,
 			    std::vector<struct state>& states, std::vector<struct sstate>& specialStates,
-			    std::set<int> &reachableStates, int startState, 
+			    std::set<int> &reachableStates, int startState, int stepsLeft,
 			    float accReward, int lastAction, float &bestReward, int &bestAction) {
   int action;
   int bestState = startState;
@@ -510,9 +515,9 @@ int PRUplanner::look4target(std::vector<struct act>& actions, std::vector<struct
     }
     return bestState;
   } else if (startState<0) {
-    action = specialPolicy[-1-startState];
+    action = specialPolicy[stepsLeft][-1-startState];
   } else {
-    action = policy[startState];
+    action = policy[stepsLeft][startState];
   }
   struct act *act;
   if (action<0)
@@ -523,7 +528,7 @@ int PRUplanner::look4target(std::vector<struct act>& actions, std::vector<struct
        it != act->outcomes.end(); ++it) {
     if (reachableStates.insert(it->s).second) {
       // new reachable state
-      bestState = look4target(actions,specialActions,values,specialValues,policy,specialPolicy, states, specialStates, reachableStates, it->s, 
+      bestState = look4target(actions,specialActions,values,specialValues,policy,specialPolicy, states, specialStates, reachableStates, it->s, stepsLeft-1, 
 			      accReward+it->r*it->p, action, bestReward, bestAction);
     } else {
       // we got back to some state, let's check if this path is better than previous one...
