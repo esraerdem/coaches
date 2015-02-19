@@ -2,7 +2,7 @@
 
   <arg name="robot_name" default="diago" />
   <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
-  <arg name="PNPGUI" value="false" />
+  <arg name="PNPGUI" default="false" />
 
   <master auto="start"/>
 

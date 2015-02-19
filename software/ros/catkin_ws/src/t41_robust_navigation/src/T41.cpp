@@ -169,7 +169,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
         string taction = aname+"_"+aparam;
 
         policy[tstate] = taction;
-        cout << "### Added policy " << tstate << " -> " << taction << endl;
+        //cout << "### Added policy " << tstate << " -> " << taction << endl;
 
         vector<string> ss = sa.successors;
         vector<string>::iterator is;
@@ -178,7 +178,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
             string tsucc = transformState(succ);
             //printf(" %s [%s] ",succ.c_str(),tsucc.c_str());
             transition_fn[make_pair(tstate,taction)].push_back(tsucc);
-            cout << "### Added transition " << tstate << "," << taction << " -> " << tsucc << endl;
+            //cout << "### Added transition " << tstate << "," << taction << " -> " << tsucc << endl;
 
         }
         //printf("\n");
@@ -238,11 +238,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
                     pc->setName("goal");
             }
             else {
-                pnp.addConditionBack("["+succ_state+"]",pe, ps, dy); dy++;
-
-                /*std::cerr << "ERROR. Cyclic policy!!!" << std::endl;
-                cyclic_policy = true;
-                break;*/
+                pnp.addConditionBack(transformedconditions[succ_state],pe, ps, dy); dy++;
             }
 
         }

@@ -124,7 +124,7 @@ void MockModel::positionCallback(const geometry_msgs::PoseWithCovarianceStamped:
   bool sent = false;
   while (it != locations.end()) {
     if (sq(robot.x - it->second.x)+sq(robot.y - it->second.y) < 1) {
-      ROS_INFO("KB: Visited site %s",it->first.c_str());
+      // ROS_INFO("KB: Visited site %s",it->first.c_str());
       t11_kb_modeling::Knowledge kb_msg;
       kb_msg.header.frame_id=ROBOTNAME;
       kb_msg.header.stamp = ros::Time::now();

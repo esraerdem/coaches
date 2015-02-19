@@ -37,6 +37,7 @@ public:
         register_action("advertiseComplex",&advertise);
         register_action("swipe",&swipe);
         register_action("interact",&interact);
+        register_action("wait",&wait);
 
         handle.param("robot_name",robotname,string("diago"));
     }
