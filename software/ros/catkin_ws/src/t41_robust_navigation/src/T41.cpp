@@ -70,7 +70,7 @@ string extractParams(string s) {
 }
 
 string transformParamsWith_(string s) {
-    vector<string> v;
+    vector<string> v; // conjunction of states
     split(v,s,boost::is_any_of(" ,"),boost::token_compress_on);
     string r="";
     vector<string>::iterator i;
@@ -81,11 +81,74 @@ string transformParamsWith_(string s) {
     return r;
 }
 
+string shortPredicate(string s) {
+    if (s=="location") return "L";
+    else if (s=="desire") return "D";
+    else
+        return s;
+}
+
+string transformState(string s) {
+    // s = "p1( X ) & p2 ( X ) & ... "
+    //cout << "HERE [" << s << "]" << endl;
+    vector<string> v;
+    split(v,s,boost::is_any_of("&"),boost::token_compress_on);
+    string r="";
+    vector<string>::iterator i;
+    for (i=v.begin(); i!=v.end(); ) {
+        string st = *i; // one state
+        //cout << "   - here ["<<st<<"]" << endl;
+        string pred = extractName(st);
+        string par = transformParamsWith_(extractParams(st));
+        r = r + shortPredicate(pred)+"_"+par;
+        i++;
+        if (i!=v.end()) r = r+"+";
+    }
+    return r;
+}
+
+string extractCondition(string s) {
+    // s = "p1( X ) & p2 ( X ) & ... "
+    //cout << "HERE [" << s << "]" << endl;
+    vector<string> v;
+    vector<string> vc;
+    split(v,s,boost::is_any_of("&"),boost::token_compress_on);
+
+    vector<string>::iterator i;
+    for (i=v.begin(); i!=v.end(); i++) {
+        string st = *i; // one state
+        //cout << "   - here ["<<st<<"]" << endl;
+        string pred = extractName(st);
+        if (pred[0]!='_') {
+            string par = transformParamsWith_(extractParams(st));
+            vc.push_back(shortPredicate(pred)+"_"+par);
+        }
+    }
+
+    string r="[";
+    if (vc.size()==0) {
+        r = r + "true";
+    }
+    if (vc.size()==1) {
+        r = r + vc[0];
+    }
+    else {
+        r = r + "and";
+        for (i=vc.begin(); i!=vc.end(); i++) {
+            r = r + " " + *i;
+        }
+    }
+    r=r+"]";
+    return r;
+}
+
 void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
     std::map<string,string> policy;
     std::map<string,Place*> visited;
     std::map<std::pair<string,string>,vector<string> > transition_fn;
+    std::map<string,string> transformedconditions;
+
     string initial_state = msg->initial_state;
     final_state = msg->final_state;
     goalname = msg->goal_name;
@@ -98,22 +161,24 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     while (it!=p.end()) {
         sa = *it++;
         // printf("   %s : %s -> ", sa.state.c_str(), sa.action.c_str());
-        vector<string> ss = sa.successors;
-        string spred = extractName(sa.state);
-        string sparam = transformParamsWith_(extractParams(sa.state));
+
+        string tstate = transformState(sa.state);
+        transformedconditions[tstate] = extractCondition(sa.state);
         string aname = extractName(sa.action);
         string aparam = transformParamsWith_(extractParams(sa.action));
-        string action = aname+"_"+aparam;
+        string taction = aname+"_"+aparam;
 
-        policy[sparam] = action;
-        //cout << "### Added policy " << sparam << " -> " << action << endl;
+        policy[tstate] = taction;
+        cout << "### Added policy " << tstate << " -> " << taction << endl;
+
+        vector<string> ss = sa.successors;
         vector<string>::iterator is;
         for (is=ss.begin(); is!=ss.end(); is++) {
             string succ = *is;
-            string _succ = transformParamsWith_(extractParams(succ));
-            //printf(" %s [%s] ",succ.c_str(),_succ.c_str());
-            transition_fn[make_pair(sparam,action)].push_back(_succ);
-            //cout << "### Added transition " << sparam << "," << action << " -> " << _succ << endl;
+            string tsucc = transformState(succ);
+            //printf(" %s [%s] ",succ.c_str(),tsucc.c_str());
+            transition_fn[make_pair(tstate,taction)].push_back(tsucc);
+            cout << "### Added transition " << tstate << "," << taction << " -> " << tsucc << endl;
 
         }
         //printf("\n");
@@ -123,10 +188,11 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     // Generates the PNP
     PNP pnp("policy");
     Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
-    string current_state = transformParamsWith_(extractParams(initial_state));
+    string current_state = transformState(initial_state);
     bool PNPgen_error = false;
 
-    pair<Transition*,Place*> pa = pnp.addCondition("["+current_state+"]",p0);
+
+    pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[current_state],p0);
     Place *p1 = pa.second;
     p1->setName(current_state);
 
@@ -163,7 +229,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
             Place *ps = visited[succ_state];
             int x = pe->getX(); // x position for all the conditions
             if (ps==NULL) {
-                pair<Transition*,Place*> pa = pnp.addCondition("["+succ_state+"]",pe,dy); dy++;
+                pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[succ_state],pe,dy); dy++;
                 Transition* tc = pa.first; Place* pc = pa.second;
                 SK.push(make_pair(succ_state,pc));
                 visited[succ_state]=pc;

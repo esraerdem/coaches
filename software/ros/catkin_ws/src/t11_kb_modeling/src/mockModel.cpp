@@ -50,6 +50,16 @@ public:
 
 
 
+std::ostream& operator<< (std::ostream& stream, const KB& kb) {
+    smap::const_iterator il = kb.location.begin();
+    while (il!=kb.location.end()) {
+        stream << "location(" << il->first << ") = " << il->second << endl;
+        il++;
+    }
+
+    return stream;
+}
+
 
 class MockModel {
   private:

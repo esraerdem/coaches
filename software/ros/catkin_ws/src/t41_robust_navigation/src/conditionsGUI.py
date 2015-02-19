@@ -10,7 +10,7 @@ import rospy
 from std_msgs.msg import String
 
 
-Conditions = ['restaurant', 'restaurant_swipe'] 
+Conditions = ['desire(unknown,swipe)']
 
 
 class DIP(tk.Frame):

@@ -277,16 +277,16 @@ void interact(string params, bool *run)
 
 
 
-void fake(string params, bool *run)
+void swipe(string params, bool *run)
 {
-    cout << "### Executing Fake action " << params << " ... " << endl;
+    cout << "### Executing Swipe action " << params << " ... " << endl;
 
     boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
 
     if (*run)
-        cout << "### Finished " << endl;
+        cout << "### Finished Swipe" << endl;
     else
-        cout << "### Aborted " << endl;
+        cout << "### Aborted Swipe" << endl;
 }
 
 

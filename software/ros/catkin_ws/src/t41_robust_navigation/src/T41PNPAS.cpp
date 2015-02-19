@@ -35,7 +35,7 @@ public:
 
         register_action("advertise",&advertise);
         register_action("advertiseComplex",&advertise);
-        register_action("swipe",&fake);
+        register_action("swipe",&swipe);
         register_action("interact",&interact);
 
         handle.param("robot_name",robotname,string("diago"));
@@ -46,10 +46,10 @@ public:
 
         // printf("-- Evaluating condition %s \n",cond.c_str());
 
-        if (cond=="RobotPos")
+        if (cond.find("RobotPos")>0)
             return 1; // the robot is in its own position -> always true
 
-        // return 1;   // Test, all conditions are true!!!
+        return 1;   // Test, all conditions are true!!!
 
         return PNPActionServer::evalCondition(cond);  // default returns -1
 
