@@ -22,7 +22,34 @@
 
 #define PATROL_RATE (1/15.)
 
+// TODO: read for ROS param...
+#define ROBOTNAME "diago"
+
+
+using namespace std;
+
 typedef std::map<std::string, geometry_msgs::Point> lmap;
+typedef std::map<std::string, std::string> smap;
+typedef std::map<std::pair<std::string, std::string>,bool> bmap2;
+
+class KB {
+public:
+    // *** functional fluents ***
+
+    // location ( agent ) = name
+    smap location;
+
+    // at ( agent ) = X, Y
+    lmap at;
+
+    // *** predicates ***
+
+    // desire ( agent, something )
+    bmap2 desire;
+};
+
+
+
 
 class MockModel {
   private:
@@ -32,6 +59,8 @@ class MockModel {
   ros::ServiceServer service_get_location, service_get_all_sites;
   lmap locations;
   lmap peoples;
+  KB kb;
+
 
   void positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void hriFeatureCallback(const shared::Feature::ConstPtr& msg);
@@ -55,6 +84,7 @@ static inline geometry_msgs::Point mkPoint(float x,float y) {
   res.z = 0;
   return res;
 }
+
 MockModel::MockModel(ros::NodeHandle node) {
   this->node = node;
   knowledge_pub = node.advertise<t11_kb_modeling::Knowledge>(TOPIC_KB, 100);
@@ -63,8 +93,8 @@ MockModel::MockModel(ros::NodeHandle node) {
   hri_feature_sub = node.subscribe("t31_feature", 10, &MockModel::hriFeatureCallback, this);
   env_feature_sub = node.subscribe("t21_feature", 10, &MockModel::envFeatureCallback, this);
   
-  service_get_location = node.advertiseService("get_location", &MockModel::getLocation, this);
-  service_get_all_sites = node.advertiseService("get_all_sites", &MockModel::getAllSites, this);
+  service_get_location = node.advertiseService(SERVICE_GET_LOCATION, &MockModel::getLocation, this);
+  service_get_all_sites = node.advertiseService(SERVICE_GET_ALL_SITES, &MockModel::getAllSites, this);
 
   locations["doorWest"]=mkPoint(6,19);
   locations["doorEast"]=mkPoint(93.69,29.75);
@@ -79,30 +109,33 @@ static inline double sq(double x) {return x*x;}
 void MockModel::positionCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
   geometry_msgs::Point robot = msg->pose.pose.position;
   ROS_DEBUG("Robot at %f %f",robot.x, robot.y);
+  kb.at[ROBOTNAME] = mkPoint(robot.x, robot.y);
   lmap::iterator it = locations.begin(); 
   bool sent = false;
   while (it != locations.end()) {
     if (sq(robot.x - it->second.x)+sq(robot.y - it->second.y) < 1) {
       ROS_INFO("KB: Visited site %s",it->first.c_str());
-      t11_kb_modeling::Knowledge kb;
-      kb.header.frame_id="diago";
-      kb.header.stamp = ros::Time::now();
-      kb.category = KB_VISIT;
-      kb.knowledge = it->first;
-      knowledge_pub.publish(kb);
+      t11_kb_modeling::Knowledge kb_msg;
+      kb_msg.header.frame_id=ROBOTNAME;
+      kb_msg.header.stamp = ros::Time::now();
+      kb_msg.category = KB_VISIT;
+      kb_msg.knowledge = it->first;
+      knowledge_pub.publish(kb_msg);
       sent = true;
+      kb.location[ROBOTNAME] = it->first; // put this predicate in the KB
     }
     ++it;
   } // while it in locations
   if (! sent) {
-    t11_kb_modeling::Knowledge kb;
-    kb.header.frame_id="diago";
-    kb.header.stamp = ros::Time::now();
-    kb.category = KB_ROBOT_AT;
+    t11_kb_modeling::Knowledge kb_msg;
+    kb_msg.header.frame_id=ROBOTNAME;
+    kb_msg.header.stamp = ros::Time::now();
+    kb_msg.category = KB_ROBOT_AT;
     std::ostringstream strs;
     strs << robot.x << "\t" << robot.y;
-    kb.knowledge = strs.str();
-    knowledge_pub.publish(kb);    
+    kb_msg.knowledge = strs.str();
+    knowledge_pub.publish(kb_msg);
+    kb.location[ROBOTNAME] = ""; // remove predicate from the KB (robot is not anymore at previous location)
   }
 }
 
@@ -161,6 +194,7 @@ void MockModel::envFeatureCallback(const shared::Feature::ConstPtr& msg)
     kb.header.stamp = ros::Time::now();
     kb.category = KB_PEOPLE;
     kb.knowledge = msg->uid;
+
     knowledge_pub.publish(kb);
   }
 }
