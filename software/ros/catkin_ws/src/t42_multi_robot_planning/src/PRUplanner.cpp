@@ -56,13 +56,15 @@ private:
   std::vector<std::vector<int> > policy;
   std::vector<std::vector<int> > specialPolicy;
 
+  void prepareModel();
   void chooseAction(int& bestAction, float& bestValue, std::vector<float> values, 
 		    std::vector<float> specialValues, int currentState);
-  int look4target(std::set<int> &reachableStates, int startState, int stepsLeft,
-		  float accReward, int lastAction, float &bestReward, int &bestAction);
-  void prepareModel();
   int computePlan(int horizon);
-  void publishPlan(int horizon);
+  void look4target(int startState, int stepsLeft, int &bestState,
+		  float accReward, int lastAction, float &bestReward, int &bestAction);
+  bool publishPlan(int horizon); // returns true if plan have been sent
+
+  std::set<std::pair<std::string,int> > actionUsed; // a set of <action, location> to track if some action has already been used at some location
 
 public:
   PRUplanner (ros::NodeHandle node);
@@ -100,7 +102,7 @@ void PRUplanner::plan() {
 
   int horizon = computePlan(10); // 10 actions long ?
 
-  publishPlan(horizon);
+  //publishPlan(horizon); // plan was already published if ok
 }
 
 void PRUplanner::prepareModel() {
@@ -246,7 +248,7 @@ void PRUplanner::chooseAction(int &bestA, float &bestV, std::vector<float> value
 } // chooseActions(...)
 
 int PRUplanner::computePlan(int horizon) {
-  for (int h=horizon-1; h>=0; --h) {
+  for (int h=0; h<horizon; ++h) {
     int s;
 #ifdef DEBUG_VI
     std::cout << "H"<<h<<":";
@@ -285,16 +287,31 @@ int PRUplanner::computePlan(int horizon) {
 #ifdef DEBUG_VI
     std::cout << std::endl;
 #endif
+    if (publishPlan(h+1))
+      return h+1;
   } // for h
   return horizon;
 } // computePlan(h)
 
-void PRUplanner::publishPlan(int horizon) {
+bool PRUplanner::publishPlan(int horizon) {
   t41_robust_navigation::Policy msg;
-  float bestReward = 0;
+  float bestReward = -1;
   int TARGETaction = 0;
-  std::set<int> reachableStates;
-  int TARGETstate = look4target(reachableStates, fixedSites.size(), horizon-1, 0, 0, bestReward, TARGETaction);
+  actionUsed.clear();
+  int TARGETstate = 0;
+  look4target(fixedSites.size(), horizon-1, TARGETstate,0, 0, bestReward, TARGETaction);
+  if (bestReward < 0) {
+    if (horizon<=1) {
+      std::cout << "Plan failed, no previous one" << std::endl;
+      return true;
+    }
+    std::cout << "Plan failed, publishing previous one" << std::endl;
+    horizon--;
+    look4target(fixedSites.size(), horizon-1, TARGETstate, 0, 0, bestReward, TARGETaction);
+  } else {
+    std::cout << "Plan is good, value=" << bestReward << " goal=" << TARGETaction << " in " << TARGETstate << std::endl;
+    return false;
+  }
 
   if (TARGETstate<0) {
     msg.final_state = specialStates[-1-TARGETstate].name;
@@ -333,7 +350,7 @@ void PRUplanner::publishPlan(int horizon) {
       } // for *itRes in successors of a
       pol.push_back(stateAction);
       std::cout << s << " - " << stateAction.state ;
-      std::cout << ": " << stateAction.action << " (" << values[0][s] << ")" << std::endl;
+      std::cout << ": " << stateAction.action << std::endl;
     } // for s in sites
     for (int s=0; s<specialStates.size(); s++) {
       t41_robust_navigation::StatePolicy stateAction;
@@ -361,7 +378,7 @@ void PRUplanner::publishPlan(int horizon) {
       } // for *itRes in successors of a
       pol.push_back(stateAction);
       std::cout << (-1-s) << " - " << stateAction.state ;
-      std::cout << ": " << stateAction.action << " (" << specialValues[0][s] << ")" << std::endl;
+      std::cout << ": " << stateAction.action << std::endl;
     } // for s in sites
     ostep = cstep;
   } // for horizon h
@@ -378,21 +395,23 @@ void PRUplanner::publishPlan(int horizon) {
   else
     msg.goal_name +=  "( " + look4name(states[TARGETstate].location) + " )";
   policy_pub.publish(msg);
-
+  return true;
 } // publishPlan(h)
 
-int PRUplanner::look4target(std::set<int> &reachableStates, int startState, int stepsLeft,
+void PRUplanner::look4target(int startState, int stepsLeft, int &bestState,
 			    float accReward, int lastAction, float &bestReward, int &bestAction) {
   int action;
-  int bestState = startState;
-  if (startState==0) {
+
+  if (stepsLeft<0) { // end of the policy
     if (accReward>bestReward) {
-      bestState = startState;
       bestReward = accReward;
       bestAction = lastAction;
+      bestState = startState;
     }
-    return bestState;
-  } else if (startState<0) {
+    return;
+  }
+
+  if (startState<0) {
     action = specialPolicy[stepsLeft][-1-startState];
   } else {
     action = policy[stepsLeft][startState];
@@ -402,21 +421,30 @@ int PRUplanner::look4target(std::set<int> &reachableStates, int startState, int 
     act = &specialActions[-1-action];
   else
     act = &actions[action];
+
   for (std::vector<struct outcome>::const_iterator it=act->outcomes.begin();
        it != act->outcomes.end(); ++it) {
-    if (reachableStates.insert(it->s).second) {
-      // new reachable state
-      bestState = look4target(reachableStates, it->s, stepsLeft-1, accReward+it->r*it->p, action, bestReward, bestAction);
+    int loc;
+    if (it->s<0)
+      loc = specialStates[-1-it->s].location;
+    else
+      loc = states[it->s].location;
+    std::pair<std::string, int> memory = std::pair<std::string, int>(*act->action, loc);
+    if (actionUsed.insert(memory).second) {
+      // new location-action combination
+      look4target(it->s, stepsLeft-1, bestState, accReward+it->r*it->p, action, bestReward, bestAction);
+      actionUsed.erase(memory);
     } else {
-      // we got back to some state, let's check if this path is better than previous one...
+      // we would use the same action in the same place, as before
+      /*
       if (accReward>bestReward) {
 	bestState = startState;
 	bestReward = accReward;
 	bestAction = lastAction;
       }
+      */
     }
   } // for *it in action.outcomes
-  return bestState;
 } // look4target
 
 
