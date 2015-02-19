@@ -86,9 +86,10 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     std::map<string,string> policy;
     std::map<string,Place*> visited;
     std::map<std::pair<string,string>,vector<string> > transition_fn;
-    string initial_state = "RobotPos";
+    string initial_state = msg->initial_state;
     final_state = msg->final_state;
     goalname = msg->goal_name;
+
 
     ROS_INFO("Received policy for goal %s. Initial state: %s Final state: %s", goalname.c_str(), initial_state.c_str(), final_state.c_str());
     std::vector<t41_robust_navigation::StatePolicy> p = msg->policy;
@@ -122,7 +123,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     // Generates the PNP
     PNP pnp("policy");
     Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
-    string current_state = initial_state;
+    string current_state = transformParamsWith_(extractParams(initial_state));
     bool PNPgen_error = false;
 
     pair<Transition*,Place*> pa = pnp.addCondition("["+current_state+"]",p0);
