@@ -8,9 +8,10 @@ from ttk import *
 import sys, time, os, glob, shutil, math, datetime
 import rospy
 from std_msgs.msg import String
+from shared.msg import Event
 
 
-Conditions = ['restaurant', 'restaurant_swipe'] 
+Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)']
 
 
 class DIP(tk.Frame):
@@ -44,21 +45,33 @@ class DIP(tk.Frame):
         
 
     def docondition(self,cond):
-        global pub
-	print "CondGUI: Send condition %s" %(cond)
-	pub.publish(cond)
+        global pub, pubEvent
+        if ("request" in cond):
+            e = Event()
+            e.kind = 'request'
+            if ('Blue' in cond):
+              e.uid = '0'
+            elif ('Red' in cond):
+              e.uid = '1'
+            elif ('Pink' in cond):
+              e.uid = '2'
+            print "CondGUI: Send event %s %s" %(e.kind, e.uid)
+            pubEvent.publish(e)
+        else:
+            print "CondGUI: Send condition %s" %(cond)
+            pub.publish(cond)
 	
 
 
 def main():
-    global pub
+    global pub, pubEvent
     rospy.init_node('condition_simulator', anonymous=True)
     pub = rospy.Publisher('/diago/PNPConditionEvent', String, queue_size=1)
+    pubEvent = rospy.Publisher('/diago/t22_event', Event, queue_size=1)
     root = tk.Tk()
     f = DIP(root)
     root.geometry("360x320+0+0")
     root.mainloop()
-  
 
 
 if __name__ == '__main__':

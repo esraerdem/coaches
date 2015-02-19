@@ -108,7 +108,7 @@ void MockSites::knowledgeCallback(const t11_kb_modeling::Knowledge::ConstPtr& ms
 	if (old != onSite) {
           old = onSite;
           ros::TimerEvent dummy;
-          sendPatrols(dummy);
+          //sendPatrols(dummy);
         }
       } else {
 	++ it->second;

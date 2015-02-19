@@ -265,9 +265,12 @@ void interact(string params, bool *run)
 
     double GX,GY;
     if (getLocationPosition(params,GX,GY)) {
-        boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
-
+        double RX,RY,RTH,dx;
+        getRobotPose(robotname,RX,RY,RTH);
+        if (RX<GX) dx=-1; else dx=+1;
+        do_movebase(GX+dx,GY,0,run);  // cannot use the same position
     }
+    else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
 
     if (*run)
         cout << "### Finished " << endl;
@@ -277,16 +280,29 @@ void interact(string params, bool *run)
 
 
 
-void fake(string params, bool *run)
+void swipe(string params, bool *run)
 {
-    cout << "### Executing Fake action " << params << " ... " << endl;
+    cout << "### Executing Swipe action " << params << " ... " << endl;
 
     boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
 
     if (*run)
-        cout << "### Finished " << endl;
+        cout << "### Finished Swipe" << endl;
     else
-        cout << "### Aborted " << endl;
+        cout << "### Aborted Swipe" << endl;
+}
+
+
+void wait(string params, bool *run)
+{
+    cout << "### Executing Wait action " << params << " ... " << endl;
+
+    boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+
+    if (*run)
+        cout << "### Finished Wait" << endl;
+    else
+        cout << "### Aborted Wait" << endl;
 }
 
 

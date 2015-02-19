@@ -25,7 +25,8 @@ using namespace std;
 
 void advertise(string params, bool *run);
 void interact(string params, bool *run);
-void fake(string params, bool *run);
+void swipe(string params, bool *run);
+void wait(string params, bool *run);
 
 #endif
 
