@@ -21,7 +21,7 @@
 class T41 {
   private:
   ros::NodeHandle node;
-  ros::Publisher low_level_pub, plantoexec_pub, policyresult_pub, pnpcond_pub;
+  ros::Publisher low_level_pub, plantoexec_pub, policyresult_pub, pnpcond_pub, hri_pub;
   ros::Subscriber nav_goal_sub, location_sub, policy_sub, pnpstatus_sub, kb_sub;
   ros::ServiceServer service_path_len;
   geometry_msgs::Pose robot_pose;

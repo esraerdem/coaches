@@ -11,8 +11,6 @@
 
 using namespace std;
 
-
-std::string robotname="diago";
 tf::TransformListener* listener = NULL;
 
 bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
@@ -116,7 +114,7 @@ void start_followcorridor(float GX, float GY, bool *run) {
 
 boost::mutex mtx_movebase;
 
-void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in degrees
+void do_movebase(string robotname, float GX, float GY, float GTh_DEG, bool *run) { // theta in degrees
 
     mtx_movebase.lock();
 
@@ -184,7 +182,7 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
 
 
 
-// Action implementation
+
 
 
 
@@ -249,74 +247,6 @@ bool getLocationPosition(string loc, double &GX, double &GY) {
     return true;
 }
 
-void advertise(string params, bool *run) {
-  cout << "### Executing Advertise " << params << " ... " << endl;
-
-  double GX,GY;
-  if (getLocationPosition(params,GX,GY)) {
-      do_movebase(GX,GY,0,run);
-  }
-  else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
-
-  cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
-
-  int sleeptime=6; // *0.5 sec.
-  while (*run && sleeptime-->0)
-      ros::Duration(0.5).sleep();
-
-  if (*run)
-      cout << "### Finished Advertise " << params << endl;
-  else
-      cout << "### Aborted Advertise " << params << endl;
-}
-
-void interact(string params, bool *run)
-{
-    cout << "### Executing Interact " << params << " ... " << endl;
-
-    double GX,GY;
-    if (getLocationPosition(params,GX,GY)) {
-        double RX,RY,RTH,dx;
-        getRobotPose(robotname,RX,RY,RTH);
-        if (RX<GX) dx=-1; else dx=+1;
-        do_movebase(GX+dx,GY,0,run);  // cannot use the same position
-    }
-    else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
-
-    if (*run)
-        cout << "### Finished Interact" << endl;
-    else
-        cout << "### Aborted Interact" << endl;
-}
-
-
-
-void swipe(string params, bool *run)
-{
-    cout << "### Executing Swipe action " << params << " ... " << endl;
-
-    ros::Duration(1).sleep();
-
-    if (*run)
-        cout << "### Finished Swipe" << endl;
-    else
-        cout << "### Aborted Swipe" << endl;
-}
-
-
-void wait(string params, bool *run)
-{
-    cout << "### Executing Wait action " << params << " ... " << endl;
-
-    int sleeptime=20; // 0.5 sec.
-    while (*run && sleeptime-->0)
-        ros::Duration(0.5).sleep();
-
-    if (*run)
-        cout << "### Finished Wait" << endl;
-    else
-        cout << "### Aborted Wait" << endl;
-}
 
 
 
@@ -438,3 +368,4 @@ void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& ped
 }
 
 #endif
+

@@ -20,29 +20,29 @@ using namespace boost::algorithm;
 #define DEG(a) ((a)*180.0/M_PI)
 
 T41::T41(ros::NodeHandle node) {
-  this->node = node;
-  // low_level_pub = node.advertise<geometry_msgs::PoseStamped>("t41_low_level", 100);
-  nav_goal_sub = node.subscribe("t42_nav_goal", 10, &T41::navGoalCallback, this);
+    this->node = node;
 
-  kb_sub = node.subscribe(TOPIC_KB, 10, &T41::kbCallback, this);
+    // Subsribers
+    nav_goal_sub = node.subscribe("t42_nav_goal", 10, &T41::navGoalCallback, this);
+    kb_sub = node.subscribe(TOPIC_KB, 10, &T41::kbCallback, this);
+    location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &T41::amclposeCallback, this);
+    pnpstatus_sub = node.subscribe(TOPIC_PNPACTIVEPLACES, 10, &T41::PNPplacesCallback, this);
+    policy_sub = node.subscribe(TOPIC_POLICY, 10, &T41::policyCallback, this);
 
-  location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &T41::amclposeCallback, this);
-  pnpstatus_sub = node.subscribe(TOPIC_PNPACTIVEPLACES, 10, &T41::PNPplacesCallback, this);
+    // Publishers
+    plantoexec_pub = node.advertise<std_msgs::String>(TOPIC_PLANTOEXEC, 100);
+    policyresult_pub = node.advertise<t41_robust_navigation::PolicyResult>(TOPIC_POLICY_RESULT, 100);
+    pnpcond_pub = node.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 100);
+    hri_pub = node.advertise<geometry_msgs::PoseStamped>("t41_low_level", 100);
 
-  policy_sub = node.subscribe(TOPIC_POLICY, 10, &T41::policyCallback, this);
-  plantoexec_pub = node.advertise<std_msgs::String>(TOPIC_PLANTOEXEC, 100);
-  policyresult_pub = node.advertise<t41_robust_navigation::PolicyResult>(TOPIC_POLICY_RESULT, 100);
+    service_path_len = node.advertiseService("get_path_len", &T41::getPathLen, this);
 
-  pnpcond_pub = node.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 100);
+    ros::NodeHandle lnode("~");
 
-  service_path_len = node.advertiseService("get_path_len", &T41::getPathLen, this);
+    lnode.param("robot_name",robotname,std::string("diago"));
+    lnode.param("plan_folder",planfolder,std::string("/tmp"));
 
-  ros::NodeHandle lnode("~");
-
-  lnode.param("robot_name",robotname,std::string("diago"));
-  lnode.param("plan_folder",planfolder,std::string("/tmp"));
-
-  cerr << "\033[22;31;1mT41 Plan folder: \033[0m\033[22;32;1m" << planfolder << "\033[0m" << endl;
+    cerr << "\033[22;31;1mT41 Plan folder: \033[0m\033[22;32;1m" << planfolder << "\033[0m" << endl;
 
 }
 

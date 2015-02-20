@@ -24,7 +24,7 @@ class MockHRI {
 
   ros::Publisher feature_pub;
   ros::Publisher hri_act_pub;
-  ros::Publisher say_pub;
+  ros::Publisher say_stage_pub;
   ros::Timer interactionTimer;
   ros::Timer adTimer;
 
@@ -44,12 +44,12 @@ class MockHRI {
 };
 
 MockHRI::MockHRI(ros::NodeHandle node) {
-  hri_goal_sub = node.subscribe("t42_hri_goal", 10, &MockHRI::hriGoalCallback, this);
+  hri_goal_sub = node.subscribe(TOPIC_HRI_GOAL, 10, &MockHRI::hriGoalCallback, this);
   location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &MockHRI::locationCallback, this);
 
   feature_pub = node.advertise<shared::Feature>("t31_feature", 100);
   hri_act_pub = node.advertise<t31_multimodal_hri::HRIActuation>("hri_actuation", 100);
-  say_pub = node.advertise<std_msgs::String>("say", 100);
+  say_stage_pub = node.advertise<std_msgs::String>(TOPIC_STAGE_SAY, 100);
   interactionTimer = node.createTimer(ros::Duration(5), &MockHRI::intTimerCallback, this, true); interactionTimer.stop();
   adTimer = node.createTimer(ros::Duration(3), &MockHRI::adTimerCallback, this, true); adTimer.stop();
   currentInteraction = "";
@@ -78,14 +78,17 @@ void MockHRI::hriGoalCallback(const shared::Goal::ConstPtr& msg)
     msgOut.data = "We arrived to " + msg->loc + ", have a nice day!";
     interactionTimer.setPeriod(ros::Duration(3));
     interactionTimer.start();
+  } else if (msg->kind == GOAL_SPEECH) {
+    msgOut.data = msg->param;
   }
   currentInteraction = msg->param;
   doSay(msgOut);
 }
 
 void MockHRI::doSay(std_msgs::String msg) {
-  say_pub.publish(msg);  // received by stage to print out say message
-  if (msg.data!="") {
+    std::cout << "Say \033[22;35;1m" << msg.data << "\033[0m" << std::endl;
+  say_stage_pub.publish(msg);  // received by stage to print out say message
+  if (false && msg.data!="") {
       std::stringstream ss; ss << "pico2wave -w /tmp/say_out.wav \"" << msg.data << "\"";
       int r1=system(ss.str().c_str());
       int r2=system("aplay /tmp/say_out.wav");
