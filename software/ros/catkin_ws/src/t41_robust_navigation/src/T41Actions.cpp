@@ -1,3 +1,5 @@
+#include <boost/thread/mutex.hpp>
+
 #include <tf/transform_listener.h>
 #include <shared/topics_name.h>
 
@@ -112,9 +114,11 @@ void start_followcorridor(float GX, float GY, bool *run) {
 
 #endif
 
-
+boost::mutex mtx_movebase;
 
 void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in degrees
+
+    mtx_movebase.lock();
 
   if (ac_movebase==NULL) { //create the client only once
     // Define the action client (true: we want to spin a thread)
@@ -149,8 +153,8 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
   // ROS_INFO("Sending goal");
   ac_movebase->sendGoal(goal);
 
-  // Wait for termination (check distance every delay seconds
-  double delay = 0.5;
+  // Wait for termination (check distance every delay seconds)
+  double delay = 0.1;
   double d_threshold=0.5, d=d_threshold+1.0;
   while (!ac_movebase->waitForResult(ros::Duration(delay)) && (*run) && (d>d_threshold)) {
     // ROS_INFO("Running...");
@@ -172,7 +176,9 @@ void do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in deg
 #endif
 
   // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
-  ac_movebase->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
+  ac_movebase->cancelAllGoals(); ros::Duration(0.2).sleep(); // wait al little
+
+  mtx_movebase.unlock();
 }
 
 
@@ -233,7 +239,7 @@ bool getLocationPosition(string loc, double &GX, double &GY) {
 
     if (siteLoc.call(srv)) {
         GX = srv.response.coords.position.x; GY = srv.response.coords.position.y;
-        ROS_INFO_STREAM("Location " << loc << " at " << GX  << " , " << GY);
+        ROS_DEBUG_STREAM("Location " << loc << " at " << GX  << " , " << GY);
     }
     else {
         ROS_ERROR_STREAM("Location "<<loc<<" unknown.");
@@ -252,6 +258,11 @@ void advertise(string params, bool *run) {
   }
   else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
 
+  cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
+
+  int sleeptime=6; // *0.5 sec.
+  while (*run && sleeptime-->0)
+      ros::Duration(0.5).sleep();
 
   if (*run)
       cout << "### Finished Advertise " << params << endl;
@@ -273,9 +284,9 @@ void interact(string params, bool *run)
     else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
 
     if (*run)
-        cout << "### Finished " << endl;
+        cout << "### Finished Interact" << endl;
     else
-        cout << "### Aborted " << endl;
+        cout << "### Aborted Interact" << endl;
 }
 
 
@@ -284,7 +295,7 @@ void swipe(string params, bool *run)
 {
     cout << "### Executing Swipe action " << params << " ... " << endl;
 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+    ros::Duration(1).sleep();
 
     if (*run)
         cout << "### Finished Swipe" << endl;
@@ -297,7 +308,9 @@ void wait(string params, bool *run)
 {
     cout << "### Executing Wait action " << params << " ... " << endl;
 
-    boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+    int sleeptime=20; // 0.5 sec.
+    while (*run && sleeptime-->0)
+        ros::Duration(0.5).sleep();
 
     if (*run)
         cout << "### Finished Wait" << endl;

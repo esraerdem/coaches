@@ -45,7 +45,7 @@ class DIP(tk.Frame):
         
 
     def docondition(self,cond):
-        global pub, pubEvent
+        global pubCond, pubEvent
         if ("request" in cond):
             e = Event()
             e.kind = 'request'
@@ -58,15 +58,17 @@ class DIP(tk.Frame):
             print "CondGUI: Send event %s %s" %(e.kind, e.uid)
             pubEvent.publish(e)
         else:
-            print "CondGUI: Send condition %s" %(cond)
-            pub.publish(cond)
+            if (cond=='desire(unknown,swipe)'):
+                scond = 'D_unknown_swipe'
+            print "CondGUI: Send condition %s" %(scond)
+            pubCond.publish(scond)
 	
 
 
 def main():
-    global pub, pubEvent
+    global pubCond, pubEvent
     rospy.init_node('condition_simulator', anonymous=True)
-    pub = rospy.Publisher('/diago/PNPConditionEvent', String, queue_size=1)
+    pubCond = rospy.Publisher('/diago/PNPConditionEvent', String, queue_size=1)
     pubEvent = rospy.Publisher('/diago/t22_event', Event, queue_size=1)
     root = tk.Tk()
     f = DIP(root)

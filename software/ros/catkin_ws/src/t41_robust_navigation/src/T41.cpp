@@ -142,6 +142,19 @@ string extractCondition(string s) {
     return r;
 }
 
+int count_conditions(string s) {
+    // s = '[cond]' OR '[and c1 c2 ... cn]'
+    int r=0;
+    std::istringstream is( s );
+    std::string line;
+    while ( std::getline( is, line, ' ' ) )
+        r++;
+    if (r>1)
+        r--; // remove 'and'
+    return r;
+}
+
+
 void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
     std::map<string,string> policy;
@@ -173,7 +186,8 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
         vector<string> ss = sa.successors;
         vector<string>::iterator is;
-        for (is=ss.begin(); is!=ss.end(); is++) {
+        for (is=ss.end(); is!=ss.begin(); ) {
+            is--;
             string succ = *is;
             string tsucc = transformState(succ);
             //printf(" %s [%s] ",succ.c_str(),tsucc.c_str());
@@ -190,7 +204,6 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
     string current_state = transformState(initial_state);
     bool PNPgen_error = false;
-
 
     pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[current_state],p0);
     Place *p1 = pa.second;
@@ -223,25 +236,44 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
         vector<string>::iterator iv; int dy=0;
 
+        // Ordering successor states (transitions) wrt number of conditions
+
+        int maxn=0;
+//        vector<string> conditions[32];  // max number of atomic conditions
+        vector<string> succstates[32];
         for (iv = vs.begin(); iv!=vs.end(); iv++) {
             string succ_state = *iv;
-            std::cout << succ_state << " ";
-            Place *ps = visited[succ_state];
-            int x = pe->getX(); // x position for all the conditions
-            if (ps==NULL) {
-                pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[succ_state],pe,dy); dy++;
-                Transition* tc = pa.first; Place* pc = pa.second;
-                SK.push(make_pair(succ_state,pc));
-                visited[succ_state]=pc;
-                pc->setName(succ_state);
-                if (succ_state==final_state)
-                    pc->setName("goal");
-            }
-            else {
-                pnp.addConditionBack(transformedconditions[succ_state],pe, ps, dy); dy++;
-            }
-
+            string cond = transformedconditions[succ_state];
+            cout << "Ordering conditions: " << cond << "  ";
+            int n = count_conditions(cond);
+            if (n>maxn) maxn=n; cout << n << endl;
+//            conditions[n].push_back(cond);
+            succstates[n].push_back(succ_state);
         }
+
+        for (int k=maxn; k>0; k--) {
+//            vector<string> vc = conditions[k];
+            vector<string> ss = succstates[k];
+
+            for (int i = 0; i<ss.size(); i++) {
+                string succ_state = ss[i];
+                std::cout << succ_state << " ";
+                Place *ps = visited[succ_state];
+                int x = pe->getX(); // x position for all the conditions
+                if (ps==NULL) {
+                    pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[succ_state],pe,dy); dy++;
+                    Place* pc = pa.second;
+                    SK.push(make_pair(succ_state,pc));
+                    visited[succ_state]=pc;
+                    pc->setName(succ_state);
+                    if (succ_state==final_state)
+                        pc->setName("goal");
+                }
+                else {
+                    pnp.addConditionBack(transformedconditions[succ_state],pe, ps, dy); dy++;
+                }
+            } // for i
+        } // for k
 
         std::cout << std::endl;
 
@@ -268,9 +300,9 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 
     // publish planToExec to start the plan
     std_msgs::String s;
-    s.data = "stop";
-    plantoexec_pub.publish(s); // stop the current plan
-    boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+    //s.data = "stop";
+    //plantoexec_pub.publish(s); // stop the current plan
+    //boost::this_thread::sleep(boost::posix_time::milliseconds(500));
     s.data = planname;
     plantoexec_pub.publish(s); // start the new one
 
@@ -301,8 +333,8 @@ void T41::kbCallback(const t11_kb_modeling::Knowledge::ConstPtr& msg) {
 
     if (msg->category==KB_VISIT) {
         // ROS_INFO_STREAM("KB: " << msg->category << " " << msg->knowledge);
-        std_msgs::String s; s.data = msg->knowledge;
-        pnpcond_pub.publish(s);
+        //std_msgs::String s; s.data = msg->knowledge;
+        //pnpcond_pub.publish(s);
     }
 
 }

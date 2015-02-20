@@ -47,10 +47,10 @@ public:
 
         // printf("-- Evaluating condition %s \n",cond.c_str());
 
-        if (cond.find("RobotPos")>0)
-            return 1; // the robot is in its own position -> always true
+        if (cond.find("L_diago")!=string::npos)
+            return 1; // the robot is in the correct position -> always true
 
-        return 1;   // Test, all conditions are true!!!
+        //    return 1;   // Test, all conditions are true!!!
 
         return PNPActionServer::evalCondition(cond);  // default returns -1
 
