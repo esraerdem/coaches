@@ -53,7 +53,109 @@ The overall procedure of the working system is the following:
 
 \subsection{Progressive Processing Units (PRU)}
 
-What is a PRU, how an MDP is generated, how an optimal policy is found ...
+Progressive Processing Units (PRU) are ... \cite{}
+
+{\bf TODO: brief summary of standard PRU}
+
+The original formulation of PRU does not allow for ...
+
+{\bf TODO: what is missing in standard PRU and why we have done all this work}
+
+
+
+Therefore, in this work we have extended the definition of PRUs in order to add the desired features. The new formalization (that we call PRU+) is this described in this section.
+
+A PRU+ is composed by a sequence of \emph{processing levels} $L = ( l_1, l_2, \ldots, l_{|L|})$, a set of \emph{state variables} $X = \{ X_1, \ldots, X_{|X|} \}$, and a set of \emph{observable boolean properties} of the environment $O = \{ o_1, \ldots, o_{|O|} \}$.
+Each state variable $X_i$ can be assigned to a value within a set of finite values, i.e., $X_i \in A_i = \{ \bot , a_i^1, \ldots, a_i^{|A_i|} \}$, with $|A_i|$ finite, and $\bot$ denoting a special null value. Each observable property can be evaluated at execution time by an external function that is always able to return a truth value for it.
+
+Each processing level $l_i$ is composed by a set of \emph{modules} $( m_i^1, \ldots, m_i^{p_i} )$ and it is associated to a set of active state variables $V_i \subseteq X$.
+We denote with $M$ the set of all the modules in all levels.
+
+Each module $m_i^j$ is defined by a non-empty set of \emph{options} $\{ \alpha_i^j, \beta_i^j, \ldots \}$, representing possible outcomes of its execution. The symbols used to denote an option (e.g., $\alpha_i^j$) are assumed to be unique identifiers in all the PRU+.
+
+Each option $\alpha_i^j$ contains the following information:
+\begin{itemize}
+\item \emph{execution condition} $\alpha_i^j.\phi$: a logical formula over atoms in $O$ and equality checks of values in state variables; this formula denotes an observable condition used at execution time to recognize this outcome; we assume that all the conditions for the options of a given module are mutually exclusive;
+\item \emph{probability} $\alpha_i^j.p$: probability of occurrence of this outcome; the sum of all the probability values for all the options in a module is 1;
+\item \emph{quality} $\alpha_i^j.q$: estimated quality for achieving this outcome ($q$ can be expressed either as a constant value or as a function pointer (see below);
+\item \emph{duration} $\alpha_i^j.d$: estimation time duration for achieving this outcome ($d$ can be expressed either as a constant value or as a function pointer (see below);
+\item \emph{successor modules} $\alpha_i^j.SM$: a set of successor modules that are enables after this outcome; for each $m_k^* \in \alpha_i^j.SM$, we have $k \geq j$, so successor modules should be either at the same level of at a next level with respect to the current one;
+\item \emph{state variable updates} $\alpha_i^j.SVU$: a set of state variable assignments that must be considered after this outcome; for each $(X_k \leftarrow a'_k) \in \alpha_i^j.SVU$, $X_i \in V_i$ (only state variables active for the current level are allowed) and  $a'_i \in A_i$.
+\end{itemize}
+
+Given a PRU+, it is possible to transform it in a MDP in order to compute an optimal policy.
+
+The representation of the states $S$ for this MDP is defined as follows.
+Each state in $S$ is defined by $[  \alpha_i^j, X_1, \ldots, X_{|X|} ]$, where
+$X_k = \bot$ for all the nonactive state variables for this level, i.e.,$ X_k \notin V_i$.
+An initial state $S_0 = [ \alpha_0^0, \bot, \ldots, \bot ]$ is also defined in the set of states $S$, with $\alpha_0^0$ being a special symbol used only in the representation of the initial state. Finally, states that are achieved after the execution of modules in the last level are marked as goal states and grouped in a set of goal states $G \subset S$.
+Notice that in the proposed framework, the states must not be fully observable at any time, since at execution time only the observable properties and the state variables used in the execution conditions are required to determine the state of the execution of the policy.
+
+Actions in MDP corresponds to the modules in the PRU+. 
+
+The transition function $\delta$ of the MDP is defined according to the probabilities and the set of successor modules defined in the PRU.
+We assume that all the modules at processing level 1 are enabled from the initial state.
+Thus we can define the transition function for the initial state $S_0$ as follows: 
+$Pr(S_0,m_1^j,S(\alpha_1^j)) = \alpha_1^j.p$, where
+$S(\alpha_1^j)$ is the state resulting from the corresponding outcome $\alpha_1^j$ of $m_1^j$.
+More specifically, $S(\alpha_1^j) = [ \alpha_1^j, e_1^{j,(1)}, \ldots, e_1^{j,(|X|)} ]$,
+with
+ 
+\[ e_1^{j,(k)} = \left\{ 
+\begin{tabular}{l} 
+$\bot$ if $X_k \notin V_1$, (i.e., non active state variables) \\  
+$a'_k$ if $(X_k \leftarrow a'_k) \in \alpha_1^j.SVU$, (i.e., it is updated by this action) \\
+$a_k$  if all the predecessors have the value $a_k$ \\
+$\bot$ if there is an inconsistency in the values of the predecessors \\
+\end{tabular} \right. \]
+
+This process can be repeated at any level to fully define the transition function.
+
+
+Estimated quality and estimated time duration of an option of a module can be represented either as a constant value or as a function pointer. In the latter case, we define the following standard function prototype: $f : S \times M \times S \times P \times \Re \rightarrow \Re$ for both the quality and the duration function. More precisely, the 5 arguments of the function prototype have the following meaning: 1) current state, 2) current action, 3) successor state, 4) function type, 5) additional. Notice that these functions are called at planning time to estimate the quality and the duration of an action executed from a virtual current state to a virtual successor state. These functions (being obviously domain dependent) are implemented by the developer of the action that should return an estimate of quality and duration in the  conditions set as arguments. The function type and the additional values are parameters used to define general functions that can be used in a parametric way by different modules.
+The returned values must be expressed in the same measuring units by all the modules. In particular, the duration is the estimated time to complete the action in seconds.
+
+From these definition the algorithm .... is able to determine an optimal policy ...
+
+{\bf TODO: describe the algorithm for generating the policy}
+
+
+
+
+\subsection{Policy to PNP transformation}
+
+The policy found by the MDP planner is transformed into a PNP by an algorithm that applies the PNP operators. 
+
+The output of the MDP planner contains the initial and goal states,  the optimal policy, and the possible successor states for each execution of an action in the policy. In other words, this output corresponds to the optimal policy and to a portion of the MDP model: initial and goal states and a subset of the transition function of the MDP containing information only for the pairs (state, action) that are considered in the returned policy.
+
+More precisely, the output of the MDP planner is $\langle S_0, G, \{ \langle s_i, a_i, SS_i \rangle \} \rangle $,  
+where $S_0$ is the initial state, $G$ is a set of goal states (i.e., final states),
+and in each tuple $\langle s_i, a_i, SS_i \rangle$, $s_i$ is a state, $a_i$ is the action to be executed in this state, $SS_i$ is a set of pairs $(s_i^k, \phi_i^k)$, with $s_i^k$ being a successor state and $\phi_i^k$ a formula over observable properties of the environment (including state variables) that  must be evaluated to determine the actual outcome of the execution of $a_i$ in $s_i$.
+In this formalization, it is thus not necessary to fully observe the states $s_i^k$, but only to determine the value of the conditions $\phi_i^k$.
+
+The PNP is built by navigating the policy from the initial state to the goal states.
+A standard approach to build a graph using a queue of states and a vector of visited states as data structures is used.
+The queue is initialized with the initial state $S_0$ which is also added as the initial place in the PNP.
+While the queue is not empty, the PNP sequence operator is used to add the action $a_i$ that must be executed in the current state $s_i$ (according to the policy), followed by a set of transitions that will check the conditions $\phi_i^k$ bringing to any of the states $s_i^k$, as defined in $SS_i$. 
+If a state in $SS_i$ has not been visited, then a new place is generated in the PNP, this place is associated with this state that is now marked as visited, and this state is added to the queue. If a state in $SS_i$ has been already visited, then the transition is connected with the place that was stored when the state was created. The process thus continues until the queue is empty.
+When encountering goal states in $G$ the corresponding places are labeled as ``goals'' that will be used by the PNP executor to terminate the execution of the plan and return a ``success'' feedback.
+
+
+This procedure is also illustrated in more details in Algorithm ... 
+
+{\bf TODO: describe the algorithm for generating the PNP}
+
+It is important to observe that the descriptions of the successor states in the output returned by the MDP planner are generated according to the specification of the PRU, as described in the previous section. Thus, they contain the conditions $\phi_i^k$ over observable properties of the environment that can be actually checked at run time to determine the current outcome of actions and thus the correct successor state from which the execution should continue.
+
+% AT THIS MOMENT LET'S CONSIDER ONLY MUTUALLY-EXCLUSIVE OPTIONS
+%Obviously, the descriptions of the states generated in this way are not complete, but they contain only those predicates that are needed by the next action. {\bf ONLY THE NEXT ONE OR ALSO THE OTHERS???}
+%Therefore the set of successor states in the output policy may contain states described with conditions that are not mutually exclusive. In particular, it may include state descriptions that implies other state descriptions. For example, a possible set of successor states may be 
+%$\{ A, A \wedge B \}$. If these conditions are added to the PNP executor without any execution rule, then when $A$ and $B$ are both true, both the transitions will be enabled and the behavior of the PNP will be non-deterministic. However, in this situation, the MDP model requires that, if both $A$ and $B$ are true, then the effect $A \wedge B$ must be considered, because it is the most specific.
+%This behavior is thus also implemented in the PNP executor. Whenever multiple transitions are enabled, the most specific one is selected and will fire.
+
+%Notice that when multiple non-exclusive conditions are present in the description of successor states and they are not in relation given by logical implication, then a non-deterministic execution of the transition in the PNP executor will happen, but in this case it will be consistent with the MDP model.
+
+
 
 \subsection{Execution Rules (ER)}
 
