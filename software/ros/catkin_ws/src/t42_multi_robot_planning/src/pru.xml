@@ -1,0 +1,94 @@
+<pru>
+  <Start>
+    <SVU>
+      location := RobotPos
+      desire := nil
+    </SVU>
+    <Next> 
+      1.advertise 
+      1.advertiseComplex 
+      1.interact
+    </Next>
+  </Start>
+  <Layer id='1'>
+    <StateVariable id='location' />
+    <StateVariable id='desire' />
+    <Action id='advertise'>
+      <Parameter id='X' domain='AvailableAds' />
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='100' />
+	<Duration kind='distance' const='3' />
+	<SVU> location := $X </SVU>
+	<Next> 
+	  1.advertise 
+	  1.advertiseComplex 
+	  1.interact
+	</Next>
+      </Outcome>
+    </Action>
+    <Action id='advertiseComplex'>
+      <Parameter id='X'>
+	Restaurant
+	Phone
+      </Parameter>
+      <Outcome id='swipe' p='0.5'>
+	<Quality kind='null' const='100' />
+	<Duration kind='distance' const='5' />
+	<Observe> swipe </Observe>
+	<SVU> 
+	  location := $X
+	  desire := swipe
+	</SVU>
+	<Next> 1.swipe </Next>
+      </Outcome>
+      <Outcome id='!swipe' p='0.5'>
+	<Quality kind='null' const='0' />
+	<Duration kind='distance' const='5' />
+	<Observe> !swipe </Observe>
+	<SVU> 
+	  location := $X
+	  desire := nil
+	</SVU>
+	<Next> 
+	  1.advertise 
+	  1.advertiseComplex 
+	  1.interact
+	</Next>
+      </Outcome>
+    </Action>
+    <Action id='swipe'>
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='1' />
+	<SVU />
+	<Next>
+	  1.advertise 
+	  1.advertiseComplex 
+	  1.interact
+	</Next>
+      </Outcome>
+    </Action>
+    <Action id='interact'>
+      <Parameter id='X'>
+	Monoprix
+      </Parameter>
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='1000' />
+	<Duration kind='null' const='60' />
+	<SVU> location := $X </SVU>
+	<Next> 2.wait </Next>
+	<Final label='success'/>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='2'>
+    <Action id='wait'>
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='1' />
+	<SVU />
+	<Next> 2.wait </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+</pru>

@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(t42_multi_robot_planning)
 
+SET(CMAKE_MODULE_PATH $ENV{COACHES_HOME}/cmake)
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -17,6 +19,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
+#find_package(LibXml2 REQUIRED)
+find_package(LibXML++ REQUIRED)
 
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
@@ -100,6 +104,10 @@ catkin_package(
 ## Your package locations should be listed before other locations
 # include_directories(include)
 include_directories(
+  ${LibXML++_INCLUDE_DIRS}
+)
+
+include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -107,14 +115,18 @@ include_directories(
 add_executable(t42 src/T42.cpp src/main.cpp)
 add_executable(pruPlanner src/T42.cpp src/PRUplanner.cpp)
 
+add_executable(pruReader src/PRUplus.cpp)
+
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(t42 ${catkin_EXPORTED_TARGETS})
 add_dependencies(pruPlanner ${catkin_EXPORTED_TARGETS})
+add_dependencies(pruReader ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t42 ${catkin_LIBRARIES} )
 target_link_libraries(pruPlanner ${catkin_LIBRARIES} )
+target_link_libraries(pruReader ${catkin_LIBRARIES} ${LibXML++_LIBRARIES})
 
 #############
 ## Install ##

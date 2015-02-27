@@ -10,7 +10,7 @@ mkdir -p lib
 mkdir -p include
 
 # Install required Linux libs and applications
-sudo apt-get install cmake g++ xterm libxml2 libxml2-dev flex
+sudo apt-get install cmake g++ xterm libxml2 libxml2-dev libxml++2.6-dev flex
 
 # Init Catkin workspace
 cd ros/catkin_ws
