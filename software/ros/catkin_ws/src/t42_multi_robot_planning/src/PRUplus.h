@@ -47,6 +47,8 @@ class PRUoutcome {
     duration="null";
     durationParameter=0; 
     durationConstant=0; 
+    isFinal = false;
+    finalLabel = "";
   }
 };
 
