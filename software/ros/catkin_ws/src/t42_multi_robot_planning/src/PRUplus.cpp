@@ -1,11 +1,93 @@
 #include "PRUplus.h"
-#include <libxml++/libxml++.h>
-#include <libxml++/parsers/textreader.h>
 
 #include <iostream>
 #include <stdlib.h>
 #include <locale.h>
 #include <boost/algorithm/string.hpp>
+
+
+std::ostream& operator<<(std::ostream& os, const PRUoutcome& option) {
+  os << option.name << " (" << (option.probability*100) <<"%): "
+     << option.observable
+     << "\n      Q=" << option.quality << "(" << option.qualityParameter << ")+"
+     << option.qualityConstant
+     << "\n      D=" << option.duration << "(" << option.durationParameter << ")+"
+     << option.durationConstant;
+  os << "\n      SVU{";
+  for (vector<string>::const_iterator it = option.stateVariableUpdate.begin();
+       it != option.stateVariableUpdate.end(); ++it) {
+    os << "\n       " << *it;
+  } // for *it in option.SVU
+  os << "\n      }";
+  os << "\n      NEXT{";
+  for (vector<string>::const_iterator it = option.nextModules.begin();
+       it != option.nextModules.end(); ++it) {
+    os << "\n       " << *it;
+  } // for *it in pru.firstEnabledModules
+  os << "\n      }";
+  if (option.isFinal)
+    os << "\n      FINAL Label=" << option.finalLabel;
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const PRUmodule& module) {
+  os << "  MODULE " << module.actionName << " {\n";
+  os << "   PARAM{\n";
+  for (map<string, domain_type>::const_iterator it = module.parameters.begin();
+       it != module.parameters.end(); ++it) {
+    os << "    " << it->first << " in {" ;
+    for (vector<string>::const_iterator it2 = it->second.begin();
+	 it2 != it->second.end(); ++it2) {
+      os << " " << *it2 ;
+    } // for *it2 in parameter *it 's domain
+    os << "   }\n";
+  } // for *it in module.parameters
+  os << "   }\n";
+  for (vector<PRUoutcome*>::const_iterator it = module.outcomes.begin();
+       it != module.outcomes.end(); ++it) {
+    os << "   > " << **it << "\n";
+  } // for *it in module.outcomes
+  os << "  }\n";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const PRUlayer& layer) {
+  os << " LAYER " << layer.name << " {\n";
+  os << "  VARS{";
+  for (vector<string>::const_iterator it = layer.stateVariables.begin();
+       it != layer.stateVariables.end(); ++it) {
+    os << " " << *it ;
+  } // for *it in layer.stateVariables
+  os << " }\n";
+  for (vector<PRUmodule*>::const_iterator it = layer.modules.begin();
+       it != layer.modules.end(); ++it) {
+    os << **it;
+  } // for *it in layer.modules
+  os << " }\n";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const PRUplus& pru) {
+  os << "PRU{\n INIT{\n";
+  for (vector<string>::const_iterator it = pru.stateVariablesInitialAssignments.begin();
+       it != pru.stateVariablesInitialAssignments.end(); ++it) {
+    os << "  " << *it << "\n";
+  } // for *it in pru.stateVariablesInitialAssignments
+  os << " }\n NEXT{\n";
+  for (vector<string>::const_iterator it = pru.firstEnabledModules.begin();
+       it != pru.firstEnabledModules.end(); ++it) {
+    os << "  " << *it << "\n";
+  } // for *it in pru.firstEnabledModules
+  os << " }\n";
+  for (vector<PRUlayer*>::const_iterator it = pru.layers.begin();
+       it != pru.layers.end(); ++it) {
+    os << **it;
+  } // for *it in pru.layers
+  os << "}\n";
+  return os;
+}
+
+
 
 map<string, domain_type> allDomains;
 
@@ -14,6 +96,185 @@ static inline string trimString(xmlpp::TextReader &r) {
   boost::algorithm::trim(tmp);
   return tmp;
 }
+
+PRUplus::PRUplus(string xmlFileName) {
+  try {
+    xmlpp::TextReader reader(xmlFileName.c_str());
+    readXML(reader);
+  } catch(const std::exception& e) {
+    std::cerr << "Exception caught: " << e.what() << std::endl;
+  }
+  std::cout << *this << std::endl;
+}
+
+void PRUplus::readXML(xmlpp::TextReader &reader) {
+  while(reader.read()) {
+    string name = reader.get_name();
+    if ((reader.get_node_type() == xmlpp::TextReader::EndElement) &&
+	(name == "pru"))
+      break;
+    if (reader.get_node_type() != xmlpp::TextReader::Element )
+      continue;
+    if (name == "pru") {
+    } else if (name == "Start") {
+    } else if (name == "SVU")
+      stateVariablesInitialAssignments.push_back(trimString(reader));
+    else if (name == "Next")
+      firstEnabledModules.push_back(trimString(reader));
+    else if (name == "Layer")
+      layers.push_back(new PRUlayer(reader));
+    else
+      std::cerr << "Unexpected tag " << name << "!" << std::endl;
+  } // while reader.read()
+} // PRUplus(reader)
+
+PRUlayer::PRUlayer(xmlpp::TextReader &reader) {
+  if (reader.has_attributes()) {
+    reader.move_to_first_attribute();
+    do {
+      if (reader.get_name() == "id")
+	name = reader.get_value();
+    } while (reader.move_to_next_attribute());
+    reader.move_to_element();
+  }
+  while(reader.read()) {
+    string name = reader.get_name();
+    if ((reader.get_node_type() == xmlpp::TextReader::EndElement) &&
+	(name == "Layer"))
+      break;
+    if (reader.get_node_type() != xmlpp::TextReader::Element )
+      continue;
+    if (name == "StateVariable") {
+      if (reader.has_attributes()) {
+	reader.move_to_first_attribute();
+	do {
+	  if (reader.get_name() == "id")
+	    stateVariables.push_back(reader.get_value());
+	} while (reader.move_to_next_attribute());
+	reader.move_to_element();
+      }
+    } else if (name == "Action") {
+      modules.push_back(new PRUmodule(reader));
+    } else
+      std::cerr << "Unexpected tag " << name << "!" << std::endl;
+  } // while reader.read()
+} // PRUlayer(reader)
+
+PRUmodule::PRUmodule(xmlpp::TextReader &reader) {
+  if (reader.has_attributes()) {
+    reader.move_to_first_attribute();
+    do {
+      if (reader.get_name() == "id")
+	actionName = reader.get_value();
+    } while (reader.move_to_next_attribute());
+    reader.move_to_element();
+  }
+  while(reader.read()) {
+    string name = reader.get_name();
+    if ((reader.get_node_type() == xmlpp::TextReader::EndElement) &&
+	(name == "Action"))
+      break;
+    if (reader.get_node_type() != xmlpp::TextReader::Element )
+      continue;
+    if (name == "Parameter") {
+      string pName = "";
+      string pDom = "";
+      if (reader.has_attributes()) {
+	reader.move_to_first_attribute();
+	do {
+	  if (reader.get_name() == "id")
+	    pName = reader.get_value();
+	  else if (reader.get_name() == "domain")
+	    pDom = reader.get_value();
+	} while (reader.move_to_next_attribute());
+	reader.move_to_element();
+      }
+      if (pName == "")
+	throw "Parameter with no name!";
+      domain_type dom;
+      if (pDom != "") {
+	//TODO add all strings from this domain to this parameter
+      }
+      if (reader.has_value())
+	dom.push_back(reader.get_value());
+      else
+	dom.push_back(trimString(reader));
+      parameters[pName] = dom;
+    } else if (name == "Outcome") {
+      outcomes.push_back(new PRUoutcome(reader));
+    } else
+      std::cerr << "Unexpected tag " << name << "!" << std::endl;
+  } // while reader.read()
+} // PRUmodule(reader)
+
+PRUoutcome::PRUoutcome(xmlpp::TextReader &reader) {
+  initDefaultValues();
+  if (reader.has_attributes()) {
+    reader.move_to_first_attribute();
+    do {
+      if (reader.get_name() == "id")
+	name = reader.get_value();
+      else if (reader.get_name() == "p")
+	probability = atof(reader.get_value().c_str());
+    } while (reader.move_to_next_attribute());
+    reader.move_to_element();
+  }
+  while(reader.read()) {
+    string name = reader.get_name();
+    if ((reader.get_node_type() == xmlpp::TextReader::EndElement) &&
+	(name == "Outcome"))
+      break;
+    if (reader.get_node_type() != xmlpp::TextReader::Element )
+      continue;
+    if (name == "Quality") {
+      if (reader.has_attributes()) {
+	reader.move_to_first_attribute();
+	do {
+	  if (reader.get_name() == "kind")
+	    quality = reader.get_value();
+	  else if (reader.get_name() == "param")
+	    qualityParameter = atof(reader.get_value().c_str());
+	  else if (reader.get_name() == "const")
+	    qualityConstant = atof(reader.get_value().c_str());
+	} while (reader.move_to_next_attribute());
+	reader.move_to_element();
+      }
+    } else if (name == "Duration") {
+      if (reader.has_attributes()) {
+	reader.move_to_first_attribute();
+	do {
+	  if (reader.get_name() == "kind")
+	    duration = reader.get_value();
+	  else if (reader.get_name() == "param")
+	    durationParameter = atof(reader.get_value().c_str());
+	  else if (reader.get_name() == "const")
+	    durationConstant = atof(reader.get_value().c_str());
+	} while (reader.move_to_next_attribute());
+	reader.move_to_element();
+      }
+    } else if (name == "Observe") {
+      if (reader.has_value())
+	observable = reader.get_value();
+      else
+	observable = reader.read_string();
+    } else if (name == "SVU") {
+      stateVariableUpdate.push_back(trimString(reader));
+    } else if (name == "Final") {
+      isFinal = true;
+      if (reader.has_attributes()) {
+	reader.move_to_first_attribute();
+	do {
+	  if (reader.get_name() == "label")
+	    finalLabel = reader.get_value();
+	} while (reader.move_to_next_attribute());
+	reader.move_to_element();
+      }
+    } else if (name == "Next")
+      nextModules.push_back(trimString(reader));
+    else
+      std::cerr << "Unexpected tag " << name << "!" << std::endl;
+  } // while reader.read()
+} // PRUoutcome(reader)
 
 PRUplus* readXML(string fileName) {
   std::locale::global(std::locale(""));
@@ -164,7 +425,7 @@ PRUplus* readXML(string fileName) {
 	      o->finalLabel = reader.get_value();
 	  } while (reader.move_to_next_attribute());
 	  reader.move_to_element();
-	}	
+	}
       } else if (name == "Next")
 	o->nextModules.push_back(trimString(reader));
     } // while reader.read()
@@ -175,90 +436,9 @@ PRUplus* readXML(string fileName) {
   return res;
 } // readXML()
 
-std::ostream& operator<<(std::ostream& os, const PRUoutcome& option) {
-  os << option.name << " (" << (option.probability*100) <<"%): "
-     << option.observable 
-     << "\n      Q=" << option.quality << "(" << option.qualityParameter << ")+"
-     << option.qualityConstant
-     << "\n      D=" << option.duration << "(" << option.durationParameter << ")+"
-     << option.durationConstant;
-  os << "\n      SVU{";
-  for (vector<string>::const_iterator it = option.stateVariableUpdate.begin();
-       it != option.stateVariableUpdate.end(); ++it) {
-    os << "\n       " << *it;
-  } // for *it in option.SVU
-  os << "\n      }";
-  os << "\n      NEXT{";
-  for (vector<string>::const_iterator it = option.nextModules.begin();
-       it != option.nextModules.end(); ++it) {
-    os << "\n       " << *it;
-  } // for *it in pru.firstEnabledModules
-  os << "\n      }";
-  if (option.isFinal)
-    os << "\n      FINAL Label=" << option.finalLabel;
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUmodule& module) {
-  os << "  MODULE " << module.actionName << " {\n";
-  os << "   PARAM{\n";
-  for (map<string, domain_type>::const_iterator it = module.parameters.begin();
-       it != module.parameters.end(); ++it) {
-    os << "    " << it->first << " in {" ;
-    for (vector<string>::const_iterator it2 = it->second.begin();
-	 it2 != it->second.end(); ++it2) {
-      os << " " << *it2 ;
-    } // for *it2 in parameter *it 's domain
-    os << "   }\n";
-  } // for *it in module.parameters
-  os << "   }\n";
-  for (vector<PRUoutcome*>::const_iterator it = module.outcomes.begin();
-       it != module.outcomes.end(); ++it) {
-    os << "   > " << **it << "\n";
-  } // for *it in module.outcomes
-  os << "  }\n";
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUlayer& layer) {
-  os << " LAYER " << layer.name << " {\n";
-  os << "  VARS{";
-  for (vector<string>::const_iterator it = layer.stateVariables.begin();
-       it != layer.stateVariables.end(); ++it) {
-    os << " " << *it ;
-  } // for *it in layer.stateVariables
-  os << " }\n";
-  for (vector<PRUmodule*>::const_iterator it = layer.modules.begin();
-       it != layer.modules.end(); ++it) {
-    os << **it;
-  } // for *it in layer.modules
-  os << " }\n";
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUplus& pru) {
-  os << "PRU{\n INIT{\n";
-  for (vector<string>::const_iterator it = pru.stateVariablesInitialAssignments.begin();
-       it != pru.stateVariablesInitialAssignments.end(); ++it) {
-    os << "  " << *it << "\n";
-  } // for *it in pru.stateVariablesInitialAssignments
-  os << " }\n NEXT{\n";
-  for (vector<string>::const_iterator it = pru.firstEnabledModules.begin();
-       it != pru.firstEnabledModules.end(); ++it) {
-    os << "  " << *it << "\n";
-  } // for *it in pru.firstEnabledModules
-  os << " }\n";
-  for (vector<PRUlayer*>::const_iterator it = pru.layers.begin();
-       it != pru.layers.end(); ++it) {
-    os << **it;
-  } // for *it in pru.layers
-  os << "}\n";
-  return os;
-}
-
-float distanceFunction(const PRUstate& fromState, 
-			  const PRUmodule& withModule, 
-			  const PRUstate& toState, 
+float distanceFunction(const PRUstate& fromState,
+			  const PRUmodule& withModule,
+			  const PRUstate& toState,
 			  const string& kind,
 		       float parameter) {
   if (kind == "null")
@@ -268,7 +448,18 @@ float distanceFunction(const PRUstate& fromState,
   return -1;
 }
 
+void test() {
+  PRUplus pru2 = PRUplus("pru.xml");
+  std::cout << pru2 << std::endl;
+}
+
 int main() {
+  std::locale::global(std::locale(""));
+  setlocale(LC_NUMERIC,"C");
+  /*
   PRUplus *pru = readXML("pru.xml");
   std::cout << *pru << std::endl;
+  */
+
+  test();
 }
