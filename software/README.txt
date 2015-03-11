@@ -56,7 +56,9 @@ If everything goes well, you will see at the end the message
 
   Hello COACHES developers!!!
 
-If you get errors, try to solve them and/or write to iocchi@dis.uniroma1.it
+If you get errors and do not see the Hello message, try to solve them and/or write to iocchi@dis.uniroma1.it.
+
+If you get errors in other packages, but you see the Hello message, do not worry and move to the next step.
 
 
 === Set up the COACHES software environment ===
@@ -89,7 +91,9 @@ After set up (as in the previous section), use:
 
   $ coaches_make.bash
 
-
+If you get errors here, first time try to run the command again (sometimes catkin
+has problems when compiling multiple packages).
+If the error is persistent, try to solve it and/or write to iocchi@dis.uniroma1.it.
 
 === Test the COACHES software environment ===
 
