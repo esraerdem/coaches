@@ -3,6 +3,7 @@
 CMakeLists.txt.user
 *.wav
 AUTOGEN*
+software/build
 software/ros/catkin_ws/.catkin_workspace
 software/ros/catkin_ws/*build/
 software/ros/catkin_ws/devel/

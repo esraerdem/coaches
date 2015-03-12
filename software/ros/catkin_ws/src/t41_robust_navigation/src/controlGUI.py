@@ -24,7 +24,7 @@ class DIP(tk.Frame):
 
     def initUI(self):
 
-        self.parent.title("Condition Simulator")
+        self.parent.title("Simulation Control GUI")
         self.style = Style()
         self.style.theme_use("alt")
         self.parent.resizable(width=FALSE, height=FALSE)
