@@ -1,6 +1,6 @@
 <launch>
 
-  <arg name="world_file" default="../maps/AUTOGEN_Rive1_diago.world" />
+  <arg name="world_file" default="AUTOGEN_Rive1_diago.world" />
   <arg name="base_frame" default="base_frame" />
   <arg name="laser_topic" default="LASER_TOPIC" />
   <arg name="laser_frame" default="LASER_FRAME" />
