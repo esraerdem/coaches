@@ -1,97 +1,5 @@
-\documentclass{article}
-\usepackage[margin=3cm]{geometry}
-\usepackage{amssymb}
-
-% Figures
-\usepackage{graphicx}
-\usepackage{color}
-
-% Page formatting
-\newsavebox{\notetitle}
-\newsavebox{\noteauthor}
-\newsavebox{\notenumber}
-\newsavebox{\notedate}
-\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
-\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
-\renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
-\newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
-\newcommand{\makemadtitle}{
-  \hrule
-  \vspace{.5em}
-  \noindent
-  \begin{center}
-  \textbf{
-  {\centering\includegraphics[height=3cm]{logoCHISTERA2014}}\\
-   {\centering\Large COACHES project, CHIST-ERA 2014 program}
-  }
-  \end{center}
-  \vspace{.5em}
- 
-  \hrule
-  \vspace{3em}
-  \begin{center}
-    \begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
-    \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
-    \begin{large}\usebox{\noteauthor} --- \usebox{\notedate}\end{large}
-  \end{center}
-  \vspace{3em}
-}
-
-% Various macros and environments
-\newtheorem{prop}{Proposition}
-\newtheorem{proposition}[prop]{Proposition}
-\newtheorem{defn}{Definition}
-\newtheorem{definition}[defn]{Definition}
-\newtheorem{cor}{Corollary}
-\newtheorem{corollary}[cor]{Corollary}
-\newtheorem{exmp}{Example}
-\newtheorem{example}[exmp]{Example}
-\newtheorem{lem}{Lemma}
-\newtheorem{lemma}[lem]{Lemma}
-\newtheorem{fact}{Fact}
-\newtheorem{thm}{Theorem}
-\newtheorem{theorem}[thm]{Theorem}
-\newtheorem{prob}{Problem}
-\newtheorem{problem}[prob]{Problem}
-\newtheorem{rem}{Remark}
-\newtheorem{remark}[rem]{Remark}
-\newtheorem{conj}{Conjecture}
-\newtheorem{conjecture}[conj]{Conjecture}
-\newenvironment{pf}{{\bf Proof }}{\hfill$\Box$\par}
-\newenvironment{proof}{{\bf Proof }}{\hfill$\Box$\par}
-\newcommand{\spaceafterproof}{\vspace{1em}}
-
-% NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\title{ Use case definitions}
-\author{COACHES Consortium}
-\nb{: DELIVRABLE D5.2}
-
-\date{\today}
-
-\begin{document}
-\includegraphics[height=3cm]{logoSapienza.png}
-\includegraphics[height=3cm]{logoUNICAEN}
-
-\makemadtitle
-
-\vspace*{1.0in}
-\begin{abstract}
- This document describes 4 use cases expected to develop for the final demonstration. 
-  \end{abstract}
-
-\vspace*{1.5in}
-
-\fbox{
-\begin{minipage}{1.0\textwidth}
-\begin{center}
- $\copyright$, THE COACHES CONSORTIUM \\
-The copyright in this document is the property of the COACHES Consortium. This document is supplied by the COACHES consortium on the express terms that it is to be treated as confidential. This document is not external distribution without the project manager's permission. 
-\end{center}
-\end{minipage}
-}
-\newpage
 \section{Introduction}
+
 This document consists of describing different use cases considered in the project to show the overall functionalities of the system (Figure \ref{Fig-1})and the data flow between different modules. 
 \begin{figure}[htbp]
 \begin{center}
@@ -203,7 +111,7 @@ The objective of this use case is to evaluate the performance of tasks T3.1, T3.
 We propose to use the robots in the Rives De l'Orne Mall of the Caen city, in the collaboration of the city's representative and the Rive de l'Orne manager
 \newpage
 \section{Test facilities: Collaboration with the Mall Rives de l'Orne}
-The test facilities concerns the Mall Rives de l'Orne. Ç Rive de lÕorne È is a new and modern mall at Caen city (France). It is composed of two face-to-face buildings separated by a large main square. At the first floor of the two buildings, there are many shops and restaurants. In the main square, there is a cinema. This space is surrounded by tramway stations and a train station. This mall is visited by more than 100,000 customers every year. In addition to that, several elderly people live in the new apartments at the other floors of the buildings. These people have their habit and there are frequent customers of the mall \ref{mall}. Two meetings have been organized ($23^{th}$ October and $12^{th}$ December 2014)to define the equipments to install in terms of cameras and sensors (RFID) to send some information to robots about shops, the planning of the robot deployment in the mall and some local dissemination actions. A visit of all partners have been organized during the kickoff meeting. 
+The test facilities concerns the Mall Rives de l'Orne. ï¿½ Rive de lï¿½orne ï¿½ is a new and modern mall at Caen city (France). It is composed of two face-to-face buildings separated by a large main square. At the first floor of the two buildings, there are many shops and restaurants. In the main square, there is a cinema. This space is surrounded by tramway stations and a train station. This mall is visited by more than 100,000 customers every year. In addition to that, several elderly people live in the new apartments at the other floors of the buildings. These people have their habit and there are frequent customers of the mall \ref{mall}. Two meetings have been organized ($23^{th}$ October and $12^{th}$ December 2014)to define the equipments to install in terms of cameras and sensors (RFID) to send some information to robots about shops, the planning of the robot deployment in the mall and some local dissemination actions. A visit of all partners have been organized during the kickoff meeting. 
 
 \begin{figure}[htbp]
 \begin{center}
@@ -220,4 +128,4 @@ The test facilities concerns the Mall Rives de l'Orne. Ç Rive de lÕorne È is a n
 \label{default}
 \end{center}
 \end{figure}
-\end{document}
+
