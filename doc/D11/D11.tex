@@ -11,8 +11,10 @@
 \newsavebox{\noteauthor}
 \newsavebox{\notenumber}
 \newsavebox{\notedate}
-\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
-\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+
+\renewcommand{\title}[1]{\sbox{\notetitle}{\begin{minipage}{1.0\textwidth} \begin{center} \Large{\textbf{#1}} \end{center}\end{minipage} }}
+\renewcommand{\author}[1]{\sbox{\noteauthor}{\begin{minipage}{1.0\textwidth} \begin{center} \large{#1} \end{center}\end{minipage}}}
+
 \renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
 \newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
 \newcommand{\makemadtitle}{
@@ -21,7 +23,7 @@
   \noindent
   \begin{center}
   \textbf{
-  {\centering\includegraphics[height=3cm]{../logoCHISTERA2014}}\\
+  {\centering\includegraphics[height=3cm]{../fig/logoCHISTERA2014.png}}\\
    {\centering\Large COACHES project, CHIST-ERA 2014 program}
   }
   \end{center}
@@ -30,9 +32,10 @@
   \hrule
   \vspace{3em}
   \begin{center}
-    \begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
+    %\begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
     \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
-    \begin{large}\usebox{\noteauthor} --- \usebox{\notedate}\end{large}
+    \begin{large}\usebox{\noteauthor}\\ [2em] 
+    \usebox{\notedate}\end{large}
   \end{center}
   \vspace{3em}
 }
@@ -63,11 +66,21 @@
 
 % NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{D1.1 Knowledge-based environment modelling}
-\author{COACHES Consortium: Abdel-Illah, Luca, Esra}
-\nb{: Draft D1.1 }
+\title{D1.1\\ 
+Knowledge-based environment modelling}
 
-\date{\today}
+\author{Esra Erdem$^1$, Luca Iocchi$^2$, Abdel-Illah Mouaddib$^3$,  Laurent Jeanpierre$^3$ \\
+\textit{
+$^1$ Sabanci University\\
+$^2$ Dept. of Computer, Control and Management Engineering\\
+Sapienza University of Rome\\
+$^3$ GREYC Lab\\
+Univeristé de Caen Basse-Normandie}}
+
+
+
+
+\date{Draft}
 
 \begin{document}
 \includegraphics[height=2cm]{../fig/logoUNICAEN.jpg}
