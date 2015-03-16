@@ -88,7 +88,10 @@ void MockHRI::hriGoalCallback(const shared::Goal::ConstPtr& msg)
 }
 
 void MockHRI::doSay(std_msgs::String msg) {
+  if (msg.data!="") {
     std::cout << "Say \033[22;35;1m" << msg.data << "\033[0m" << std::endl;
+    msg.data += "      ."; // if not clearing balloon, adding a few spaces to enlarge the balloon
+  }
   say_stage_pub.publish(msg);  // received by stage to print out say message
   if (false && msg.data!="") {
       std::stringstream ss; ss << "pico2wave -w /tmp/say_out.wav \"" << msg.data << "\"";
