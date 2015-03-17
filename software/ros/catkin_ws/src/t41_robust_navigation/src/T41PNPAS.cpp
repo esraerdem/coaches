@@ -138,7 +138,7 @@ void T41PNPActionServer::interact(string params, bool *run)
 
     shared::Goal hri_goal;
     hri_goal.kind = GOAL_INTERACT;
-    hri_goal.param = "Person";
+    hri_goal.param = params;
     hri_pub.publish(hri_goal);
     
     int sleeptime=10; // *0.5 sec.

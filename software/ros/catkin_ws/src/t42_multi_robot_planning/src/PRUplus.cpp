@@ -5,96 +5,24 @@
 #include <locale.h>
 #include <boost/algorithm/string.hpp>
 
-
-std::ostream& operator<<(std::ostream& os, const PRUoutcome& option) {
-  os << option.name << " (" << (option.probability*100) <<"%): "
-     << option.observable
-     << "\n      Q=" << option.quality << "(" << option.qualityParameter << ")+"
-     << option.qualityConstant
-     << "\n      D=" << option.duration << "(" << option.durationParameter << ")+"
-     << option.durationConstant;
-  os << "\n      SVU{";
-  for (vector<string>::const_iterator it = option.stateVariableUpdate.begin();
-       it != option.stateVariableUpdate.end(); ++it) {
-    os << "\n       " << *it;
-  } // for *it in option.SVU
-  os << "\n      }";
-  os << "\n      NEXT{";
-  for (vector<string>::const_iterator it = option.nextModules.begin();
-       it != option.nextModules.end(); ++it) {
-    os << "\n       " << *it;
-  } // for *it in pru.firstEnabledModules
-  os << "\n      }";
-  if (option.isFinal)
-    os << "\n      FINAL Label=" << option.finalLabel;
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUmodule& module) {
-  os << "  MODULE " << module.actionName << " {\n";
-  os << "   PARAM{\n";
-  for (map<string, domain_type>::const_iterator it = module.parameters.begin();
-       it != module.parameters.end(); ++it) {
-    os << "    " << it->first << " in {" ;
-    for (vector<string>::const_iterator it2 = it->second.begin();
-	 it2 != it->second.end(); ++it2) {
-      os << " " << *it2 ;
-    } // for *it2 in parameter *it 's domain
-    os << "   }\n";
-  } // for *it in module.parameters
-  os << "   }\n";
-  for (vector<PRUoutcome*>::const_iterator it = module.outcomes.begin();
-       it != module.outcomes.end(); ++it) {
-    os << "   > " << **it << "\n";
-  } // for *it in module.outcomes
-  os << "  }\n";
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUlayer& layer) {
-  os << " LAYER " << layer.name << " {\n";
-  os << "  VARS{";
-  for (vector<string>::const_iterator it = layer.stateVariables.begin();
-       it != layer.stateVariables.end(); ++it) {
-    os << " " << *it ;
-  } // for *it in layer.stateVariables
-  os << " }\n";
-  for (vector<PRUmodule*>::const_iterator it = layer.modules.begin();
-       it != layer.modules.end(); ++it) {
-    os << **it;
-  } // for *it in layer.modules
-  os << " }\n";
-  return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const PRUplus& pru) {
-  os << "PRU{\n INIT{\n";
-  for (vector<string>::const_iterator it = pru.stateVariablesInitialAssignments.begin();
-       it != pru.stateVariablesInitialAssignments.end(); ++it) {
-    os << "  " << *it << "\n";
-  } // for *it in pru.stateVariablesInitialAssignments
-  os << " }\n NEXT{\n";
-  for (vector<string>::const_iterator it = pru.firstEnabledModules.begin();
-       it != pru.firstEnabledModules.end(); ++it) {
-    os << "  " << *it << "\n";
-  } // for *it in pru.firstEnabledModules
-  os << " }\n";
-  for (vector<PRUlayer*>::const_iterator it = pru.layers.begin();
-       it != pru.layers.end(); ++it) {
-    os << **it;
-  } // for *it in pru.layers
-  os << "}\n";
-  return os;
-}
-
-
-
 map<string, domain_type> allDomains;
 
 static inline string trimString(xmlpp::TextReader &r) {
   string tmp = r.read_string();
   boost::algorithm::trim(tmp);
   return tmp;
+}
+
+static inline void readVector(vector<string> &v, xmlpp::TextReader &r) {
+  string tmp = r.read_string();
+  vector<string> sv;
+  boost::algorithm::split( sv, tmp, boost::algorithm::is_any_of("\n"), boost::algorithm::token_compress_on );
+  for (vector<string>::iterator it=sv.begin(); it != sv.end(); ++it) {
+    tmp = *it;
+    boost::algorithm::trim(tmp);
+    if (! tmp.empty())
+      v.push_back(tmp);
+  }
 }
 
 PRUplus::PRUplus(string xmlFileName) {
@@ -118,9 +46,9 @@ void PRUplus::readXML(xmlpp::TextReader &reader) {
     if (name == "pru") {
     } else if (name == "Start") {
     } else if (name == "SVU")
-      stateVariablesInitialAssignments.push_back(trimString(reader));
+      readVector(stateVariablesInitialAssignments, reader);
     else if (name == "Next")
-      firstEnabledModules.push_back(trimString(reader));
+      readVector(firstEnabledModules, reader);
     else if (name == "Layer")
       layers.push_back(new PRUlayer(reader));
     else
@@ -198,7 +126,7 @@ PRUmodule::PRUmodule(xmlpp::TextReader &reader) {
       if (reader.has_value())
 	dom.push_back(reader.get_value());
       else
-	dom.push_back(trimString(reader));
+	readVector(dom,reader);
       parameters[pName] = dom;
     } else if (name == "Outcome") {
       outcomes.push_back(new PRUoutcome(reader));
@@ -258,7 +186,7 @@ PRUoutcome::PRUoutcome(xmlpp::TextReader &reader) {
       else
 	observable = reader.read_string();
     } else if (name == "SVU") {
-      stateVariableUpdate.push_back(trimString(reader));
+      readVector(stateVariableUpdate,reader);
     } else if (name == "Final") {
       isFinal = true;
       if (reader.has_attributes()) {
@@ -270,7 +198,7 @@ PRUoutcome::PRUoutcome(xmlpp::TextReader &reader) {
 	reader.move_to_element();
       }
     } else if (name == "Next")
-      nextModules.push_back(trimString(reader));
+      readVector(nextModules,reader);
     else
       std::cerr << "Unexpected tag " << name << "!" << std::endl;
   } // while reader.read()
@@ -298,9 +226,9 @@ PRUplus* readXML(string fileName) {
       else if (name == "Start")
 	{}
       else if (name == "SVU")
-	res->stateVariablesInitialAssignments.push_back(trimString(reader));
+	readVector(res->stateVariablesInitialAssignments,reader);
       else if (name == "Next")
-	res->firstEnabledModules.push_back(trimString(reader));
+	readVector(res->firstEnabledModules,reader);
     } // while reader.read()
 
     // reading the main part
@@ -368,7 +296,7 @@ PRUplus* readXML(string fileName) {
 	if (reader.has_value())
 	  dom.push_back(reader.get_value());
 	else
-	  dom.push_back(trimString(reader));
+	  readVector(dom,reader);
 	a->parameters[pName] = dom;
       } else if (name == "Outcome") {
 	o = new PRUoutcome();
@@ -415,7 +343,7 @@ PRUplus* readXML(string fileName) {
 	else
 	  o->observable = reader.read_string();
       } else if (name == "SVU") {
-	o->stateVariableUpdate.push_back(trimString(reader));
+	readVector(o->stateVariableUpdate,reader);
       } else if (name == "Final") {
 	o->isFinal = true;
 	if (reader.has_attributes()) {
@@ -427,7 +355,7 @@ PRUplus* readXML(string fileName) {
 	  reader.move_to_element();
 	}
       } else if (name == "Next")
-	o->nextModules.push_back(trimString(reader));
+	readVector(o->nextModules,reader);
     } // while reader.read()
   } catch(const std::exception& e) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
