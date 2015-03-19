@@ -1,4 +1,4 @@
-all: PRUplus.o PRUprint.o
+all: PRUplus.o PRUprint.o PRUtoMDP.o
 	g++ -g $^ `pkg-config --libs libxml++-2.6`
 
 %.o : %.cpp
