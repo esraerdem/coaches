@@ -81,3 +81,20 @@ std::ostream& operator<<(std::ostream& os, const PRUplus& pru) {
   return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const domain_type vec) {
+  os << "{ ";
+  for (domain_type::const_iterator it = vec.begin(); it != vec.end(); ++it) {
+    os << *it << ' ';
+  }
+  os << "}";
+  return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const map<string, domain_type> vars) {
+  os << "Variables:\n";
+  for (map<string, domain_type>::const_iterator it = vars.begin(); 
+       it != vars.end(); ++it) {
+    os << " - " << it->first << " in " << it->second << "\n";
+  }
+  return os;
+}

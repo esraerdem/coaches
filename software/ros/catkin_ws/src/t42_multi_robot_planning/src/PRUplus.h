@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <libxml++/libxml++.h>
 #include <libxml++/parsers/textreader.h>
 
@@ -10,8 +11,12 @@
 using std::string;
 using std::map;
 using std::vector;
+using std::set;
 
 typedef vector<string> domain_type;
+
+std::ostream& operator<<(std::ostream& os, const domain_type vec);
+std::ostream& operator<<(std::ostream& os, const map<string, domain_type> vars);
 
 class PRUstate;
 class PRUmodule;
@@ -58,6 +63,8 @@ class PRUoutcome {
   PRUoutcome() { initDefaultValues(); };
   PRUoutcome(xmlpp::TextReader &reader);
   ~PRUoutcome() { std::cout << "Destroying outcome " << name <<std::endl;};
+  void fillSVdomain (map<string, domain_type> &stateVariableDomain,
+		     const map<string, domain_type> &parameters) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const PRUoutcome& option);
@@ -65,7 +72,7 @@ std::ostream& operator<<(std::ostream& os, const PRUoutcome& option);
 class PRUmodule {
  public:
   string actionName;
-  map<string, domain_type > parameters;
+  map<string, domain_type> parameters;
   vector<PRUoutcome*> outcomes;
   PRUmodule() { };
   PRUmodule(xmlpp::TextReader &reader);
@@ -74,6 +81,7 @@ class PRUmodule {
     for (vector<PRUoutcome*>::iterator it = outcomes.begin(); it != outcomes.end(); ++it)
       delete *it;
   };
+  void fillSVdomain (map<string, domain_type> &stateVariableDomain) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const PRUmodule& module);
@@ -90,6 +98,7 @@ class PRUlayer {
     for (vector<PRUmodule*>::iterator it = modules.begin(); it != modules.end(); ++it)
       delete *it;
   };
+  void fillSVdomain (map<string, domain_type> &stateVariableDomain) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const PRUlayer& layer);
@@ -108,6 +117,8 @@ class PRUplus {
     for (vector<PRUlayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
       delete *it;
   };
+  
+  void fillSVdomain (map<string, domain_type> &stateVariableDomain) const;
 };
 
 
