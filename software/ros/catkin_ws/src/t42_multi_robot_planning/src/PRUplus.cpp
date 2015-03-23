@@ -25,6 +25,18 @@ static inline void readVector(vector<string> &v, xmlpp::TextReader &r, string se
   }
 }
 
+static inline void readVector(set<string> &v, xmlpp::TextReader &r, string sep="\n") {
+  string tmp = r.read_string();
+  vector<string> sv;
+  boost::algorithm::split( sv, tmp, boost::algorithm::is_any_of(sep), boost::algorithm::token_compress_on );
+  for (vector<string>::iterator it=sv.begin(); it != sv.end(); ++it) {
+    tmp = *it;
+    boost::algorithm::trim(tmp);
+    if (! tmp.empty())
+      v.insert(tmp);
+  }
+}
+
 PRUplus::PRUplus(string xmlFileName) {
   try {
     xmlpp::TextReader reader(xmlFileName.c_str());
@@ -125,11 +137,11 @@ PRUmodule::PRUmodule(xmlpp::TextReader &reader) {
 	  std::cerr << "Empty action domain: " << pDom << std::endl;
 	else for (domain_type::const_iterator it=actionsDomain[pDom].begin(); 
 	     it!=actionsDomain[pDom].end(); ++it){
-	  dom.push_back(*it);
+	  dom.insert(*it);
 	}
       }
       if (reader.has_value())
-	dom.push_back(reader.get_value());
+	dom.insert(reader.get_value());
       else
 	readVector(dom,reader);
       parameters[pName] = dom;
@@ -219,7 +231,7 @@ void PRUplus::fillSVdomain (map<string, domain_type> &stateVariableDomain) const
     if (vec.size()!=2)
       std::cerr << "Unreadable SVU : " << *it << std::endl;
     else
-      stateVariableDomain[vec[0]].push_back(vec[1]);
+      stateVariableDomain[vec[0]].insert(vec[1]);
   }
   for (vector<PRUlayer*>::const_iterator it = layers.begin(); it != layers.end(); ++it) {
     (*it)->fillSVdomain(stateVariableDomain);
@@ -256,14 +268,14 @@ void PRUoutcome::fillSVdomain (map<string, domain_type> &stateVariableDomain,
 	  std::cerr << "Unknown module parameter: " << vec[1] << std::endl;
 	else {
 	  domain_type dom = itP->second;
-	  for (vector<string>::const_iterator itD = dom.begin(); 
+	  for (domain_type::const_iterator itD = dom.begin(); 
 	       itD != dom.end(); ++itD) {
-	    stateVariableDomain[vec[0]].push_back(*itD);
+	    stateVariableDomain[vec[0]].insert(*itD);
 	  } // for itD in dom
 	} // if known action parameter
       } // if assignment from action parameter
       else 
-	stateVariableDomain[vec[0]].push_back(vec[1]);
+	stateVariableDomain[vec[0]].insert(vec[1]);
     } // if correct assignment var := value
   } // for it in stateVariableUpdate
 } // PRUoutcome::fillSVdomain(stateVariableDomain,parameters)
@@ -281,9 +293,9 @@ float distanceFunction(const PRUstate& fromState,
 }
 
 void testPRUplus() {
-  actionsDomain["AvailableAds"].push_back("Monoprix");
-  actionsDomain["AvailableAds"].push_back("Restaurant");
-  actionsDomain["AvailableAds"].push_back("DoorE");
+  actionsDomain["AvailableAds"].insert("Monoprix");
+  actionsDomain["AvailableAds"].insert("Restaurant");
+  actionsDomain["AvailableAds"].insert("DoorE");
   PRUplus pru2 = PRUplus("pru.xml");
   std::cout << pru2 << std::endl;
   map<string, domain_type> stateVariableDomain;

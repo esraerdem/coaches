@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& os, const PRUmodule& module) {
   for (map<string, domain_type>::const_iterator it = module.parameters.begin();
        it != module.parameters.end(); ++it) {
     os << "    " << it->first << " in {" ;
-    for (vector<string>::const_iterator it2 = it->second.begin();
+    for (domain_type::const_iterator it2 = it->second.begin();
 	 it2 != it->second.end(); ++it2) {
       os << " " << *it2 ;
     } // for *it2 in parameter *it 's domain

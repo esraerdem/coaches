@@ -13,7 +13,7 @@ using std::map;
 using std::vector;
 using std::set;
 
-typedef vector<string> domain_type;
+typedef set<string> domain_type;
 
 std::ostream& operator<<(std::ostream& os, const domain_type vec);
 std::ostream& operator<<(std::ostream& os, const map<string, domain_type> vars);
