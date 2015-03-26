@@ -60,6 +60,8 @@ class PRUoutcome {
   ~PRUoutcome() { std::cout << "Destroying outcome " << name <<std::endl;};
 };
 
+std::ostream& operator<<(std::ostream& os, const PRUoutcome& option);
+
 class PRUmodule {
  public:
   string actionName;
@@ -74,6 +76,8 @@ class PRUmodule {
   };
 };
 
+std::ostream& operator<<(std::ostream& os, const PRUmodule& module);
+
 class PRUlayer {
  public:
   string name;
@@ -87,6 +91,8 @@ class PRUlayer {
       delete *it;
   };
 };
+
+std::ostream& operator<<(std::ostream& os, const PRUlayer& layer);
 
 class PRUplus {
  private:
@@ -103,3 +109,7 @@ class PRUplus {
       delete *it;
   };
 };
+
+
+std::ostream& operator<<(std::ostream& os, const PRUplus& pru);
+

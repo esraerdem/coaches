@@ -74,7 +74,7 @@
       </Parameter>
       <Outcome id='done' p='1.0'>
 	<Quality kind='null' const='1000' />
-	<Duration kind='null' const='60' />
+	<Duration kind='distance' const='60' />
 	<SVU> location := $X </SVU>
 	<Next> 2.wait </Next>
 	<Final label='success'/>

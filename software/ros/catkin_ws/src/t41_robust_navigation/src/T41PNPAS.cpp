@@ -20,7 +20,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     //position_sub = handle.subscribe("odom", 10, &MyPNPActionServer::odom_callback, this);
 
     register_action("advertise",&T41PNPActionServer::advertise,this);
-    register_action("advertiseComplex",&T41PNPActionServer::advertise,this);
+    register_action("advertiseComplex",&T41PNPActionServer::advertiseComplex,this);
     register_action("swipe",&T41PNPActionServer::swipe,this);
     register_action("interact",&T41PNPActionServer::interact,this);
     register_action("wait",&T41PNPActionServer::wait,this);
@@ -56,22 +56,69 @@ void T41PNPActionServer::advertise(string params, bool *run) {
       do_movebase(robotname,GX,GY,0,run);
   }
   else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
+  
+  if (! *run)
+    cout << "ABORT"<<endl;
 
-  cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
+  if (*run) {
+    cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
 
-  shared::Goal hri_goal;
-  hri_goal.kind = GOAL_SPEECH;
-  hri_goal.param = "Advertise!!!";
-  hri_pub.publish(hri_goal);
-
-  int sleeptime=6; // *0.5 sec.
-  while (*run && sleeptime-->0)
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Advertise!!!";
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=6; // *0.5 sec.
+    while (*run && sleeptime-->0 && ros::ok())
       ros::Duration(0.5).sleep();
+  }
 
   if (*run)
       cout << "### Finished Advertise " << params << endl;
   else
       cout << "### Aborted Advertise " << params << endl;
+}
+
+void T41PNPActionServer::advertiseComplex(string params, bool *run) {
+  cout << "### Executing AdvertiseComplex " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_movebase(robotname,GX,GY,0,run);
+  }
+  else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
+
+  if (! *run)
+    cout << "ABORT"<<endl;
+
+  if (*run) {
+    cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
+    
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_ADVERTISE;
+    hri_goal.param = "Ad";
+    hri_pub.publish(hri_goal);
+  }
+
+  int sleeptime=6; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+
+  if (*run && ros::ok()){
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Do you want to swipe your card?";
+    hri_pub.publish(hri_goal);    
+  }
+
+  sleeptime=4; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+
+  if (*run)
+      cout << "### Finished AdvertiseComplex " << params << endl;
+  else
+      cout << "### Aborted AdvertiseComplex " << params << endl;
 }
 
 void T41PNPActionServer::interact(string params, bool *run)
@@ -87,9 +134,20 @@ void T41PNPActionServer::interact(string params, bool *run)
     }
     else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
 
-    if (*run)
+    cout << "\033[22;34;1mINTERACTING: " << params << "\033[0m" << endl;
+
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_INTERACT;
+    hri_goal.param = params;
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=10; // *0.5 sec.
+    while (*run && sleeptime-->0)
+      ros::Duration(0.5).sleep();
+    
+    if (*run) {
         cout << "### Finished Interact" << endl;
-    else
+    } else
         cout << "### Aborted Interact" << endl;
 }
 
@@ -99,7 +157,14 @@ void T41PNPActionServer::swipe(string params, bool *run)
 {
     cout << "### Executing Swipe action " << params << " ... " << endl;
 
-    ros::Duration(1).sleep();
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Please swipe your card!";
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=2; // *0.5 sec.
+    while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
 
     if (*run)
         cout << "### Finished Swipe" << endl;
