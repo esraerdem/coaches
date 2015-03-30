@@ -53,17 +53,12 @@ The overall procedure of the working system is the following:
 
 \subsection{Progressive Processing Units (PRU)}
 
-Progressive Processing Units (PRU) are ... \cite{}
-
-{\bf TODO: brief summary of standard PRU}
-
-The original formulation of PRU does not allow for ...
-
-{\bf TODO: what is missing in standard PRU and why we have done all this work}
+{\bf TODO: brief summary of PRUs and discussion about what is missing in them and why we had to extend the definition.}
 
 
+\subsection{Extended PRUs}
 
-Therefore, in this work we have extended the definition of PRUs in order to add the desired features. The new formalization (that we call PRU+) is this described in this section.
+In this work we have extended the definition of PRUs in order to add the desired features. The new formalization (that we call PRU+) is this described in this section.
 
 A PRU+ is composed by a sequence of \emph{processing levels} $L = ( l_1, l_2, \ldots, l_{|L|})$, a set of \emph{state variables} $X = \{ X_1, \ldots, X_{|X|} \}$, and a set of \emph{observable boolean properties} of the environment $O = \{ o_1, \ldots, o_{|O|} \}$.
 Each state variable $X_i$ can be assigned to a value within a set of finite values, i.e., $X_i \in A_i = \{ \bot , a_i^1, \ldots, a_i^{|A_i|} \}$, with $|A_i|$ finite, and $\bot$ denoting a special null value. Each observable property can be evaluated at execution time by an external function that is always able to return a truth value for it.
@@ -115,9 +110,9 @@ This process can be repeated at any level to fully define the transition functio
 Estimated quality and estimated time duration of an option of a module can be represented either as a constant value or as a function pointer. In the latter case, we define the following standard function prototype: $f : S \times M \times S \times P \times \Re \rightarrow \Re$ for both the quality and the duration function. More precisely, the 5 arguments of the function prototype have the following meaning: 1) current state, 2) current action, 3) successor state, 4) function type, 5) additional. Notice that these functions are called at planning time to estimate the quality and the duration of an action executed from a virtual current state to a virtual successor state. These functions (being obviously domain dependent) are implemented by the developer of the action that should return an estimate of quality and duration in the  conditions set as arguments. The function type and the additional values are parameters used to define general functions that can be used in a parametric way by different modules.
 The returned values must be expressed in the same measuring units by all the modules. In particular, the duration is the estimated time to complete the action in seconds.
 
-From these definition the algorithm .... is able to determine an optimal policy ...
+\subsection{Computing the optimal policy}
 
-{\bf TODO: describe the algorithm for generating the policy}
+{\bf TODO: describe the algorithm for computing the optimal policy.}
 
 
 
@@ -140,10 +135,10 @@ While the queue is not empty, the PNP sequence operator is used to add the actio
 If a state in $SS_i$ has not been visited, then a new place is generated in the PNP, this place is associated with this state that is now marked as visited, and this state is added to the queue. If a state in $SS_i$ has been already visited, then the transition is connected with the place that was stored when the state was created. The process thus continues until the queue is empty.
 When encountering goal states in $G$ the corresponding places are labeled as ``goals'' that will be used by the PNP executor to terminate the execution of the plan and return a ``success'' feedback.
 
+\vspace{0.5cm}
+{\bf TODO: describe the algorithm for generating the PNP in details.}
+\vspace{0.5cm}
 
-This procedure is also illustrated in more details in Algorithm ... 
-
-{\bf TODO: describe the algorithm for generating the PNP}
 
 It is important to observe that the descriptions of the successor states in the output returned by the MDP planner are generated according to the specification of the PRU, as described in the previous section. Thus, they contain the conditions $\phi_i^k$ over observable properties of the environment that can be actually checked at run time to determine the current outcome of actions and thus the correct successor state from which the execution should continue.
 
@@ -200,10 +195,14 @@ if the action fails, the MDP will be modified according to one or more of these 
 
 
 
-\subsection{Algorithm for Model Update}
+\subsection{Model Update}
 
 
-\section{Examples: Assistance and Escorting Tasks}
+\vspace{0.5cm}
+{\bf TODO: describe the method for updating the MDP model based on the execution results.}
+\vspace{0.5cm}
+
+%\section{Examples: Assistance and Escorting Tasks}
 
 
 

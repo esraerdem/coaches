@@ -11,17 +11,23 @@
 \newsavebox{\noteauthor}
 \newsavebox{\notenumber}
 \newsavebox{\notedate}
-\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
-\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+
+\usepackage{url}
+
+%\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
+%\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+\renewcommand{\title}[1]{\sbox{\notetitle}{\begin{minipage}{1.0\textwidth} \begin{center} \Large{\textbf{#1}} \end{center}\end{minipage} }}
+\renewcommand{\author}[1]{\sbox{\noteauthor}{\begin{minipage}{1.0\textwidth} \begin{center} \large{#1} \end{center}\end{minipage}}}
 \renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
 \newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
+
 \newcommand{\makemadtitle}{
   \hrule
   \vspace{.5em}
   \noindent
   \begin{center}
   \textbf{
-  {\centering\includegraphics[height=3cm]{../fig/logoCHISTERA2014}}\\
+  {\centering\includegraphics[height=3cm,bb=0 0 371 145]{../fig/logoCHISTERA2014.png}}\\
    {\centering\Large COACHES project, CHIST-ERA 2014 program}
   }
   \end{center}
@@ -30,9 +36,10 @@
   \hrule
   \vspace{3em}
   \begin{center}
-    \begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
+    %\begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
     \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
-    \begin{large}\usebox{\noteauthor} --- \usebox{\notedate}\end{large}
+    \begin{large}\usebox{\noteauthor}\\ [2em]
+    \usebox{\notedate}\end{large}
   \end{center}
   \vspace{3em}
 }
@@ -61,19 +68,20 @@
 \newenvironment{proof}{{\bf Proof }}{\hfill$\Box$\par}
 \newcommand{\spaceafterproof}{\vspace{1em}}
 
+
 % NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title{ Defintions of tasks and dialogues}
+\title{D5.2b\\ Defintion of tasks and dialogues}
 \author{COACHES Consortium: Abdel-Illah Mouaddib, Luca Iocchi, Laurent Jeanpierre}
-\nb{: Technical report WP4 and WP3}
 
-\date{\today}
+
+\date{Draft 0.1 - ...}
 
 \begin{document}
 \includegraphics[height=2cm]{../fig/logoUNICAEN.jpg}
 \includegraphics[height=2cm]{../fig/logoSapienza.png}
 %\includegraphics[height=2cm]{logo-vub}
-\includegraphics[height=2cm]{../fig/logoSebanci}
+%\includegraphics[height=2cm]{../fig/logoSebanci}
 
 
 \makemadtitle
@@ -112,7 +120,7 @@ The global structure of tasks will be based on a hierarchy of modules to execute
 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{GeneralTask}
+\includegraphics[height=10cm]{fig/GeneralTask}
 \caption{General task structure }
 \label{FigTaskstructure}
 \end{center}
@@ -125,7 +133,7 @@ This structure will serve to express different tasks that we consider in the pro
 \item {\it Assistance Task (AT)}: this task consists in joining the location of the person and then use a dialogue subtask to exchange with him to make clear his needs. The structure of the task. Dialogue can concern: showing a direction, searching a shop, advertise and transporting goods. The schema of this dialogue is given in the next section.
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{AssistanceTask}
+\includegraphics[height=10cm]{fig/AssistanceTask}
 \caption{Assistance task }
 \label{FigAssistanceTask}
 \end{center}
@@ -133,7 +141,7 @@ This structure will serve to express different tasks that we consider in the pro
 \item {\it Escorting task (ET)}: this task consists of joining the person and escorting him to his target destination by maintaining the joint intention. When the behavior of the human is not appropriate, a dialogue between the robot and him js performed. This dialogue is described in the next section. 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{EscortingTask}
+\includegraphics[height=10cm]{fig/EscortingTask}
 \caption{Escort task }
 \label{FigEscortTask}
 \end{center}
@@ -142,7 +150,7 @@ This structure will serve to express different tasks that we consider in the pro
 \item {\it Collaborative Task (CT)}: this task consists in joining the location execute the part of the task, send message to the other robots during the travel and then inform the person.
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{JointTask}
+\includegraphics[height=10cm]{fig/JointTask}
 \caption{Joint task }
 \label{FigjointTask}
 \end{center}
@@ -150,7 +158,7 @@ This structure will serve to express different tasks that we consider in the pro
 \item {\it Welcoming visitor task  (PT)}: this task consists in going to the entrance and initiating a dialogue with a visitor. The dialogue is described bellow  and is the same as for assistance task. 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{patrolTask}
+\includegraphics[height=10cm]{fig/PatrolTask}
 \caption{Patrol task }
 \label{FigPatrolTask}
 \end{center}
@@ -158,7 +166,7 @@ This structure will serve to express different tasks that we consider in the pro
 \item {\it Surveillance task (ST)}: this task consists in heading a destination where an abnormal object has been detected, taking a picture, send it and then call the security unit when informing people to be away from this object. 
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=10cm]{SecurityTask}
+\includegraphics[height=10cm]{fig/SecurityTask}
 \caption{Security  task }
 \label{FigsecurityTask}
 \end{center}
@@ -169,7 +177,7 @@ This structure will serve to express different tasks that we consider in the pro
 \subsection{Dialogue with visitor}
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=20cm]{VisitorDialogueII}
+\includegraphics[height=20cm]{fig/VisitorDialogueII}
 \caption{Dialogue with visitor}
 \label{FigVisitorDialogue}
 \end{center}
@@ -177,7 +185,7 @@ This structure will serve to express different tasks that we consider in the pro
 \subsection{Dialogue during escort}
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=12cm]{EscortDialogue}
+\includegraphics[height=12cm]{fig/EscortDialogue}
 \caption{Dialogue with visitor during the escort}
 \label{FigVisitorDialogueII}
 \end{center}
@@ -185,7 +193,7 @@ This structure will serve to express different tasks that we consider in the pro
 \subsection{Dialogue with shopkeepers}
 \begin{figure}[htbp]
 \begin{center}
-\includegraphics[height=15cm]{VisitorDialogue}
+\includegraphics[height=15cm]{fig/VisitorDialogue}
 \caption{Dialogue with Shopkeepers}
 \label{FigVisitorDialogue}
 \end{center}
