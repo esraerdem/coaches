@@ -1,4 +1,7 @@
 // Stores a PRU+ file in memory for later use
+#ifndef __PRUplus__
+#define __PRUplus__
+
 #include <string>
 #include <vector>
 #include <map>
@@ -124,3 +127,4 @@ class PRUplus {
 
 std::ostream& operator<<(std::ostream& os, const PRUplus& pru);
 
+#endif

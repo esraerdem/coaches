@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <locale.h>
 #include <boost/algorithm/string.hpp>
+#include "MDP.h"
 
 map<string, domain_type> actionsDomain;
 
@@ -281,9 +282,9 @@ void PRUoutcome::fillSVdomain (map<string, domain_type> &stateVariableDomain,
 } // PRUoutcome::fillSVdomain(stateVariableDomain,parameters)
 
 float distanceFunction(const PRUstate& fromState,
-			  const PRUmodule& withModule,
-			  const PRUstate& toState,
-			  const string& kind,
+		       const PRUmodule& withModule,
+		       const PRUstate& toState,
+		       const string& kind,
 		       float parameter) {
   if (kind == "null")
     return 0;
@@ -296,12 +297,15 @@ void testPRUplus() {
   actionsDomain["AvailableAds"].insert("Monoprix");
   actionsDomain["AvailableAds"].insert("Restaurant");
   actionsDomain["AvailableAds"].insert("DoorE");
-  PRUplus pru2 = PRUplus("pru.xml");
-  std::cout << pru2 << std::endl;
+  PRUplus pru("pru.xml");
+  std::cout << pru << std::endl;
+
   map<string, domain_type> stateVariableDomain;
-  pru2.fillSVdomain(stateVariableDomain);
-  
+  pru.fillSVdomain(stateVariableDomain);  
   std::cout << stateVariableDomain << std::endl;
+
+  MDP m(pru, &stateVariableDomain);
+  
 }
 
 int main() {

@@ -12,7 +12,7 @@
   </Start>
   <Layer id='1'>
     <StateVariable id='location' />
-    <StateVariable id='desire' />
+    <!--StateVariable id='desire' /-->
     <Action id='advertise'>
       <Parameter id='X' domain='AvailableAds' />
       <Outcome id='done' p='1.0'>
