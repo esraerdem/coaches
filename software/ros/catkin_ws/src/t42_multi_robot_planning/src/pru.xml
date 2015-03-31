@@ -5,9 +5,11 @@
       desire := nil
     </SVU>
     <Next> 
-      1.advertise 
+	<!--1.[^s].*-->
+      <!--1.advertise 
       1.advertiseComplex 
-      1.interact
+      1.interact-->
+	1.* -1.swipe
     </Next>
   </Start>
   <Layer id='1'>
