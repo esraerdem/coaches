@@ -182,7 +182,7 @@ void MDP::associate(const string &module, MDPstate &state) {
   boost::regex expression("(^|\b)"+module+"(,|$)"); // adds the word-boundary conditions
   if (module[0]=='-')
     expression = boost::regex("(^|\b)"+module.substr(1)+"(,|$)");
-  std::cout << "Matching " << module << std::endl;
+  std::cout << "Matching " << module << " for state " << state.name << std::endl;
   for (map<string, MDPaction*>::const_iterator it = actions.begin();
        it != actions.end(); ++it) {
     if (regex_search(it->first, expression)) {
