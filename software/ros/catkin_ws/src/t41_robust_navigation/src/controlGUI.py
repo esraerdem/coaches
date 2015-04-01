@@ -60,8 +60,11 @@ class DIP(tk.Frame):
         else:
             if (cond=='desire(unknown,swipe)'):
                 scond = 'D_unknown_swipe'
-            print "CondGUI: Send condition %s" %(scond)
-            pubCond.publish(scond)
+            print "CondGUI: Sending condition %s ..." %(scond)
+            for i in range(0,3):
+	      pubCond.publish(scond)
+	      rospy.sleep(2)
+	    print "CondGUI: Done."
 	
 
 
