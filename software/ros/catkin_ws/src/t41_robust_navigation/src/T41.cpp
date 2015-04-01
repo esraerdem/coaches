@@ -1,6 +1,6 @@
 #include "shared/topics_name.h"
 #include "T41.h"
-#include "pnpgenerator.h"
+#include <pnpgenerator.h>
 
 #include <tf/transform_broadcaster.h>
 #include <std_msgs/String.h>
