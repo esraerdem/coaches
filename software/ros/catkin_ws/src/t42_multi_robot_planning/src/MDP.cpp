@@ -3,6 +3,29 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
+MDPaction::MDPaction(const MDPaction &copy): 
+  actionName(copy.actionName), parameters(copy.parameters) {
+  for (set<MDPstate*>::const_iterator it=copy.outcomes.begin();
+       it != copy.outcomes.end(); ++it) {
+    outcomes.insert(new MDPstate((*it)->name, this, (*it)->prevOutcome,(*it)->stateVariables));
+  }
+};
+
+MDPaction::MDPaction(const MDPaction &copy, string param, const string *value): 
+  actionName(copy.actionName), parameters(copy.parameters) {
+    parameters[param] = value;
+  for (set<MDPstate*>::const_iterator it=copy.outcomes.begin();
+       it != copy.outcomes.end(); ++it) {
+    outcomes.insert(new MDPstate((*it)->name, this, (*it)->prevOutcome,(*it)->stateVariables));
+  }
+};
+
+MDPaction::~MDPaction() {
+  for (set<MDPstate*>::iterator it = outcomes.begin();
+       it != outcomes.end(); ++it)
+    delete (*it);
+};
+
 std::ostream& operator<<(std::ostream& os, const MDPaction& act) {
   os << act.actionName;
   for (map<string, const string*>::const_iterator it = act.parameters.begin();
@@ -64,7 +87,6 @@ void MDP::buildOutcome(PRUlayer *lay, PRUmodule *mod, string suffix, MDPaction *
   }
   act->outcomes.insert(&(itS->second));
 } //buildOutcome
-
 
 void MDP::buildOutcomes(PRUlayer *lay, PRUmodule *mod, string suffix, MDPaction *act,
 			vector<string>::const_iterator itSV, 

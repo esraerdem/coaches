@@ -14,14 +14,14 @@ class MDPaction {
  public:
   map<string, const string*> parameters; // reuse strings from actions domain (PRUmodule.parameters)
   set<MDPstate*> outcomes;
- MDPaction(const string &name): actionName(name) {};
- MDPaction(const MDPaction &copy): 
-  actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {};
+
+  MDPaction(const string &name): actionName(name) {};
+  
+  MDPaction(const MDPaction &copy);
+  
   /** Copies the specified action, changing the given parameter by the specified value.*/
- MDPaction(const MDPaction &copy, string param, const string *value): 
-  actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {
-    parameters[param] = value;
-  };
+  MDPaction(const MDPaction &copy, string param, const string *value);
+  
   string const* getParameter(string &key) {
     map<string, const string*>::const_iterator it = parameters.find(key);
     if (it == parameters.end())
@@ -30,16 +30,18 @@ class MDPaction {
       return it->second;
   };
   friend std::ostream& operator<<(std::ostream& os, const MDPaction& act); // allows that method to access private fields
+ 
+  ~MDPaction();
 };
 std::ostream& operator<<(std::ostream& os, const MDPaction& act);
 
 class MDPstate {
  public:
   const string name;
-  set<const MDPaction *> availableActions;
+  set<const MDPaction *> availableActions; // references to PRU2MDPprogress.actions
   const MDPaction *prevAction; // may be null for initial state
   const PRUoutcome *prevOutcome; // may be null for initial state
-  map<string, const string*> stateVariables;
+  map<string, const string*> stateVariables; // references to PRU2MDP.stateVariableDomain
 
  MDPstate(const string &description) : name(description) { 
     prevAction = NULL;

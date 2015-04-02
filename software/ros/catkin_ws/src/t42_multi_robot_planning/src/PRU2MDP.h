@@ -14,13 +14,16 @@ class PRU2MDPprogress {
  private:
   void buildActions(const PRUmodule *mod, 
 		    map<string,domain_type>::const_iterator iParam,
-		    const MDPaction &act);
+		    const MDPaction &act, map<string, domain_type> *SVdomain);
  public:
   const PRUlayer *lay;
   const map<string, const string*> stateVariables; // reuse strings from SV domains (PRU2MDP.stateVariableDomain)
   vector<MDPaction*> actions; // actions are created but not deleted here
 
-  PRU2MDPprogress(const PRUlayer *l, const map<string, const string*> &sv);
+  PRU2MDPprogress(const PRUlayer *l, const map<string, const string*> &sv,
+		  map<string, domain_type> *stateVariableDomain);
+
+  ~PRU2MDPprogress();
 };
 std::ostream& operator<<(std::ostream& os, const PRU2MDPprogress& act);
 
@@ -38,10 +41,12 @@ class PRU2MDP {
 
   PRU2MDP (const PRUplus &pru);
   ~PRU2MDP() {
+    std::cout << "Destroying PRU2MDP...\n";
     for (vector<PRU2MDPprogress*>::iterator it=progress.begin();
 	 it != progress.end(); ++it) {
       delete (*it);
     }
+    delete stateVariableDomain; // TEMPORARY
   }
 };
 
