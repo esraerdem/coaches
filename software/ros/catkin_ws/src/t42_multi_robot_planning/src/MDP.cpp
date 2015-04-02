@@ -9,6 +9,7 @@ std::ostream& operator<<(std::ostream& os, const MDPaction& act) {
 	 it != act.parameters.end(); ++it) {
     os << ' ' << it->first<<"="<<*it->second;
   }
+  return os;
 };
 
 void MDP::buildOutcome(PRUlayer *lay, PRUmodule *mod, string suffix, MDPaction *act,

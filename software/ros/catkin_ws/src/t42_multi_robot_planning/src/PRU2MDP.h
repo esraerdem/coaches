@@ -6,6 +6,10 @@
 
 class MDPaction;
 
+/**
+ * Represents a PRU layer and the associated state variables.
+ * Builds and storess the actions defined for this set of variables.
+ */
 class PRU2MDPprogress {
  private:
   void buildActions(const PRUmodule *mod, 
@@ -13,12 +17,16 @@ class PRU2MDPprogress {
 		    const MDPaction &act);
  public:
   const PRUlayer *lay;
-  const map<string, const string*> stateVariables;
+  const map<string, const string*> stateVariables; // reuse strings from SV domains (PRU2MDP.stateVariableDomain)
   vector<MDPaction*> actions; // actions are created but not deleted here
 
   PRU2MDPprogress(const PRUlayer *l, const map<string, const string*> &sv);
 };
+std::ostream& operator<<(std::ostream& os, const PRU2MDPprogress& act);
 
+/**
+ * Builds a MDP from a PRUplus.
+ */
 class PRU2MDP {
  private:
   void buildProgress(const PRUlayer *layer,
@@ -26,9 +34,15 @@ class PRU2MDP {
 		     map<string, const string*> &params);
  public:
   vector<PRU2MDPprogress*> progress;
-  map<string, domain_type> *stateVariableDomain;
+  map<string, domain_type> *stateVariableDomain; // domains are created but not deleted here
 
   PRU2MDP (const PRUplus &pru);
+  ~PRU2MDP() {
+    for (vector<PRU2MDPprogress*>::iterator it=progress.begin();
+	 it != progress.end(); ++it) {
+      delete (*it);
+    }
+  }
 };
 
 #endif

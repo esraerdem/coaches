@@ -17,10 +17,10 @@ void PRU2MDPprogress::buildActions(const PRUmodule *mod,
     for (;it != itEnd; ++it) {
       MDPaction ma(act,name,&*it);
       buildActions(mod, iParam, ma);
-    } // for it in the current parameter's domain
+    } // for *it in the current parameter's domain
     --iParam;
   } // if more parameters
-} // buildAction(*mod, iParam)
+} // buildActions(*mod, iParam)
 
 PRU2MDPprogress::PRU2MDPprogress(const PRUlayer *l, const map<string, 
 				 const string*> &sv) : stateVariables(sv) {
@@ -32,6 +32,22 @@ PRU2MDPprogress::PRU2MDPprogress(const PRUlayer *l, const map<string,
     buildActions(mod, mod->parameters.begin(), act);
   } // for *iMod in lay->modules
 } // PRU2MDPprogress(*l,&sv)
+
+std::ostream& operator<<(std::ostream& os, const PRU2MDPprogress& progress) {
+  os << "Layer " << progress.lay->name << " [";
+  for (map<string, const string*>::const_iterator itSV = progress.stateVariables.begin();
+       itSV != progress.stateVariables.end(); ++ itSV) {
+    os << ' ' << itSV->first << '=' << *(itSV->second);
+  } // for *itSV in stateVariables
+  os << " ]" << std::endl;
+  for (vector<MDPaction*>::const_iterator itA = progress.actions.begin();
+       itA != progress.actions.end(); ++itA) {
+    MDPaction *pa = *itA;
+    MDPaction a = *pa;
+    os << " > " << a << std::endl;
+  }
+  return os;
+}
 
 void PRU2MDP::buildProgress(const PRUlayer *layer,
 			    vector<string>::const_iterator itSV, 

@@ -6,7 +6,7 @@
 #include <boost/algorithm/string.hpp>
 #include "MDP.h"
 
-map<string, domain_type> actionsDomain;
+map<string, domain_type> PRUplus::actionsDomain;
 
 static inline string trimString(xmlpp::TextReader &r) {
   string tmp = r.read_string();
@@ -133,11 +133,10 @@ PRUmodule::PRUmodule(xmlpp::TextReader &reader) {
 	throw "Parameter with no name!";
       domain_type dom;
       if (pDom != "") {
-	//TODO add all strings from this domain to this parameter
-	if (actionsDomain[pDom].empty())
+	if (PRUplus::actionsDomain[pDom].empty())
 	  std::cerr << "Empty action domain: " << pDom << std::endl;
-	else for (domain_type::const_iterator it=actionsDomain[pDom].begin(); 
-	     it!=actionsDomain[pDom].end(); ++it){
+	else for (domain_type::const_iterator it=PRUplus::actionsDomain[pDom].begin(); 
+	     it!=PRUplus::actionsDomain[pDom].end(); ++it){
 	  dom.insert(*it);
 	}
       }
@@ -294,9 +293,9 @@ float distanceFunction(const PRUstate& fromState,
 }
 
 void testPRUplus() {
-  actionsDomain["AvailableAds"].insert("Monoprix");
-  actionsDomain["AvailableAds"].insert("Restaurant");
-  actionsDomain["AvailableAds"].insert("DoorE");
+  PRUplus::actionsDomain["AvailableAds"].insert("Monoprix");
+  PRUplus::actionsDomain["AvailableAds"].insert("Restaurant");
+  PRUplus::actionsDomain["AvailableAds"].insert("DoorE");
   PRUplus pru("pru.xml");
   std::cout << pru << std::endl;
 
@@ -308,9 +307,4 @@ void testPRUplus() {
   
 }
 
-int main() {
-  std::locale::global(std::locale(""));
-  setlocale(LC_NUMERIC,"C");
 
-  testPRUplus();
-}

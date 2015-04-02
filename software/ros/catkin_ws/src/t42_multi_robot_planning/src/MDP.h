@@ -6,16 +6,20 @@
 
 class MDPstate;
 
+/** Represents a MDP action.
+ * A MDP action is a PRUaction with instanciated parameters that can be used in a specific state of a the layer the PRUaction belongs to.
+ */
 class MDPaction {
   const string &actionName;
-public:
-  map<string, const string*> parameters;
+ public:
+  map<string, const string*> parameters; // reuse strings from actions domain (PRUmodule.parameters)
   set<MDPstate*> outcomes;
-  MDPaction(const string &name): actionName(name) {};
-  MDPaction(const MDPaction &copy): 
-    actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {};
-  MDPaction(const MDPaction &copy, string param, const string *value): 
-    actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {
+ MDPaction(const string &name): actionName(name) {};
+ MDPaction(const MDPaction &copy): 
+  actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {};
+  /** Copies the specified action, changing the given parameter by the specified value.*/
+ MDPaction(const MDPaction &copy, string param, const string *value): 
+  actionName(copy.actionName), parameters(copy.parameters), outcomes(copy.outcomes) {
     parameters[param] = value;
   };
   string const* getParameter(string &key) {
@@ -25,12 +29,12 @@ public:
     else
       return it->second;
   };
-    friend std::ostream& operator<<(std::ostream& os, const MDPaction& act); // allows that method to access private fields
+  friend std::ostream& operator<<(std::ostream& os, const MDPaction& act); // allows that method to access private fields
 };
 std::ostream& operator<<(std::ostream& os, const MDPaction& act);
 
 class MDPstate {
-public:
+ public:
   const string name;
   set<const MDPaction *> availableActions;
   const MDPaction *prevAction; // may be null for initial state
@@ -50,7 +54,7 @@ public:
 };
 
 class MDP {
-private:
+ private:
   map<string, MDPstate> states;
   map<string, MDPaction*> actions; // association of each action with its name
   vector<vector<float> > rewards; // a float for each action of each state
@@ -75,7 +79,7 @@ private:
   /**
      Builds all the actions for this layer.module, 
      instanciating each remaining action-parameter
-   */
+  */
   void buildActions(PRUlayer *lay, PRUmodule *mod, 
 		    map<string,domain_type>::const_iterator iParam,
 		    string suffix, MDPaction *act);
@@ -90,7 +94,7 @@ private:
   */
   void associate(const string &module, MDPstate &state);
 
-public:
+ public:
   ~MDP() {
     for (map<string, MDPaction*>::iterator it=actions.begin();
 	 it != actions.end(); ++it) {
