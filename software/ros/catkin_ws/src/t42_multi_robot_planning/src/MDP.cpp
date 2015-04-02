@@ -196,7 +196,7 @@ MDP::MDP (PRUplus &pru, map<string, domain_type> *stateVariableDomain) {
       for(vector<string>::const_iterator itM = state.prevOutcome->nextModules.begin();
 	  itM != state.prevOutcome->nextModules.end(); ++itM) {
 	associate(*itM, state);
-      } // for itM in
+      } // for itM in state.prevOutcome->nextModules
     }
   } // for *itS in states
 } // MDP(...)

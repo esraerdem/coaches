@@ -3,8 +3,11 @@
 #define __PRU2MDP__
 
 #include "PRUplus.h"
+#include "MDP.h"
+#include "PRU2MDPactionDescriptor.h"
 
 class MDPaction;
+class PRU2MDP;
 
 /**
  * Represents a PRU layer and the associated state variables.
@@ -24,6 +27,19 @@ class PRU2MDPprogress {
 		  map<string, domain_type> *stateVariableDomain);
 
   ~PRU2MDPprogress();
+
+  /** Tests whether this progress has compatible state variables.
+   * Specified state variables may include irrelevant ones.
+   */
+  bool isMatching(const map<string, const string*> &stateVariables) const;
+
+  /** Matches all PRU modules with MDPactions from all MDPstate */
+  void matchActions(const PRU2MDP *model);
+  /** Matches specified modules with MDPactions and store them into s->availableActions */
+  void matchActions(const vector<string> &nextModules, MDPstate *s, const PRU2MDP *model);
+
+  /** Stores a descriptor of all the actions of this progress into the specified log */
+  void registerActions(map<string, PRU2MDPactionDescriptor> &allActions) const;
 };
 std::ostream& operator<<(std::ostream& os, const PRU2MDPprogress& act);
 
@@ -32,12 +48,17 @@ std::ostream& operator<<(std::ostream& os, const PRU2MDPprogress& act);
  */
 class PRU2MDP {
  private:
+  /** Builds Progresses from the specified PRULayer.
+   * Each progress then builds instanciated actions.
+   * Each action the builds resulting states.
+   */
   void buildProgress(const PRUlayer *layer,
 		     vector<string>::const_iterator itSV, 
 		     map<string, const string*> &params);
  public:
   vector<PRU2MDPprogress*> progress;
   map<string, domain_type> *stateVariableDomain; // domains are created but not deleted here
+  map<string, PRU2MDPactionDescriptor> allActions;
 
   PRU2MDP (const PRUplus &pru);
   ~PRU2MDP() {
@@ -48,6 +69,7 @@ class PRU2MDP {
     }
     delete stateVariableDomain; // TEMPORARY
   }
+
 };
 
 #endif

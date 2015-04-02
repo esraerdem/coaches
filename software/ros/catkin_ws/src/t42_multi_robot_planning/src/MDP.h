@@ -10,8 +10,8 @@ class MDPstate;
  * A MDP action is a PRUaction with instanciated parameters that can be used in a specific state of a the layer the PRUaction belongs to.
  */
 class MDPaction {
-  const string &actionName;
  public:
+  const string &actionName;
   map<string, const string*> parameters; // reuse strings from actions domain (PRUmodule.parameters)
   set<MDPstate*> outcomes;
 
@@ -35,6 +35,7 @@ class MDPaction {
 };
 std::ostream& operator<<(std::ostream& os, const MDPaction& act);
 
+/** Represents a MDP state resulting from the outcome of an action (with specific parameters) in a layer (with specific variables). */
 class MDPstate {
  public:
   const string name;
