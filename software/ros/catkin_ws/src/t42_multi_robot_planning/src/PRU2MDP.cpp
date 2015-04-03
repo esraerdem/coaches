@@ -1,7 +1,11 @@
+// Compiles a PRU+ into a MDP
 
 #include "PRU2MDP.h"
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
+
+#undef PRINT
+#include "DEBUGprint.h"
 
 void PRU2MDP::buildProgress(const PRUlayer *layer,
 			    vector<string>::const_iterator itSV, 
@@ -36,7 +40,7 @@ void PRU2MDP::matchActions(const vector<string> &nextModules, MDPstate *s) const
     boost::regex expression("(^|\b)"+module+"([.,$]|$)"); // adds the word-boundary conditions
     if (module[0]=='-')
       expression = boost::regex("(^|\b)"+module.substr(1)+"([.,$]|$)");
-    std::cout << "Matching " << module << std::endl;
+    DEBUG("Matching " << module << std::endl);
     bool err = true;
     for (map<string, PRU2MDPactionDescriptor>::const_iterator it = allActions.begin();
 	 it != allActions.end(); ++it) {
@@ -44,10 +48,10 @@ void PRU2MDP::matchActions(const vector<string> &nextModules, MDPstate *s) const
 	if (regex_search(it->first, expression)) {
 	  err = false;
 	  if (module[0]=='-') {
-	    std::cout << " < " << it->first << std::endl;
+    DEBUG(" < " << it->first << std::endl);
 	    s->availableActions.erase(it->second.action);
 	  } else {
-	    std::cout << " > " << it->first << std::endl;
+    DEBUG(" > " << it->first << std::endl);
 	    s->availableActions.insert(it->second.action);
 	  }
 	} // if match
@@ -58,7 +62,7 @@ void PRU2MDP::matchActions(const vector<string> &nextModules, MDPstate *s) const
 } // matchActions(&nextModules, *s)
 
 PRU2MDP::~PRU2MDP() {
-  std::cout << "Destroying PRU2MDP...\n";
+    DEBUG("Destroying PRU2MDP...\n");
   for (vector<PRU2MDPprogress*>::iterator it=progress.begin();
        it != progress.end(); ++it) {
     delete (*it);
@@ -80,10 +84,12 @@ PRU2MDP::PRU2MDP(const PRUplus &pru) {
     buildProgress(lay, lay->stateVariables.begin(), params);
   } // for *iLay in pru.layers
 
+#ifdef PRINT
   for (map<string,PRU2MDPactionDescriptor>::const_iterator it=allActions.begin();
        it != allActions.end(); ++it) {
     std::cout << it->first << std::endl;
   }
+#endif
 
   // Matches first-modules with MDPaction in initial state
   init = new MDPstate("RobotPos");

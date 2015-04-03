@@ -35,15 +35,6 @@ class PRU2MDP {
   /** Builds a MDP from a PRU */
   PRU2MDP (const PRUplus &pru);
   ~PRU2MDP();
-  /* {
-    std::cout << "Destroying PRU2MDP...\n";
-    for (vector<PRU2MDPprogress*>::iterator it=progress.begin();
-	 it != progress.end(); ++it) {
-      delete (*it);
-    }
-    //    delete init; // TEMPORARY
-    delete stateVariableDomain; // TEMPORARY
-    }*/
 
   /** Matches specified modules with MDPactions and store them into s->availableActions */
   void matchActions(const vector<string> &nextModules, MDPstate *s) const;

@@ -1,8 +1,10 @@
+// Compile a PRU+ into a MDP
 
-#include "PRU2MDP.h"
-#include "MDP.h"
+#include "PRU2MDPprogress.h"
 #include <boost/algorithm/string.hpp>
-//#include <boost/regex.hpp>
+
+#undef PRINT
+#include "DEBUGprint.h"
 
 void PRU2MDPprogress::registerActions(map<string, PRU2MDPactionDescriptor> &allActions) const {
   string prefix = lay->name + ".";
@@ -98,7 +100,7 @@ PRU2MDPprogress::PRU2MDPprogress(const PRUlayer *l, const map<string,
 PRU2MDPprogress::~PRU2MDPprogress(){
   for (vector<MDPaction*>::iterator itA = actions.begin();
        itA != actions.end(); ++itA) {
-    std::cout << "Temporary destruction of " << **itA << std::endl;
+    DEBUG("Temporary destruction of " << **itA << std::endl);
     delete (*itA);
   }
 }

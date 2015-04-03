@@ -1,10 +1,17 @@
 #include "PRUplus.h"
 
+#include <libxml++/libxml++.h>
+#include <libxml++/parsers/textreader.h>
+
 #include <iostream>
 #include <stdlib.h>
 #include <locale.h>
 #include <boost/algorithm/string.hpp>
+
 #include "MDP.h"
+
+#undef PRINT
+#include "DEBUGprint.h"
 
 map<string, domain_type> PRUplus::actionsDomain;
 
@@ -38,6 +45,24 @@ static inline void readVector(set<string> &v, xmlpp::TextReader &r, string sep="
   }
 }
 
+void PRUoutcome::initDefaultValues() {
+  probability=1.0f;
+  quality="null";
+  qualityParameter=0;
+  qualityConstant=0;
+  duration="null";
+  durationParameter=0;
+  durationConstant=0;
+  isFinal = false;
+  finalLabel = "";
+};
+PRUoutcome::PRUoutcome() { 
+  initDefaultValues(); 
+};
+PRUoutcome::~PRUoutcome() { 
+  DEBUG("||+Destroying outcome " << name <<std::endl);
+};
+
 PRUplus::PRUplus(string xmlFileName) {
   try {
     xmlpp::TextReader reader(xmlFileName.c_str());
@@ -46,6 +71,26 @@ PRUplus::PRUplus(string xmlFileName) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
   }
 }
+PRUmodule::~PRUmodule() {
+  DEBUG("|+Destroying Module "<<actionName <<std::endl);
+  for (vector<PRUoutcome*>::iterator it = outcomes.begin(); it != outcomes.end(); ++it)
+    delete *it;
+};
+
+PRUlayer::~PRUlayer() {
+  DEBUG("+Destroying Layer " << name <<std::endl);
+  for (vector<PRUmodule*>::iterator it = modules.begin(); it != modules.end(); ++it)
+    delete *it;
+};
+
+PRUplus::PRUplus() { 
+  // Nothing to do
+};
+PRUplus::~PRUplus() {
+  DEBUG("Destroying PRU" <<std::endl);
+  for (vector<PRUlayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
+    delete *it;
+};
 
 void PRUplus::readXML(xmlpp::TextReader &reader) {
   while(reader.read()) {
@@ -302,9 +347,6 @@ void testPRUplus() {
   map<string, domain_type> stateVariableDomain;
   pru.fillSVdomain(stateVariableDomain);  
   std::cout << stateVariableDomain << std::endl;
-
-  MDP m(pru, &stateVariableDomain);
-  
 }
 
 
