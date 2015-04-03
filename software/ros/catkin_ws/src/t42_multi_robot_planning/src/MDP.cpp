@@ -3,6 +3,14 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 
+MDPstate::~MDPstate() {
+  std::cout << "Destroying state " << name;
+  if (prevAction != NULL)
+    std::cout << ".(action " << prevAction->actionName
+	      << " -> " << prevOutcome->name << ")";
+  std::cout << std::endl;
+};
+
 MDPaction::MDPaction(const MDPaction &copy): 
   actionName(copy.actionName), parameters(copy.parameters) {
   for (set<MDPstate*>::const_iterator it=copy.outcomes.begin();

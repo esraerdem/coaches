@@ -1,4 +1,4 @@
-// Compile a PRU+ into a MDP
+// Represents a MDP for solving PRUs
 #ifndef __MDP__
 #define __MDP__
 
@@ -54,6 +54,8 @@ class MDPstate {
     prevAction = act;
     prevOutcome = out;
   }
+
+  ~MDPstate(); 
 };
 
 class MDP {

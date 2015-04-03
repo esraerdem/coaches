@@ -1,8 +1,8 @@
-all: PRUplus.o PRUprint.o MDP.o PRU2MDP.o testPRU2MDP.o
-	g++ -Wall -g $^ `pkg-config --libs libxml++-2.6` -lboost_regex
+all: PRUplus.o PRUprint.o MDP.o PRU2MDP.o PRU2MDPprogress.o testPRU2MDP.o
+	g++ -Wextra -g -fstack-check $^ `pkg-config --libs libxml++-2.6` -lboost_regex
 
 %.o : %.cpp
-	g++ -Wall -c -g -MP -MMD $< `pkg-config --cflags libxml++-2.6`
+	g++ -Wextra -c -g -MP -MMD -fstack-check $< `pkg-config --cflags libxml++-2.6`
 
 -include $(wildcard *.d)
 
