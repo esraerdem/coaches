@@ -1,9 +1,8 @@
 #ifndef __PRU2MDPactionDescriptor__
 #define __PRU2MDPactionDescriptor__
 
-#include "PRU2MDP.h"
-
 class PRU2MDPprogress;
+class MDPaction;
 
 class PRU2MDPactionDescriptor{
  public:

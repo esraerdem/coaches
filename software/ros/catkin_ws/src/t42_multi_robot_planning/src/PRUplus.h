@@ -15,26 +15,25 @@ using std::vector;
 using std::set;
 
 typedef set<string> domain_type;
+typedef map<string, const string*> PRUstate; // assignment of state variables
 
 /** Utility function for printing a domain */
 std::ostream& operator<<(std::ostream& os, const domain_type vec);
 /** Utility function for printing a set or variables */
 std::ostream& operator<<(std::ostream& os, const map<string, domain_type> vars);
 
-class PRUstate;
+
 class PRUmodule;
 // Defines class xmlpp::TextReader so that libxml++ is necessary only for linking
 namespace xmlpp {
   class TextReader;
 };
 
-/* The PRU function profile
-typedef float (*function)(const PRUstate& fromState,
-			  const PRUmodule& withModule,
+/* The PRU function profile */
+typedef float (*PRUfunction)(const PRUstate& fromState,
 			  const PRUstate& toState,
 			  const string& kind,
 			  float parameter);
-*/
 
 /** Represents one of the outcomes of a PRUmodule.
  *  Any outcome is defined by a name that must be unique for a given module.
@@ -140,6 +139,9 @@ class PRUplus {
  public:
   /** Stores the domain of any action that can be specified outside of the XML file.*/
   static map<string, domain_type> actionsDomain;
+  /** Stores the domain-dependant function used for computing reward and distances */
+  static PRUfunction domainFunction;
+
   /** Initial values of state variables. May be forgotten depending on layers... */
   vector<string> stateVariablesInitialAssignments;
   /** Available modules for starting the PRU. Usually first_layer.*

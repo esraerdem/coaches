@@ -4,8 +4,8 @@
 
 #include "PRUplus.h"
 #include "MDP.h"
-#include "PRU2MDPactionDescriptor.h"
 #include "PRU2MDPprogress.h"
+#include "PRU2MDPactionDescriptor.h"
 
 class MDPaction;
 class PRU2MDP;

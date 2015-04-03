@@ -4,9 +4,8 @@
 
 #include "PRUplus.h"
 #include "MDP.h"
-#include "PRU2MDP.h"
+#include "PRU2MDPactionDescriptor.h"
 
-class MDPaction;
 class PRU2MDP;
 
 /**
@@ -20,10 +19,10 @@ class PRU2MDPprogress {
 		    const MDPaction &act, map<string, domain_type> *SVdomain);
  public:
   const PRUlayer *lay;
-  const map<string, const string*> stateVariables; // reuse strings from SV domains (PRU2MDP.stateVariableDomain)
+  const PRUstate stateVariables; // reuse strings from SV domains (PRU2MDP.stateVariableDomain)
   vector<MDPaction*> actions; // actions are created but not deleted here
 
-  PRU2MDPprogress(const PRUlayer *l, const map<string, const string*> &sv,
+  PRU2MDPprogress(const PRUlayer *l, const PRUstate &sv,
 		  map<string, domain_type> *stateVariableDomain);
 
   ~PRU2MDPprogress();
@@ -31,7 +30,7 @@ class PRU2MDPprogress {
   /** Tests whether this progress has compatible state variables.
    * Specified state variables may include irrelevant ones.
    */
-  bool isMatching(const map<string, const string*> &stateVariables) const;
+  bool isMatching(const PRUstate &stateVariables) const;
 
   /** Matches all PRU modules with MDPactions from all MDPstate */
   void matchActions(const PRU2MDP *model);

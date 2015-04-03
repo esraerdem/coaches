@@ -12,7 +12,7 @@ class MDPstate;
 class MDPaction {
  public:
   const string &actionName;
-  map<string, const string*> parameters; // reuse strings from actions domain (PRUmodule.parameters)
+  PRUstate parameters; // reuse strings from actions domain (PRUmodule.parameters)
   set<MDPstate*> outcomes;
 
   MDPaction(const string &name);  
@@ -37,11 +37,11 @@ class MDPstate {
   set<const MDPaction *> availableActions; // references to PRU2MDPprogress.actions
   const MDPaction *prevAction; // may be null for initial state
   const PRUoutcome *prevOutcome; // may be null for initial state
-  map<string, const string*> stateVariables; // references to PRU2MDP.stateVariableDomain
+  PRUstate stateVariables; // references to PRU2MDP.stateVariableDomain
 
   MDPstate(const string &description);
   MDPstate(const string &description, const MDPaction *act, const PRUoutcome *out,
-	   const map<string, const string*> &SV);
+	   const PRUstate &SV);
 
   ~MDPstate(); 
 };

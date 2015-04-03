@@ -3,6 +3,8 @@
 #include "PRU2MDPprogress.h"
 #include <boost/algorithm/string.hpp>
 
+#include "PRU2MDP.h"
+
 #undef PRINT
 #include "DEBUGprint.h"
 

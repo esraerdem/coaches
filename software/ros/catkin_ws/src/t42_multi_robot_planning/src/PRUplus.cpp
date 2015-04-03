@@ -14,6 +14,7 @@
 #include "DEBUGprint.h"
 
 map<string, domain_type> PRUplus::actionsDomain;
+PRUfunction PRUplus::domainFunction;
 
 static inline string trimString(xmlpp::TextReader &r) {
   string tmp = r.read_string();
@@ -325,11 +326,8 @@ void PRUoutcome::fillSVdomain (map<string, domain_type> &stateVariableDomain,
   } // for it in stateVariableUpdate
 } // PRUoutcome::fillSVdomain(stateVariableDomain,parameters)
 
-float distanceFunction(const PRUstate& fromState,
-		       const PRUmodule& withModule,
-		       const PRUstate& toState,
-		       const string& kind,
-		       float parameter) {
+static float testFunction(const PRUstate& fromState, const PRUstate& toState,
+		   const string& kind, float parameter) {
   if (kind == "null")
     return 0;
   if (kind == "distance")
@@ -338,6 +336,7 @@ float distanceFunction(const PRUstate& fromState,
 }
 
 void testPRUplus() {
+  PRUplus::domainFunction = &testFunction;
   PRUplus::actionsDomain["AvailableAds"].insert("Monoprix");
   PRUplus::actionsDomain["AvailableAds"].insert("Restaurant");
   PRUplus::actionsDomain["AvailableAds"].insert("DoorE");

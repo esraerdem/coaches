@@ -28,7 +28,7 @@ MDPaction::MDPaction(const MDPaction &copy, string param, const string *value):
   }
 };
 string const* MDPaction::getParameter(string &key) const {
-    map<string, const string*>::const_iterator it = parameters.find(key);
+    PRUstate::const_iterator it = parameters.find(key);
     if (it == parameters.end())
       return NULL;
     else
@@ -42,7 +42,7 @@ MDPaction::~MDPaction() {
 
 std::ostream& operator<<(std::ostream& os, const MDPaction& act) {
   os << act.actionName;
-  for (map<string, const string*>::const_iterator it = act.parameters.begin();
+  for (PRUstate::const_iterator it = act.parameters.begin();
 	 it != act.parameters.end(); ++it) {
     os << ' ' << it->first<<"="<<*it->second;
   }
@@ -54,7 +54,7 @@ MDPstate::MDPstate(const string &description) : name(description) {
   prevOutcome = NULL;
 };
 MDPstate::MDPstate(const string &description, const MDPaction *act, 
-		   const PRUoutcome *out, const map<string, const string*> &SV) : 
+		   const PRUoutcome *out, const PRUstate &SV) : 
   name(description), stateVariables(SV) {
   prevAction = act;
   prevOutcome = out;
