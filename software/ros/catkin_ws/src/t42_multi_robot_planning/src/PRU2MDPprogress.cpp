@@ -29,13 +29,14 @@ void PRU2MDPprogress::registerActions(map<string, PRU2MDPactionDescriptor> &allA
 void PRU2MDPprogress::buildActions(const PRUmodule *mod, 
 				   map<string,domain_type>::const_iterator iParam,
 				   const MDPaction &action, 
-				   map<string, domain_type> *SVdomain) {
+				   map<string, domain_type> *SVdomain,
+				   PRU2MDPstateStore &states) {
   if (iParam == mod->parameters.end()) {
     // All parameters are instanciated
     MDPaction *act = new MDPaction(action);
     actions.push_back(act);
     
-    map<string, const string*> res(stateVariables); // makes a local copy of SV that will be updated with out SVUs
+    PRUstate res(stateVariables); // makes a local copy of SV that will be updated with out SVUs
     for (vector<PRUoutcome*>::const_iterator itO = mod->outcomes.begin();
 	 itO != mod->outcomes.end(); ++itO) {
       PRUoutcome *out = *itO;
@@ -69,7 +70,7 @@ void PRU2MDPprogress::buildActions(const PRUmodule *mod,
 	} // if correct SVU element
       } // for itSVU in *itO SV Updates
       // Here, res contains the updated state variables
-      MDPstate *s = new MDPstate(lay->name, act, out, res);
+      MDPstate *s = states.getState(lay->name, act, out, res);
       act->outcomes.insert(s);
     } // for *itO in mod->outcomes
   } else {
@@ -80,7 +81,7 @@ void PRU2MDPprogress::buildActions(const PRUmodule *mod,
     ++iParam;
     for (;it != itEnd; ++it) {
       MDPaction ma(action,name,&*it);
-      buildActions(mod, iParam, ma, SVdomain);
+      buildActions(mod, iParam, ma, SVdomain, states);
     } // for *it in the current parameter's domain
     --iParam;
   } // if more parameters
@@ -88,14 +89,15 @@ void PRU2MDPprogress::buildActions(const PRUmodule *mod,
 
 PRU2MDPprogress::PRU2MDPprogress(const PRUlayer *l, const map<string, 
 				 const string*> &sv,
-				 map<string, domain_type> *stateVariableDomain) 
+				 map<string, domain_type> *stateVariableDomain,
+				 PRU2MDPstateStore &states) 
   : stateVariables(sv) {
   lay = l;
   for (vector<PRUmodule*>::const_iterator iMod = lay->modules.begin(); 
        iMod != lay->modules.end(); ++iMod) {
     PRUmodule *mod = *iMod;
     MDPaction act(mod->actionName); // template for building all those actions
-    buildActions(mod, mod->parameters.begin(), act, stateVariableDomain);
+    buildActions(mod, mod->parameters.begin(), act, stateVariableDomain, states);
   } // for *iMod in lay->modules
 } // PRU2MDPprogress(*l,&sv)
 

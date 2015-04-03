@@ -23,4 +23,6 @@ int main() {
 
   // Next builds a MDP from it
   PRU2MDP p2m(pru);
+
+  p2m.states.print();
 }

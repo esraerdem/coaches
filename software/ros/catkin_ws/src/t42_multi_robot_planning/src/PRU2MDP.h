@@ -24,6 +24,7 @@ class PRU2MDP {
 		     map<string, const string*> &params);
  public:
   /** The initial state of the MDP */
+  PRU2MDPstateStore states;
   MDPstate *init;
   vector<PRU2MDPprogress*> progress;
   map<string, domain_type> *stateVariableDomain; // domains are created but not deleted here
@@ -38,6 +39,9 @@ class PRU2MDP {
 
   /** Matches specified modules with MDPactions and store them into s->availableActions */
   void matchActions(const vector<string> &nextModules, MDPstate *s) const;
+
+  /** Fills the specified vector with all the MDP states */
+  void getStates(vector<MDPstate*> &result) const;
 };
 
 #endif

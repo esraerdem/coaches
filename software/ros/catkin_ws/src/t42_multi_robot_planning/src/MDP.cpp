@@ -35,9 +35,11 @@ string const* MDPaction::getParameter(string &key) const {
       return it->second;
   };
 MDPaction::~MDPaction() {
+  /* Don't delete states, they are managed by the store
   for (set<MDPstate*>::iterator it = outcomes.begin();
        it != outcomes.end(); ++it)
     delete (*it);
+  */
 };
 
 std::ostream& operator<<(std::ostream& os, const MDPaction& act) {

@@ -12,7 +12,7 @@ void PRU2MDP::buildProgress(const PRUlayer *layer,
 			    map<string, const string*> &params){
   if (itSV == layer->stateVariables.end()) {
     // All variables are instanciated
-    progress.push_back(new PRU2MDPprogress(layer,params, stateVariableDomain));
+    progress.push_back(new PRU2MDPprogress(layer,params, stateVariableDomain, states));
     progress.back()->registerActions(allActions);
   } else {
     // Some state variable is to be instanciated yet

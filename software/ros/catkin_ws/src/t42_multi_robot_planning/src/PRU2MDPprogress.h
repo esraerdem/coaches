@@ -5,6 +5,7 @@
 #include "PRUplus.h"
 #include "MDP.h"
 #include "PRU2MDPactionDescriptor.h"
+#include "PRU2MDPstateStore.h"
 
 class PRU2MDP;
 
@@ -16,14 +17,16 @@ class PRU2MDPprogress {
  private:
   void buildActions(const PRUmodule *mod, 
 		    map<string,domain_type>::const_iterator iParam,
-		    const MDPaction &act, map<string, domain_type> *SVdomain);
+		    const MDPaction &act, map<string, domain_type> *SVdomain,
+		    PRU2MDPstateStore &states);
  public:
   const PRUlayer *lay;
   const PRUstate stateVariables; // reuse strings from SV domains (PRU2MDP.stateVariableDomain)
   vector<MDPaction*> actions; // actions are created but not deleted here
 
   PRU2MDPprogress(const PRUlayer *l, const PRUstate &sv,
-		  map<string, domain_type> *stateVariableDomain);
+		  map<string, domain_type> *stateVariableDomain,
+		  PRU2MDPstateStore &states);
 
   ~PRU2MDPprogress();
 
