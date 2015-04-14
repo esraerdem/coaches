@@ -120,3 +120,14 @@ PRU2MDP::PRU2MDP(const PRUplus &pru) {
     (*itP)->matchActions(this);
   } // for *itP in progress
 } // PRU2MDP(&pru)
+
+void PRU2MDP::getStates(vector<MDPstate*> &result) const {
+  result.push_back(init);
+  states.getStates(result);
+}
+
+MDP *PRU2MDP::getMDP() const {
+  vector<MDPstate*> states;
+  getStates(states);
+  return new MDP(states);
+}

@@ -23,10 +23,9 @@ class MDPaction {
 
   ~MDPaction();  
   
-  string const* getParameter(string &key) const
-;
-  friend std::ostream& operator<<(std::ostream& os, const MDPaction& act); // allows that method to access private fields
- 
+  string const* getParameter(string &key) const;
+
+  friend std::ostream& operator<<(std::ostream& os, const MDPaction& act); // allows that method to access private fields 
 };
 std::ostream& operator<<(std::ostream& os, const MDPaction& act);
 
@@ -34,6 +33,8 @@ std::ostream& operator<<(std::ostream& os, const MDPaction& act);
 class MDPstate {
  public:
   const string name;
+  /** The unique index of this state */
+  int index; 
   set<const MDPaction *> availableActions; // references to PRU2MDPprogress.actions
   const MDPaction *prevAction; // may be null for initial state
   const PRUoutcome *prevOutcome; // may be null for initial state
@@ -48,21 +49,23 @@ class MDPstate {
 
 class MDP {
  private:
-  map<string, MDPstate> states;
-  map<string, MDPaction*> actions; // association of each action with its name
-  vector<vector<float> > rewards; // a float for each action of each state
-  vector<vector<float> > durations; // a float for each action of each state
-  map<string, domain_type> *stateVariableDomain;
+  vector<MDPstate*>    states;
+
+  vector<float>            value[2]; // the expected value of each state
+  vector<vector<const MDPaction*> > policy;   // the optimal action to use in each state
 
  public:
-  ~MDP() {
-    for (map<string, MDPaction*>::iterator it=actions.begin();
-	 it != actions.end(); ++it) {
-      delete (it->second);
-    }
-  }
+  ~MDP();
 
-  MDP (PRUplus &pru, map<string, domain_type> *stateVariableDomain);
+  MDP (vector<MDPstate*> &states);
+
+  /** Prepares the MDP for computing Value Iteration */
+  void initVI(); 
+  /** Computes one iteration of VI.
+   * @param gamma the discout factor.
+   * @return the variation of the value function during this iteration.
+   */
+  float iterate(float gamma);
 }; // class MDP
 
 #endif

@@ -70,3 +70,9 @@ MDPstate::~MDPstate() {
   std::cout << std::endl;
 #endif
 };
+
+MDP::~MDP() {
+};
+
+MDP::MDP(vector<MDPstate*> &_states) : states(_states) {
+};

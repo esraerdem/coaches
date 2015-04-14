@@ -42,6 +42,9 @@ class PRU2MDP {
 
   /** Fills the specified vector with all the MDP states */
   void getStates(vector<MDPstate*> &result) const;
+
+  /** Builds the MDP */
+  MDP *getMDP() const;
 };
 
 #endif
