@@ -69,31 +69,35 @@
 \title{D1.1\\ 
 Knowledge-based environment modelling}
 
-\author{Esra Erdem$^1$, Luca Iocchi$^2$, Abdel-Illah Mouaddib$^3$,  Laurent Jeanpierre$^3$ \\
+\author{Luca Iocchi$^1$, Abdel-Illah Mouaddib$^2$,  Laurent Jeanpierre$^2$, Esra Erdem$^3$, Hichem Sahli$^4$,  \\
 \textit{
-$^1$ Sabanci University\\
-$^2$ Dept. of Computer, Control and Management Engineering\\
-Sapienza University of Rome\\
-$^3$ GREYC Lab\\
-Univeristé de Caen Basse-Normandie}}
+$^1$ Dept. of Computer, Control and Management Engineering\\
+Sapienza University of Rome, Italy\\
+$^2$ GREYC Lab\\
+Univeristé de Caen Basse-Normandie, Fance\\
+$^3$ Sabanci University, Insyanbul, Turkey\\
+$^4$ Vrije University, Brussels, Belgium}}
 
 
 
 
-\date{Draft 0.1 - March 26, 2015}
+\date{Draft 0.2 - April 15, 2015}
 
 \begin{document}
-\includegraphics[height=2cm]{../fig/logoUNICAEN.jpg}
-\includegraphics[height=2cm]{../fig/logoSapienza.png}
-%\includegraphics[height=2cm]{../fig/logoVUB}
-\includegraphics[height=2cm]{../fig/logoSebanci}
 
+\includegraphics[height=1.8cm]{../fig/logoSapienza.png}
+\includegraphics[height=1.8cm]{../fig/logoUNICAEN.jpg}
+\includegraphics[height=1.8cm]{../fig/logoSebanci}
+\includegraphics[height=1.8cm]{../fig/logoVUB}
+
+\vspace{0.5cm}
 
 \makemadtitle
 
 %\vspace*{1.0in}
 \begin{abstract}
-This document describes the general principles of the Knowledge-based representation and reasoning techniques developed in WP1. In particular, it describes the formalism for representing the semantic map of the environment, spatial information, common sense, and events as well as the algorithms for reasoning about this knowledge. 
+This document describes the general principles of the Knowledge-based representation and reasoning techniques developed in WP1. In particular, it describes the formalism for representing the semantic map of the environment, spatial information, common sense and human activities.
+The methods and the algorithms used for reasoning about this knowledge will be described in Deliverable D1.3.
 \end{abstract}
 
 \vspace*{1.5cm}
@@ -108,7 +112,13 @@ The copyright in this document is the property of the COACHES Consortium. This d
 }
 \newpage
 \section{Introduction}
-This document consists of describing different principles of the Knowledge-based reasoning module developed in WP1. This  module receives different information from different units, sensors or other modules of the architecture, particularly the multi-modal interface and the perception modules. These information concern the semantic map, spatial information and human activities. From these information, the reasoning module should infer new goals to accomplish. This list of goals is sent the decision module that will compute the behavior policy of the robot to accomplish such goals. The behavior policy is then sent to the executor module based on Petri Net Plans. The general principle is depicted in Figure \ref{WP1principle}.
+
+This document consists of describing different principles of the knowledge-based representation that will be used in the development of the knowledge-based reasoning system in WP1. The knowledge base (KB) is used to model both static knowledge (e.g., the semantic map of the environment and the common sense information) and the dynamic knowledge (e.g., human activities) coming from different units, such as the perception modules of the architecture, particularly the multi-modal HRI interface (WP3) and the image processing modules (WP2). 
+From these information, the reasoning module should infer the list of possible tasks to accomplish. This list of tasks is then sent to the decision module (WP4) that will compute the behavior policy of the robot to accomplish them. The behavior policy is then sent to the executor module based on Petri Net Plans. 
+
+The general principle is depicted in Figure \ref{WP1principle}.
+
+{\bf TODO: Luca extend the figure as discussed with Esra.}
 
 \begin{figure}[htbp]
 \begin{center}
@@ -161,9 +171,9 @@ will represent the color property \emph{red} of the particular object  \emph{dre
 
 \section {Representation of the environment}
 
-In this section we present the main concepts (as defined in the previous section) we will consider to represent the status of the environment and to detect events due to external units or human activities. To this end, we consider three types of information: the semantic map, spatial information and human activities.
+In this section we present the main concepts (as defined in the previous section) we will consider to represent the status of the environment and to detect events due to external units or human activities. To this end, we consider three types of information: the semantic map (including spatial relations), the common sense knowledge and the human activities.
 
-\subsection {Semantic map}
+\subsection{Semantic map}
 
 For the mall map, we consider different types of areas: shops, restaurants, halls, corridors, rest areas, offices, toilettes, etc. For shops, services and restaurants we consider different categories:
 \begin{itemize}
@@ -174,7 +184,7 @@ For the mall map, we consider different types of areas: shops, restaurants, hall
 
 All these areas are represented as concepts that are grouped in a more general concept \emph{Area}. The hierarchy of these areas will be defined through the ``is-a'' relation of the semantic labels described before.
 
-Doors are also considered as connections of these areas. \emph{Door} is a concept containing door objects and connections of areas through doors are represented with the {\tt\bf connect} predicate.
+Doors are also considered as connections of these areas. \emph{Door} is a concept containing door objects and connections of areas through doors are represented with the {\tt\bf connect} predicate (see also below).
 
 \begin{quote}
 {\bf\tt connect} ( door12, area1, area2 )
@@ -224,25 +234,77 @@ where \emph{area} $\in$ \emph{Area} and \emph{coordinates} is in general a 2D bo
 The {\tt\bf position} predicate is also used to represent a unique position of an object for which the size is not important or it is known or estimated (e.g., a person or a robot). In this case \emph{coordinates} is expressed with only one 2D point. 
 
 
+\subsubsection{Spatial relations}
 
+In order to represent spatial relations among the elements of the semantic map, we will use a set of predicates, such as:
 
-\subsection{Spatial relations}
-
-In this section we consider all spatial relations and information:
 \begin{itemize}
-\item {\tt\bf Infrontof}(person\_id, area\_id)
-\item {\tt\bf Nearby}(person\_id, area\_id)
-\item {\tt\bf At}(person\_id, location)
-\item {\tt\bf In}(person\_id $\|$ object\_id, areas\_id)
- \end{itemize}
+\item {\tt\bf in}(person\_id $\|$ object\_id, area\_id)
+\item {\tt\bf at}(person\_id $\|$ object\_id, location\_id)
+\item {\bf\tt connect} ( area\_id1, area\_id2 )
+\item {\bf\tt connect} ( door\_id, area\_id1, area\_id2 )
+\item {\tt\bf nearby}(person\_id, area\_id)
+\item $\ldots$
+\end{itemize}
+
+
+
+
+\subsection{Commonsense knowledge}
+
+{\bf TODO Esra}
+
+\vspace{3cm}
+
+
+
 \subsection{Human activities}
+
+{\bf TODO: Hichem}
+
+{\bf PLEASE CONSIDER THESE AS JUST EXAMPLES. FEEL FREE TO MODIFY DELETE EVERYTHING}
+
+{\bf Related to image processing}
+
 \begin{itemize}
-\item {\tt\bf Motionless}(person\_id, time\_t, location)
-\item {\tt\bf Request} (request\_id,request\_type, person\_id, location\_t) where {\it Request\_type}  could be escorting\_to(location),informing\_about(area\_id), guiding\_to(location)
-\item {\tt\bf Rest\_Area} (person\_id, time\_t, location)
- \end{itemize}
-  \subsection{Commonsense and event-based Reasoning}
-  \subsubsection{Event Definition}
+%\item {\tt\bf Motionless}(person\_id, time\_t, location)
+%\item {\tt\bf Request} (request\_id,request\_type, person\_id, location\_t) where {\it Request\_type}  could be escorting\_to(location),informing\_about(area\_id), guiding\_to(location)
+%\item {\tt\bf Rest\_Area} (person\_id, time\_t, location)
+
+\item {\tt\bf motionless} (person\_id)
+\item {\tt\bf empty} (location\_id)
+\item {\tt\bf crowded} (location\_id)
+\item {\tt\bf approaching} (person\_id, location\_id)
+\item {\tt\bf approaching} (person\_id, robot\_id)
+\item $\ldots$
+
+
+\end{itemize}
+
+
+
+{\bf Related to HRI}
+
+
+\begin{itemize}
+
+\item {\tt\bf asking-for-help} (person\_id)
+\item {\tt\bf in-conversation} (person\_id, robot\_id)
+\item $\ldots$
+
+\end{itemize}
+
+
+\vspace{3cm}
+
+
+
+\subsection{Events}
+
+{\bf TODO Later}
+
+
+\subsubsection{Event Definition}
   \begin{defn}
   An {\bf Event} is a tuple defined by the actor of the event, where the event has been occurred, when and what is the semantic of the event described by spatio-temporal relations or human activities. 
   \[ Event = <actor, location, time, semantic> \] 
@@ -262,9 +324,17 @@ In this section we consider all spatial relations and information:
    add(list\_goal, create\_task(task\_id, advertising\_task, location, person\_id, shop\_id)
 \item $\dots$
    \end{itemize}
-   
-  \section{Conclusion}
   
-  This draft describes in an abstract way what we can expect to have in the KB module. Many concepts should be defined and deepened to provide an effective reasoning module. Representation and reasoning techniques should be discussed. Many commonsense reasoning rules should be defined, spatial reasoning and computation of spatial relations from robot and people locations have to be defined. This could also be discussed in the next phone meeting.
+
+\section{Semantic map of the \emph{Rives de l'Orne} mall}
+ 
+{\bf TODO: Caen student}
+
+\vspace{3cm}
+
+
+\section{Conclusion}
+  
+This draft describes in an abstract way what we can expect to have in the KB module. Many concepts should be defined and deepened to provide an effective reasoning module. Representation and reasoning techniques should be discussed. Many commonsense reasoning rules should be defined, spatial reasoning and computation of spatial relations from robot and people locations have to be defined. This could also be discussed in the next phone meeting.
      
 \end{document}
