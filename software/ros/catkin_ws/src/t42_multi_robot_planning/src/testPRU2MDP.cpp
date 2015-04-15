@@ -1,4 +1,5 @@
 #include "PRU2MDP.h"
+#include "MDP.h"
 #include <locale.h>
 
 static float testFunction(const PRUstate& fromState, const PRUstate& toState,
@@ -25,4 +26,20 @@ int main() {
   PRU2MDP p2m(pru);
 
   p2m.states.print();
+  
+  MDP *mdp = p2m.getMDP();
+  mdp->initVI();
+  
+  std::cout << "Solve : " << mdp->iterate(0.9f) << std::endl;
+  mdp->printPolicy(std::cout);
+  std::cout << "Solve : " << mdp->iterate(0.9f) << std::endl;
+  mdp->printPolicy(std::cout);
+  std::cout << "Solve : " << mdp->iterate(0.9f) << std::endl;
+  mdp->printPolicy(std::cout);
+  std::cout << "Solve : " << mdp->iterate(0.9f) << std::endl;
+  mdp->printPolicy(std::cout);
+  std::cout << "Solve : " << mdp->iterate(0.9f) << std::endl;
+  mdp->printPolicy(std::cout);
+
+  delete mdp;
 }

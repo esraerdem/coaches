@@ -71,8 +71,43 @@ MDPstate::~MDPstate() {
 #endif
 };
 
+std::ostream& operator<<(std::ostream& os, const MDPstate& state) {
+  os << state.name;
+  if (state.prevAction != NULL) {
+    os << '.' << state.prevAction->actionName
+       << '.' << state.prevOutcome->name;
+    for (PRUstate::const_iterator itSV = state.stateVariables.begin();
+	 itSV != state.stateVariables.end(); ++itSV) {
+      os << '$' << itSV->first << '=' << *(itSV->second);
+    } // for *itSV in stateVariables
+  }
+  return os;
+};
+
+
 MDP::~MDP() {
 };
 
 MDP::MDP(vector<MDPstate*> &_states) : states(_states) {
 };
+
+const vector<const MDPaction*> &MDP::getPolicy(int horizon) const {
+  return policy[horizon];
+}
+
+void MDP::printPolicy(std::ostream& os) const {
+  printPolicy(os, policy.size()-1);
+}
+
+void MDP::printPolicy(std::ostream& os, int horizon) const {
+  const vector<const MDPaction*> &p = policy[horizon];
+  for (vector<MDPstate*>::const_iterator itS = states.begin();
+       itS != states.end(); ++itS) {
+    MDPstate *s = *itS;
+    os << *s << ": " << *p[s->index];
+    if (horizon >= ((int)policy.size())-2) {
+      os << " (" << value[(horizon+1) & 1][s->index] << ')';
+    }
+    os << std::endl;
+  } // for *itS in states
+}

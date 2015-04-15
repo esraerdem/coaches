@@ -46,6 +46,7 @@ class MDPstate {
 
   ~MDPstate(); 
 };
+std::ostream& operator<<(std::ostream& os, const MDPstate& state);
 
 class MDP {
  private:
@@ -66,6 +67,15 @@ class MDP {
    * @return the variation of the value function during this iteration.
    */
   float iterate(float gamma);
+
+  /** Gets the policy for a given horizon
+   * @param horizon the number of actions left, including this one
+   * @return a reference to the requested policy */
+  const vector<const MDPaction*> &getPolicy(int horizon) const;
+
+  void printPolicy(std::ostream& os, int horizon) const;
+  void printPolicy(std::ostream& os) const;
+
 }; // class MDP
 
 #endif

@@ -41,8 +41,8 @@ float MDP::iterate(float gamma) {
 	float duration = out->durationConstant 
 	  + PRUplus::domainFunction(s->stateVariables, s2->stateVariables,
 				    out->duration, out->durationParameter);
-	v += out->probability * (pv[s2->index]*pow(gamma,duration)
-				 + quality);
+	float fct = powf(gamma, duration);
+	v += out->probability * (pv[s2->index]*fct + quality);
       } // for *itO in current-action's outcomes
       if (v>bv) {
 	bv = v;
