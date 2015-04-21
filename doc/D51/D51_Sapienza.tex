@@ -139,9 +139,8 @@ ROS provides the middleware to share information among the many modules implemen
 
 \section{Main software components}
 
-In this section, the main software components that will be development for the control, the reasoning and the interaction functionalities of the system are described.
+The main software components that will be developed for control, reasoning and interaction functionalities of the system are listed below.
 
-The main software components that will be realized within the COACHES project correspond to the following project tasks.
 \begin{itemize}
 \item T1.1 KB modeling
 \item T1.2 KB reasoning
@@ -237,7 +236,7 @@ TF, odom, cmd\_vel, stimated robot pose from localizer, laser and RBGD data. On 
 \paragraph{Data set.} The raw data streams acquired are processed in order to be easier to process. The resulting data set will contain:
 \begin{itemize}
 \item Robot Position: text file containing (timestamp, X, Y, THETA) (world coordinates)
-\item Robot Laser: text file containing (timestamp, map<RHO, THETA>)  (robot coordinates)
+\item Robot Laser: text file containing (timestamp, map$\langle$RHO, THETA$\rangle$)  (robot coordinates)
 \item Robot Camera: image files:	(timestamp\_RGB.bmp or .jpg or .png) and
  				(timestamp\_DEPTH.png)
 \item Camera: image files (as in the Robot Camera)
@@ -246,7 +245,7 @@ TF, odom, cmd\_vel, stimated robot pose from localizer, laser and RBGD data. On 
 All time stamps must be synchronized. This synchronization will be performed at this stage by manually detecting and synchronizing a few corresponding frames in the different acquired data streams.
 
 \paragraph{Ground-truth annotations.} The data set will be annotated in order to provide useful information for evaluating the processing algorithms.
-The two elements annoted will be {\tt person}, representing an indiviual person in the scene, and {\tt group}, representing a group of people in the scene for which we are not interested in determining individuals.
+The two elements annotated will be {\tt person}, representing an individual person in the scene, and {\tt group}, representing a group of people in the scene for which we are not interested in determining individuals.
 
 For each person/group in the scene the following annotation will be used.
 
@@ -258,7 +257,7 @@ For each person/group in the scene the following annotation will be used.
       <bby> ... </bby>
       <bbw> ... </bbw>
       <bbh> ... </bbh>
-      <sex> ... </sex>
+      <gender> ... </gender>
       <age> ... </age>
       <identity> ... </identity>
       <activity> ... </activity>
@@ -282,21 +281,23 @@ where:
 
 
 \begin{verbatim}
-      id: person or group id (unique for every person/group appearing in the data set)
+      id: person or group id (unique anonymous identifier for every person/group appearing in the data set)
       timestamp: timestamp of reference
       sensorid: sensor with which the person/group has been detected
       x, y: floor projection of baricenter of the person/group (world coordinates)
       bbx, bby: coordinates of the top left point of the bounding box (image coordinates)
       bbw, bbh: width and height of the bounding box (image coordinates)
-      sex: sex of person 
+      gender: gender of person 
       age: age category (child, adult, senior)
-      identity: the identity of the person (real name, birth date, ...)
+      identity: the identity of the person (name, birth date, ...)
       size: number of people in the group
       activity: a set of symbols representing activities of the person/group
 \end{verbatim}
 
 An annotation is made every several frames (e.g., 60 frames or 5 seconds). {\tt id} of people and groups are maintained over different sensors and over time, even when the person/group move through different sensors.
 
+Notice also that identity of people will be gathered and stored only for the people that are involved in the development of the project, who agree on this procedure and on the use of these information. In no case, these information will be collected from visitors or other users that are not involved with the partners of the project.
+In some experiments, some invented identities will be associated to users. 
 
 \section{Software organization and version management}
 
