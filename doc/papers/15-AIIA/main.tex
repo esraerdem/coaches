@@ -1,0 +1,88 @@
+\documentclass{llncs}
+
+\usepackage{epsfig}
+\usepackage{color}
+
+\renewcommand{\baselinestretch}{0.999}
+
+%\setlength{\topmargin}{-0.5cm}
+%\setlength{\oddsidemargin}{0.5cm}
+%\setlength{\evensidemargin}{0.5cm}
+%\setlength{\textwidth}{15.5cm}
+%\setlength{\textheight}{22.5cm}
+
+\newcommand{\todo}[1]
+{\colorbox{yellow}{{\bf TODO:} #1}}
+
+%\newcommand{\todo}[1]{}
+
+
+\def\coaches{ {\bf COACHES}}
+
+\begin{document}
+%
+%\frontmatter          % for the preliminaries
+%
+%\pagestyle{headings}  % switches on printing of running heads
+%
+%\mainmatter              % start of the contributions
+%
+\title{\coaches\\
+Cooperative Autonomous Robots in Complex and Human Populated Environments}
+%
+%\titlerunning{SPQR}  % abbreviated title (for running head)
+%                                     also used for the TOC unless
+%                                     \toctitle is used
+%
+\author{L. Iocchi$^1$,  E. Erdem$^2$,  L. Jeanpierre$^3$, A.-I. Mouaddib$^3$, H. Sahli$^4$ \\
+$^1$ Department of Computer, Control, and Management Engineering\\ 
+Sapienza University of Rome, Italy\\
+$^2$ ...
+$^3$ ...
+$^4$ ...
+}
+
+\institute{}
+\date{}
+
+%
+%\authorrunning{L. Iocchi, D. Nardi, et al.}   % abbreviated author list (for running head)
+%
+
+\maketitle              % typeset the title of the contribution
+
+\begin{abstract}
+
+Public spaces in large cities are increasingly becoming complex, more hostile and  
+unpleasant to use because of the overcrowding, rush and complex information in signboards. 
+It is in the interest of cities to make their public spaces easier to use, friendlier to visitors and safer to increasing elderly population and to the people with disabilities. 
+Meanwhile, we observe, in the last decade a tremendous progress in the development of robots in dynamic, complex and uncertain environments. The new challenge for the near future is to deploy the robots in public spaces to make easier and safer the use of these spaces. 
+
+In this paper, we provide an overview of the COACHES project which addresses fundamental issues related to the design and development of autonomous robots with high-level skills for environment modeling and scene understanding, distributed autonomous decision-making, short-term interacting with humans and robust and safe navigation in overcrowding spaces. 
+In particular, we describe the main components in which Artificial Intelligence techniques are used and integrated with the robotic system, as well as implementation details and some preliminary tests of these components. The implementation and the performed tests confirm the suitable integration of AI and robotics techniques to solve complex problems in complex environments, where human-robot interaction is a key feature.
+
+\end{abstract}
+
+
+\input{intro}
+
+\input{swarch}
+
+\input{AI}
+
+\input{impl}
+
+
+
+\section*{Acknowledgements}
+
+\coaches ~ is funded within the CHIST-ERA program ...
+
+\begin{small}
+\bibliographystyle{plain}
+\bibliography{bib/inc-short,bib/2000-2004,bib/2005-2009,bib/2010-2014}
+\end{small}
+
+
+\end{document}
+
