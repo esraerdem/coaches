@@ -56,10 +56,6 @@ If everything goes well, you will see at the end the message
 
   Hello COACHES developers!!!
 
-If you get errors and do not see the Hello message, try to solve them and/or write to iocchi@dis.uniroma1.it.
-
-If you get errors in other packages, but you see the Hello message, do not worry and move to the next step.
-
 
 === Set up the COACHES software environment ===
 
@@ -84,7 +80,6 @@ After set up (as in the previous section), use:
   $ coaches_update.bash
 
 
-
 === Build the COACHES software environment ===
 
 After set up (as in the previous section), use:
@@ -94,6 +89,7 @@ After set up (as in the previous section), use:
 If you get errors here, first time try to run the command again (sometimes catkin
 has problems when compiling multiple packages).
 If the error is persistent, try to solve it and/or write to iocchi@dis.uniroma1.it.
+
 
 === Test the COACHES software environment ===
 
@@ -108,25 +104,32 @@ You will see a print out 'Hello COACHES developers!!!'
 2. Stage environment
 
   $ roscd stage_environments/scripts/
-  $ ./start_simulation.py Rive1 diago 10 23 0 amcl move_base joystick rviz
+  $ ./start_simulation.py Rive1 diago 10 23 0 amcl move_base keyboard rviz
 
-You can move the simulated robot with keyboard in the window 
-or through goal commands in Rviz
+You can move the simulated robot with keys WASD when you focus the window in which
+you read: "Reading from the keyboard..."
+Otherwise you can try to send move_base goal commands in Rviz.
+
 When you want to close the simulation use the command
 
   $ ./quit.sh
 
+
+You can also use only the command
+  $ ./start_simulation.py 
+and select a proper combination in the GUI  
+
+
+
 Known problems: 
 
-1. sometimes the very first execution when you turn on the machine does not workspaces.
+1. sometimes the very first execution when you turn on the machine does not work.
 Solution: retry or try to launch 'roscore' manually before starting the simulation
 
 2. sometimes Rviz shows a black window. 
 Solution: re-launch Rviz with the command
   $ rosrun rviz rviz -d `rospack find stage_environments`/config/diago/rviz/diago.rviz
   
-You can also use only the command
-  $ ./start_simulation.py 
-and select a proper combination in the GUI  
+
 
 

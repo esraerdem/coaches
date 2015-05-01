@@ -11,7 +11,8 @@ software/ros/catkin_ws/src/CMakeLists.txt*
 software/external/gradient_based_navigation/
 software/ros/catkin_ws/src/gradient_based_navigation
 software/external/PetriNetPlans/
-software/ros/catkin_ws/src/PNPros
+software/ros/catkin_ws/src/pnp_msgs
+software/ros/catkin_ws/src/pnp_ros
 software/external/stage_environments/
 software/ros/catkin_ws/src/stage_environments
 doc/**/*.pdf
