@@ -3,11 +3,11 @@
 \begin{figure}
 \centering
 \includegraphics[width=0.95\textwidth]{fig/COACHES_swarch.png}
-\caption{COACHES software architecture}
+\caption{\coaches software architecture}
 \label{fig:swarch}
 \end{figure}
 
-The software architecture of the COACHES robots is shown in Figure \ref{fig:swarch}).
+The software architecture of the \coaches robots is shown in Figure \ref{fig:swarch}).
 An open architecture (hard/soft) and standard technologies available will be used, 
 so that it will be easy to extend and/or adapt the capabilities of the system during the whole length of 
 the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors).  
@@ -15,19 +15,19 @@ Such an open architecture will also simplify and optimize integration efficiency
 
 
 For the development of the software robotics components, the Robot Operating System (ROS)\footnote{www.ros.org}, which is the standard middleware for robotics applications, has been selected.
-ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, an interface (ROS-through-TCP) will be realized in order to share information among the robots and between each robot and other components of the system.
+ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, an interface (ROS-through-TCP) will be realized in order to share information among the robots and between ROS and non-ROS components of the system.
 
 The main software components that will be developed for control, reasoning and interaction functionalities of the system are listed below.
 
 \begin{itemize}
-\item T1.1 KB modeling
-\item T1.2 KB reasoning
-\item T2.1 Image Processing
-\item T2.2 Situation Awareness
-\item T3.1 Multimodal HRI
-\item T3.2 Human needs estimation
-\item T4.1 Robust navigation %(Sapienza)
-\item T4.2 Multi-robot planning
+\item {\bf T1.1} KB modeling
+\item {\bf T1.2} KB reasoning
+\item {\bf T2.1} Image Processing
+\item {\bf T2.2} Situation Awareness
+\item {\bf T3.1} Multi-modal HRI
+\item {\bf T3.2} Human needs estimation
+\item {\bf T4.1} Robust navigation %(Sapienza)
+\item {\bf T4.2} Multi-robot planning
 \end{itemize}
 
 In the next section we will detail the components where Artificial Intelligence techniques have a fundamental role.
