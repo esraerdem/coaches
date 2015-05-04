@@ -21,6 +21,13 @@ In order to implement this approach we have chosen Markov Decision Processes (MD
 
 \subsection{MDP}
 
+Markov Decision Processes model sequential decision problems in probabilistic environments. More Formally, we have $M=(S,A,T,R)$ where $S$ is a finite set of states, $A$ is a set of actions, $T(s,a,s')$ a transition function denoting the probability for going from state $s$ to state $s'$ using action $a$, and $R(s,a,s')$ a reward function expressing the expected gain for using action $a$ in state $s$ and arriving in state $s'$.
+
+The Markov property tells that the future only depends on the current state. That implies that the state alone must be sufficient for deciding on what to do.
+Moreover, states are \emph{observable}: at any time, the system knows what the current state is, even if transitions are probabilistic. For example a dice may run any value between 1 and 6 with probability $1/6$. However, when the dice has been thrown, we can read its actual value.
+
+MDPs can be solved efficiently using standard algorithms like \emph{Value Iteration}. The resulting policy $\pi(s)=a$ gives the optimal action for any state $s$. It maximises the expected value $V(s)=\sum_{t=0}^H{\gamma^t \sum_{s'}{R(s_t,\pi(s_t),s') T(s_t,\pi(s_t),s')}}$ over the next $H$ (the horizon) actions, with $0<\gamma\le1$ a discount factor.
+
 \subsection{PNP}
 
 \subsection{Rule based system}
@@ -75,13 +82,12 @@ Given a PRU+, it is possible to transform it in a MDP in order to compute an opt
 The representation of the states $S$ for this MDP is defined as follows.
 Each state in $S$ is defined by $[  \alpha_i^j, X_1, \ldots, X_{|X|} ]$, where
 $X_k = \bot$ for all the nonactive state variables for this level, i.e.,$ X_k \notin V_i$.
-An initial state $S_0 = [ \alpha_0^0, \bot, \ldots, \bot ]$ is also defined in the set of states $S$, with $\alpha_0^0$ being a special symbol used only in the representation of the initial state. Finally, states that are achieved after the execution of modules in the last level are marked as goal states and grouped in a set of goal states $G \subset S$.
-Notice that in the proposed framework, the states must not be fully observable at any time, since at execution time only the observable properties and the state variables used in the execution conditions are required to determine the state of the execution of the policy.
+An initial state $S_0 = [ \alpha_0^0, \bot, \ldots, \bot ]$ is also defined in the set of states $S$, with $\alpha_0^0$ being a special symbol used only in the representation of the initial state. This state describes the modules that can be used at the beginning. Finally, states that are achieved after the execution of modules in the last level are marked as goal states and grouped in a set of goal states $G \subset S$.
+Notice that in the proposed framework, the states must not be fully observable at any time, since at execution time only the observable properties and the state variables used in the execution conditions are required to determine the state of the execution of the policy. However each transition must be fully observable since the execution module needs to know which option has been activated at runtime.
 
 Actions in MDP corresponds to the modules in the PRU+. 
 
 The transition function $\delta$ of the MDP is defined according to the probabilities and the set of successor modules defined in the PRU.
-We assume that all the modules at processing level 1 are enabled from the initial state.
 Thus we can define the transition function for the initial state $S_0$ as follows: 
 $Pr(S_0,m_1^j,S(\alpha_1^j)) = \alpha_1^j.p$, where
 $S(\alpha_1^j)$ is the state resulting from the corresponding outcome $\alpha_1^j$ of $m_1^j$.
@@ -104,9 +110,8 @@ The returned values must be expressed in the same measuring units by all the mod
 
 \subsection{Computing the optimal policy}
 
-{\bf TODO: describe the algorithm for computing the optimal policy.}
-
-
+Computing the optimal policy simply consists in solving the MDP model.
+{\bf TODO: any need for more detail here?}
 
 
 \subsection{Policy to PNP transformation}
