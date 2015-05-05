@@ -50,16 +50,20 @@ The overall procedure of the working system is the following:
 
 
 
-\subsection{Progressive Processing Units (PRU)}
+\subsection{Progressive Reasonning Units (PRU)}
 
-{\bf TODO: brief summary of PRUs and discussion about what is missing in them and why we had to extend the definition.}
+Progressive Reasonning Units \cite{MZDecai98ws} are a family of models allowing for anytime computation, that is an aglorithm able to give a solution at any time, with an response quality increasing with time. In their classical form, they allow for solving a dynamic set of problems within a given deadline.
+Each problem is described by a PRU, that is a sequence of computation levels. Each level gives a specific quality to the solution, but costs a certain amount of time. The main question of the algorithm is ``should I improve the solution of the current problem, or skip to next problem?''.
 
+In advanced versions, a given PRU level may include several alternative modules with specific durations and qualities, and even resource consumption. Anyway, these are still dedicated to computing and enhancing some result before skipping to next one. In order to apply these techniques to more general problems, we had to refine and extend the PRU concept.
 
 \subsection{Extended PRUs}
 
 In this work we have extended the definition of PRUs in order to add the desired features. The new formalization (that we call PRU+) is this described in this section.
 
-A PRU+ is composed by a sequence of \emph{processing levels} $L = ( l_1, l_2, \ldots, l_{|L|})$, a set of \emph{state variables} $X = \{ X_1, \ldots, X_{|X|} \}$, and a set of \emph{observable boolean properties} of the environment $O = \{ o_1, \ldots, o_{|O|} \}$.
+A PRU+ is a PRU where each level is given a set of state variables describing the current state of the problem to be solved. These variables may be different from one level to the other. The problem can be computational, but it can include any process where progressive stages can be acheived, like in a hierarchical plan. For example, to read the newspaper, you have to go to the mailbox, take the newspaper, get back and start reading. Each stage has different processing details that can be dealt with independantly.
+
+More formally, a PRU+ is composed by a sequence of \emph{processing levels} $L = ( l_1, l_2, \ldots, l_{|L|})$, a set of \emph{state variables} $X = \{ X_1, \ldots, X_{|X|} \}$, and a set of \emph{observable boolean properties} of the environment $O = \{ o_1, \ldots, o_{|O|} \}$.
 Each state variable $X_i$ can be assigned to a value within a set of finite values, i.e., $X_i \in A_i = \{ \bot , a_i^1, \ldots, a_i^{|A_i|} \}$, with $|A_i|$ finite, and $\bot$ denoting a special null value. Each observable property can be evaluated at execution time by an external function that is always able to return a truth value for it.
 
 Each processing level $l_i$ is composed by a set of \emph{modules} $( m_i^1, \ldots, m_i^{p_i} )$ and it is associated to a set of active state variables $V_i \subseteq X$.
@@ -83,7 +87,7 @@ The representation of the states $S$ for this MDP is defined as follows.
 Each state in $S$ is defined by $[  \alpha_i^j, X_1, \ldots, X_{|X|} ]$, where
 $X_k = \bot$ for all the nonactive state variables for this level, i.e.,$ X_k \notin V_i$.
 An initial state $S_0 = [ \alpha_0^0, \bot, \ldots, \bot ]$ is also defined in the set of states $S$, with $\alpha_0^0$ being a special symbol used only in the representation of the initial state. This state describes the modules that can be used at the beginning. Finally, states that are achieved after the execution of modules in the last level are marked as goal states and grouped in a set of goal states $G \subset S$.
-Notice that in the proposed framework, the states must not be fully observable at any time, since at execution time only the observable properties and the state variables used in the execution conditions are required to determine the state of the execution of the policy. However each transition must be fully observable since the execution module needs to know which option has been activated at runtime.
+Notice that in the proposed framework, the states do not have to be fully observable at any time, since at execution time only the observable properties and the state variables used in the execution conditions are required to determine the state of the execution of the policy. However each transition must be fully observable since the execution module needs to know which option has been activated at runtime.
 
 Actions in MDP corresponds to the modules in the PRU+. 
 
@@ -110,7 +114,8 @@ The returned values must be expressed in the same measuring units by all the mod
 
 \subsection{Computing the optimal policy}
 
-Computing the optimal policy simply consists in solving the MDP model.
+Computing the optimal policy simply consists in solving the MDP model. Classical algorithms like \emph{Value Iteration} \cite{Bellman57} or \emph{Policy Iteration} \cite{howard1960dynamic} are able to compute an optimal policy efficiently.
+
 {\bf TODO: any need for more detail here?}
 
 
