@@ -101,8 +101,6 @@ To this end, the reasoning engine takes into account the available information i
 \subsection{Planning under uncertainty}
 
 In this section we describe the Markov Decision Process (MDP) used to model the \coaches planning domain and the algorithm implemented for computing the optimal policy.
-In this algorithm a tabu-list of actions is used to choose actions to be inserted in the policy.
-This tabu-list is built and updated by the Model updater module, described below in this section, representing the actual feedback coming from the execution layer..
 
 \vspace{1em}
 \noindent
@@ -171,7 +169,9 @@ In the following we define the $MDP = <S, A, R, T> $ where :
 From this definition the Bellman equation of our former, becomes : 
 \[ V([l,m,o,svu]) = R(o) + max_{E,S} \sum Pr([l',m',o',svu'] | [l,m,o,svu], a). V([l',m',o',svu'] )  \]
 
-The optimal policy $\pi$ can be computed by standard MDP solving algorithms as value-iteration algorithm. 
+The optimal policy $\pi$ is computed by a standard MDP solving algorithm based on value-iteration. Moreover, in this algorithm, a tabu-list of actions is used to choose or drop actions to be inserted in the policy.
+This tabu-list is built and updated by the Model updater module, described below in this section, representing the actual feedback coming from the execution layer.
+
 
 
 \subsection{Plan execution and monitoring}
@@ -229,7 +229,7 @@ At this moment, we have implemented a simple method that build and maintains a t
 More specifically, whenever an action fails, the action is inserted in the tabu list and thus it will not be selected in the next generation of the policy.
 This mechanism is also tied to a time decay mechanism, so that the presence of an action in the tabu list decreases over time, making the action available some time after the action failed, in order to try it again in the future.
 
-For example, if the action o moving to a particular shop fails because there are too many people in that area, the robot will avoid to generate a new plan that will include going to that shop for a while, avoiding thus the main cause of the current failure.
+For example, if the action of moving to a particular shop fails because there are too many people in that area, the robot will avoid to generate a new plan that will include going to that shop for a while, avoiding thus the main cause of the current failure.
 
 Although not optimal, this strategy allows the robot to generate new plans after failures that will not determine the same cause of failure with respect to the one just failed. 
 
