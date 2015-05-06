@@ -101,9 +101,9 @@ with
 \[ e_1^{j,(k)} = \left\{ 
 \begin{tabular}{l} 
 $\bot$ if $X_k \notin V_1$, (i.e., non active state variables) \\  
-$a'_k$ if $(X_k \leftarrow a'_k) \in \alpha_1^j.SVU$, (i.e., it is updated by this action) \\
+$a'_k$ if $(X_k \leftarrow a'_k) \in \alpha_1^j.SVU$, (i.e., updated by this action) \\
 $a_k$  if all the predecessors have the value $a_k$ \\
-$\bot$ if there is an inconsistency in the values of the predecessors \\
+$\bot$ if inconsistency in the values of the predecessors \\
 \end{tabular} \right. \]
 
 This process can be repeated at any level to fully define the transition function.
@@ -116,7 +116,7 @@ The returned values must be expressed in the same measuring units by all the mod
 
 Computing the optimal policy simply consists in solving the MDP model. Classical algorithms like \emph{Value Iteration} \cite{Bellman57} or \emph{Policy Iteration} \cite{howard1960dynamic} are able to compute an optimal policy efficiently.
 
-{\bf TODO: any need for more detail here?}
+\todo{any need for more detail here?}
 
 
 \subsection{Policy to PNP transformation}
@@ -137,9 +137,8 @@ While the queue is not empty, the PNP sequence operator is used to add the actio
 If a state in $SS_i$ has not been visited, then a new place is generated in the PNP, this place is associated with this state that is now marked as visited, and this state is added to the queue. If a state in $SS_i$ has been already visited, then the transition is connected with the place that was stored when the state was created. The process thus continues until the queue is empty.
 When encountering goal states in $G$ the corresponding places are labeled as ``goals'' that will be used by the PNP executor to terminate the execution of the plan and return a ``success'' feedback.
 
-\vspace{0.5cm}
-{\bf TODO: describe the algorithm for generating the PNP in details.}
-\vspace{0.5cm}
+\todo{describe the algorithm for generating the PNP in details.}
+
 
 
 It is important to observe that the descriptions of the successor states in the output returned by the MDP planner are generated according to the specification of the PRU, as described in the previous section. Thus, they contain the conditions $\phi_i^k$ over observable properties of the environment that can be actually checked at run time to determine the current outcome of actions and thus the correct successor state from which the execution should continue.
@@ -200,9 +199,8 @@ if the action fails, the MDP will be modified according to one or more of these 
 \subsection{Model Update}
 
 
-\vspace{0.5cm}
-{\bf TODO: describe the method for updating the MDP model based on the execution results.}
-\vspace{0.5cm}
+\todo{describe the method for updating the MDP model based on the execution results.}
+
 
 %\section{Examples: Assistance and Escorting Tasks}
 

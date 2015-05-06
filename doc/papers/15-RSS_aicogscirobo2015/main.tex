@@ -5,6 +5,17 @@
 \usepackage[numbers]{natbib}
 \usepackage{multicol}
 \usepackage[bookmarks=true]{hyperref}
+\usepackage{epsfig}
+\usepackage{color}
+
+
+\newcommand{\todo}[1]{
+\noindent
+%\fbox
+\colorbox{yellow}{\parbox{\columnwidth}{
+{\bf TODO:} #1
+}} \vspace{1em}
+}
 
 \pdfinfo{
    /Author (L. Iocchi, L. Jeanpierre, A.-I. Mouaddib)

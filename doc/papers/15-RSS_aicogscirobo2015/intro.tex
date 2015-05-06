@@ -1,27 +1,55 @@
 \section{Introduction}
 
-Contributions
+% Motivation
 
-Different levels of abstractions for the representation of information ...
-(no need to add too details at the high level)
+\todo{The COACHES project ...}
 
-
-Dealing with action failures and incomplete/incorrect model of the environment
-
-
-Problem
-
-Input: set of possible tasks
-
-Output: execution and monitoring of a behavior (policy) implementing a solution for the most convenient task.
-
-
-
-
-Execution monitoring and interleaving planning and execution are crucial features for an autonomous robot acting in a real environment, specially when human interaction is involved, 
-as for the COACHES robots. Indeed, in complex scenarios, it is not possible to model and foresee all the possible situations that may occur.
-At planning time, several information about the real environment are not known. Therefore, generated plans may not be optimal or feasible at execution time.
+Planning under uncertainty, execution monitoring and interleaving planning and execution are crucial features for an autonomous robot acting in a real environment, specially when human interaction is involved, 
+as for the COACHES robots. Indeed, in complex scenarios, it is not possible to model and foresee all the possible situations that may occur. Moreover, at planning time, several information about the real environment are not known. Therefore, generated plans may not be optimal or feasible at execution time.
 
 It is thus necessary to explicitly model and consider possible plan failures and to devise a mechanism that is able to properly react to these failures.
 
-In this paper, we describe a framework for representing possible causes of action failures and for revising the model of the system, in order to find better plans for the current situation.
+
+% Problem
+
+\todo{The problem considered in this paper is the following...}
+
+Input: domain description  (PRU+ / standard definition of factored MDPs)
+
+Output: planning, execution and monitoring of a behavior (policy) implementing the optimal solution for the domain.
+
+
+
+% Analysis of standard techniques
+
+A standard way of approaching this problem is to model the problem as an MDP, apply a standard solver to produce the policy and then execute the policy, monitoring its success.
+However, the execution of a policy generated from standard MDP techniques require the full evaluation of the current state in order to determine the actions to be performed. When the state is composed by several independent variables, all of them must be evaluated in order to properly choose the next action.
+This can be achieved in two ways: 1) \emph{passive observability} in which sensor processing routines are implemented to automatically determine at any time the value of all the variables needed to assess the current state, 2) \emph{active observability}, in which sensor processing to determine the value of each variable can be activated on demand.
+The problem with the first approach is that it forces the system to execute a lot of computation for sensor processing, most of which is not really needed at each time.
+Obviously, it is also possible a mixed approach in which a subset of variables can be continuously observed, while another subset will be observed only when needed. Typically, we want to apply \emph{active observability} for all those variables that require high computational load for determining their value (this is a typical case for variables determined through image processing procedures).
+
+Therefore, when the cost of sensing and evaluating (a subset of) variables forming the state is relevant for the application, the plain execution of a policy is not adequate, since it is not possible to know which are the variables that we must check at any time, and thus we cannot apply \emph{active observability}.
+
+When compact representations of the Value function and of the policy in Factored MDP is used (e.g., \cite{Hoey99spudd,KoPa00}), the variables to be determined at any execution step are limited by the structure of the compact representation (e.g., decision trees). But it is necessary to traverse all the decision tree or the decision list, in order to determine the action to be executed.
+
+\todo{PRU+ vs. language for defining Factored MDP (e.g.,  Relational Dynamic Influence Diagram
+Language (RDDL) or the one used in SPUDD}
+
+\todo{Transformation from compact representation of the policy ADD/DL  to PNP}
+
+\todo{Describe the general concept that given the entire set of state variables that can be used to represent the domain, only a subset of them is used at MDP level.}
+
+\todo{Example...}
+
+\todo{Our Contributions}
+
+A hierarchical representation of the information needed for planning and execution where the state variables used for planning are a subset of the ones used for execution. This means that some execution states (i.e., states at execution level) will not be distinguishable at planning level.
+
+
+Dealing with action failures and incomplete/incorrect model of the environment, that will enable the planner to improve the plan in correspondence with indistinguishable execution states, without extending the state representation at planning level.
+
+
+
+
+
+
