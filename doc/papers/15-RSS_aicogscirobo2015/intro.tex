@@ -41,6 +41,16 @@ Language (RDDL) or the one used in SPUDD}
 
 \todo{Example...}
 
+A robot operates in the corridor of a shopping mall composed by a set of shops ${\mathbf S} = \{ S_1, \ldots, S_n \}$. Each shop keepers cane define a set of advertisements that the robot is asked to communicate to customers of the mall. The set of advertisements for shop $S_i$ is denoted by ${\mathbf A}_i = \{ A_{i,1}, \ldots, A_{i,m_i} \}$. Each advertisement has associated two properties: a customer profile $c_{i,j}$ and a nominal reward $\tilde r_{i,j}$, with $i=1, \ldots, n$ and $j=1, \ldots, m_i$. For example, a customer profile can be a set of constraints on gender and age, while the nominal reward is a real value associated to how good is for the system that a customer receives this advertisement.
+Given a customer $P$ to whom the robot shows the advertisement $A_{i,j}$ and the distance $d$ of the pair robot and person $P$ (that we assume are close each other) to the shop $S_i$, an actual reward is computed as a function $r_{i,j,P,d} = f({\tilde r}_{i,j},c_{i,j},P,d)$, that consider the nominal reward discounted by a factor considering a possible mismatch between $P$ and the customer profile $c_{i,j}$ and another discount factor related to the distance $d$. A possible implementation of this function is $ f({\tilde r}_{i,j},c_{i,j},P,d) =
+{\tilde r}_{i,j} (1 - \alpha(c_{i,j},P)) \beta (d)$, where $\alpha(\cdot)$ is the function computing the matching between a person and a customer profile (a value in $[0,1]$)
+and  $\alpha(\cdot)$ can be a sigmoid decay function.
+The robot can execute the following actions in the environment: move to any location (i.e., in front of any shop), avoiding obstacles and considering people with social navigation techniques; approach a specific person or a group of poeple; ask a customer to slide his/her fidelity card to get information about him/her, perform a simple advertisement action (when no information about the customer are known), perform a more complex user dependent advertisement action (when information about the customer are known).
+The problem we want to solve is the following: given the current position of the robot,
+the information about shops and advertisements: ${\mathbf S}$, ${\mathbf A}_i$, $c_{i,j}$, and  $\tilde r_{i,j}$, and an initial probability distribution of the presence of people in the shopping mall (for example, provided by an external system of video-cameras), plan and execute the behavior that maximizes the global actual reward, also recovering from possible failures.
+
+
+
 \todo{Our Contributions}
 
 A hierarchical representation of the information needed for planning and execution where the state variables used for planning are a subset of the ones used for execution. This means that some execution states (i.e., states at execution level) will not be distinguishable at planning level.
