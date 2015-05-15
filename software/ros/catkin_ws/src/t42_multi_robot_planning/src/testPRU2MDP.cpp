@@ -84,6 +84,10 @@ int main() {
   
   MDP *mdp = p2m.getMDP();
   mdp->initVI();
+  std::cout << "Nb states : " << mdp->getStates().size() << std::endl;
+  std::cout << "Init  state : " << mdp->getState(0)->getPredicates() << std::endl;
+  std::cout << "First state : " << mdp->getState(1)->getPredicates() << std::endl;
+  std::cout << "Fifth state : " << mdp->getState(5)->getPredicates() << std::endl;
   
   std::cout << "Solve : " << mdp->iterate(0.99f) << std::endl;
   mdp->printPolicy(std::cout);

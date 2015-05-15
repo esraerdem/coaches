@@ -61,6 +61,23 @@ MDPstate::MDPstate(const string &description, const MDPaction *act,
   prevAction = act;
   prevOutcome = out;
 };
+const string MDPstate::getPredicates() const {
+  string prefix = "_context("+name;
+  string res = ")"; // closing context
+  for (PRUstate::const_iterator it=stateVariables.begin();
+       it != stateVariables.end(); ++it) {
+    if (*it->second != "nil") // nil variables are not specified
+      res += " & " + it->first+"("+*it->second+")";
+  }
+  if (prevAction != NULL) {
+    prefix += ","+prevAction->actionName+","+prevOutcome->name;
+    if (prevOutcome->isFinal)
+      res += " & _goal('" + prevOutcome->finalLabel + "')";
+  }
+
+  return prefix + res;
+}
+
 MDPstate::~MDPstate() {
 #ifdef PRINT
   std::cout << "Destroying state " << name;
@@ -111,3 +128,12 @@ void MDP::printPolicy(std::ostream& os, int horizon) const {
     os << std::endl;
   } // for *itS in states
 }
+
+const MDPstate *MDP::getState(int idx) const {
+  return states[idx];
+}
+
+const vector<const MDPstate *> &MDP::getStates() const {
+  return (const vector<const MDPstate *>&) states;
+}
+

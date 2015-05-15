@@ -92,7 +92,7 @@ PRU2MDP::PRU2MDP(const PRUplus &pru) {
 #endif
 
   // Matches first-modules with MDPaction in initial state
-  init = new MDPstate("RobotPos");
+  init = new MDPstate("Init");
   for (vector<string>::const_iterator itSV = pru.stateVariablesInitialAssignments.begin();
        itSV != pru.stateVariablesInitialAssignments.end(); ++itSV) {
     vector<string> vec;

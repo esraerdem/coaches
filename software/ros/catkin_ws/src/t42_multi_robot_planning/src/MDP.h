@@ -44,6 +44,10 @@ class MDPstate {
   MDPstate(const string &description, const MDPaction *act, const PRUoutcome *out,
 	   const PRUstate &SV);
 
+  /** Builds a string using variables as predicates separated by '&'. 
+   */
+  const string getPredicates() const;
+
   ~MDPstate(); 
 };
 std::ostream& operator<<(std::ostream& os, const MDPstate& state);
@@ -76,6 +80,8 @@ class MDP {
   void printPolicy(std::ostream& os, int horizon) const;
   void printPolicy(std::ostream& os) const;
 
+  const MDPstate *getState(int idx) const;
+  const vector<const MDPstate *> &getStates() const;
 }; // class MDP
 
 #endif

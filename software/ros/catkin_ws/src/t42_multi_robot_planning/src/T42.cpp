@@ -170,15 +170,6 @@ bool T42::updateDistances(int &closestSite) {
   if (bestDist <= 1) { // less than 1 meter away for a known site
     bestDist = sqrtf(bestDist);
     closestSite = bestSite;
-    /*    std::string bestSiteName="none";
-    for (std::map<std::string, int>::iterator it = fixedSites.begin();
-	 it != fixedSites.end(); ++it) {
-      if (it->second == bestSite) {
-	bestSiteName = it->first;
-	break;
-      }
-    }
-    std::cout << "Reusing distance based on " << bestSiteName << "(" <<bestDist<< ")\n";*/
     for (std::map<std::string,int>::iterator it = fixedSites.begin();
 	 it != fixedSites.end(); ++it) {
       i = it->second;
@@ -223,7 +214,6 @@ void T42::plan() {
   int closestSite;
   if (!updateDistances(closestSite))
     return;
-  //  ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   Point best = robot;
   int bestSite = -1;
   std::string bestSiteName = "here";
@@ -232,41 +222,19 @@ void T42::plan() {
   float expect = 0;
   for (std::vector<Point>::iterator it = sitesLocation.begin();
        it != sitesLocation.end(); ++it, ++i) {
-    /*
-    t41_robust_navigation::GetPathLen srv2;
-    srv2.request.from.header.frame_id="map";
-    srv2.request.from.pose.position.x = robot.x;
-    srv2.request.from.pose.position.y = robot.y;
-    srv2.request.from.pose.position.z = robot.z;
-    srv2.request.from.pose.orientation.x = 0;
-    srv2.request.from.pose.orientation.y = 0;
-    srv2.request.from.pose.orientation.z = 0;
-    srv2.request.from.pose.orientation.w = 1;
-    srv2.request.to.pose.position.x = it->x;
-    srv2.request.to.pose.position.y = it->y;
-    srv2.request.to.pose.position.z = it->z;
-    srv2.request.to.pose.orientation.x = 0;
-    srv2.request.to.pose.orientation.y = 0;
-    srv2.request.to.pose.orientation.z = 0;
-    srv2.request.to.pose.orientation.w = 1;
-    if (! pathLen.call(srv2)) 
-      return;
-    {
-    robot2siteDistance[i] = srv2.response.length;*/
-      for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
-	float estimation = itA->second;
-	if (robot2siteDistance[i] >= 1)
-	  estimation /= sqrt(robot2siteDistance[i]);
-
-	if (estimation > expect) {
-	  best = *it;
-	  bestAction = itA->first;
-	  bestParam = siteActionParam[i][bestAction];
-	  bestSite = i;
-	  expect = estimation;
-	}
-      } // for itA in siteActionReward[i]
-    //}
+    for (std::map<std::string,float>::iterator itA=siteActionReward[i].begin(); itA!=siteActionReward[i].end(); ++itA) {
+      float estimation = itA->second;
+      if (robot2siteDistance[i] >= 1)
+	estimation /= sqrt(robot2siteDistance[i]);
+      
+      if (estimation > expect) {
+	best = *it;
+	bestAction = itA->first;
+	bestParam = siteActionParam[i][bestAction];
+	bestSite = i;
+	expect = estimation;
+      }
+    } // for itA in siteActionReward[i]
   } // for it in sitesLocation
   bestSiteName = look4name(bestSite);
   if (bestAction != GOAL_ESCORT) {
@@ -310,6 +278,35 @@ std::string T42::look4name(int siteIdx) {
   return name;
 }
 
+float T42::getDistance(const std::string &orig, const std::string &dest) const {
+  if (orig == "RobotPos") {
+    std::map<std::string, int>::const_iterator itT = fixedSites.find(dest);
+    if (itT == fixedSites.end()) {
+      std::cerr << "! Unkown destination site " << dest << " !" << std::endl;
+      return 0;
+    }
+    return robot2siteDistance[itT->second];
+  }
+  if (dest == "RobotPos") {
+    std::map<std::string, int>::const_iterator itT = fixedSites.find(orig);
+    if (itT == fixedSites.end()) {
+      std::cerr << "! Unkown destination site " << orig << " !" << std::endl;
+      return 0;
+    }
+    return robot2siteDistance[itT->second];
+  }
+  std::map<std::string, int>::const_iterator itF = fixedSites.find(orig);
+  if (itF == fixedSites.end()) {
+    std::cerr << "! Unkown origin site " << orig << " !" << std::endl;
+    return 0;
+  }
+  std::map<std::string, int>::const_iterator itT = fixedSites.find(dest);
+  if (itT == fixedSites.end()) {
+    std::cerr << "! Unkown destination site " << dest << " !" << std::endl;
+    return 0;
+  }
+  return site2siteDistance[itF->second][itT->second];
+}
 
 void T42::run() {
   ros::spin();

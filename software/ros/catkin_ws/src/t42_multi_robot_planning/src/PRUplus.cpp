@@ -267,6 +267,15 @@ PRUoutcome::PRUoutcome(xmlpp::TextReader &reader) {
   } // while reader.read()
 } // PRUoutcome(reader)
 
+/** Computes the reward for arriving in dest when coming from orig */
+float PRUoutcome::getQuality(const PRUstate &orig, const PRUstate &dest) const {
+  return qualityConstant + PRUplus::domainFunction(orig, dest, quality, qualityParameter);
+}
+
+/** Computes the reward for arriving in dest when coming from orig */
+float PRUoutcome::getDuration(const PRUstate &orig, const PRUstate &dest) const {
+  return durationConstant + PRUplus::domainFunction(orig, dest, duration, durationParameter);
+}
 
 void PRUplus::fillSVdomain (map<string, domain_type> &stateVariableDomain) const {
   for (vector<string>::const_iterator it = stateVariablesInitialAssignments.begin();

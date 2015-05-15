@@ -63,5 +63,7 @@ class T42 {
   public:
   T42(ros::NodeHandle node);
   void run();
+  /** Gets the distance from the specified orig site to the specified dest site */
+  float getDistance(const std::string &orig, const std::string &dest) const;
 };
 

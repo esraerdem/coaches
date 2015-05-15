@@ -83,6 +83,13 @@ class PRUoutcome {
    *  Needs the action-parameters domain in case SVU depends on them. */
   void fillSVdomain (map<string, domain_type> &stateVariableDomain,
 		     const map<string, domain_type> &parameters) const;
+
+  /** Computes the reward for arriving in dest when coming from orig */
+  float getQuality(const PRUstate &orig, const PRUstate &dest) const;
+
+  /** Computes the reward for arriving in dest when coming from orig */
+  float getDuration(const PRUstate &orig, const PRUstate &dest) const;
+
 };
 
 std::ostream& operator<<(std::ostream& os, const PRUoutcome& option);
