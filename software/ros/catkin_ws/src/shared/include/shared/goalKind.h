@@ -11,3 +11,4 @@
 #define GOAL_ESCORT2 "escort2"      // Requires the robot to start escorting _param_ to _loc_
 #define GOAL_DONE "done"            // Requires the robot to acknowledge the end of the escort to _param_
 
+#define GOAL_SPEECH "speech"        // Used to define a speech message

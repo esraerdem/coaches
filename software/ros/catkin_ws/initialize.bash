@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This file is called from the main initialize.bash script in coaches/src
+# This file is called from the main coaches_init.bash script
 
 # Initialize the workspace
 if [ ! -d devel ]; then
@@ -10,10 +10,10 @@ if [ ! -d devel ]; then
 fi
 
 # Compile the workspace
-catkin_make
+catkin_make --pkg hello_coaches_developers
 
 # Setting up environment variables
-source devel/setup.bash
+source $COACHES_HOME/ros/catkin_ws/devel/setup.bash
 
 # Run hello
 rosrun hello_coaches_developers hello

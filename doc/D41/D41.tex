@@ -1,0 +1,107 @@
+\documentclass{article}
+\usepackage[margin=3cm]{geometry}
+\usepackage{amssymb}
+
+% Figures
+\usepackage{graphicx}
+\usepackage{color}
+
+% Page formatting
+\newsavebox{\notetitle}
+\newsavebox{\noteauthor}
+\newsavebox{\notenumber}
+\newsavebox{\notedate}
+
+\usepackage{url}
+
+%\renewcommand{\title}[1]{\sbox{\notetitle}{\Large{\textbf{#1}}}}
+%\renewcommand{\author}[1]{\renewcommand{\and}{\quad}\sbox{\noteauthor}{\large{#1}}}
+\renewcommand{\title}[1]{\sbox{\notetitle}{\begin{minipage}{1.0\textwidth} \begin{center} \Large{\textbf{#1}} \end{center}\end{minipage} }}
+\renewcommand{\author}[1]{\sbox{\noteauthor}{\begin{minipage}{1.0\textwidth} \begin{center} \large{#1} \end{center}\end{minipage}}}
+\renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
+\newcommand{\nb}[1]{\sbox{\notenumber}{\Large{\textbf{#1}}}}
+
+\newcommand{\makemadtitle}{
+  \hrule
+  \vspace{.5em}
+  \noindent
+  \begin{center}
+  \textbf{
+  {\centering\includegraphics[height=3cm,bb=0 0 371 145]{../fig/logoCHISTERA2014.png}}\\
+   {\centering\Large COACHES project, CHIST-ERA 2014 program}
+  }
+  \end{center}
+  \vspace{.5em}
+ 
+  \hrule
+  \vspace{3em}
+  \begin{center}
+    %\begin{large}\textbf{ Note~\usebox{\notenumber}.}\end{large}\\[.5em]
+    \begin{Large}\textbf{\usebox{\notetitle}}\end{Large}\\[2em]
+    \begin{large}\usebox{\noteauthor}\\ [2em]
+    \usebox{\notedate}\end{large}
+  \end{center}
+  \vspace{3em}
+}
+
+% Various macros and environments
+\newtheorem{prop}{Proposition}
+\newtheorem{proposition}[prop]{Proposition}
+\newtheorem{defn}{Definition}
+\newtheorem{definition}[defn]{Definition}
+\newtheorem{cor}{Corollary}
+\newtheorem{corollary}[cor]{Corollary}
+\newtheorem{exmp}{Example}
+\newtheorem{example}[exmp]{Example}
+\newtheorem{lem}{Lemma}
+\newtheorem{lemma}[lem]{Lemma}
+\newtheorem{fact}{Fact}
+\newtheorem{thm}{Theorem}
+\newtheorem{theorem}[thm]{Theorem}
+\newtheorem{prob}{Problem}
+\newtheorem{problem}[prob]{Problem}
+\newtheorem{rem}{Remark}
+\newtheorem{remark}[rem]{Remark}
+\newtheorem{conj}{Conjecture}
+\newtheorem{conjecture}[conj]{Conjecture}
+\newenvironment{pf}{{\bf Proof }}{\hfill$\Box$\par}
+\newenvironment{proof}{{\bf Proof }}{\hfill$\Box$\par}
+\newcommand{\spaceafterproof}{\vspace{1em}}
+
+% NOTE ITSELF BELOW %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\title{D4.1\\ Robot, localization, navigation and plan execution}
+
+\author{Luca Iocchi,  ... \\
+\textit{Dept. of Computer, Control and Management Engineering\\
+Sapienza University of Rome}}
+
+
+\date{Draft 0.1 - ....}
+
+\begin{document}
+
+\includegraphics[height=2.2cm]{../fig/logoSapienza.png}
+
+\makemadtitle
+
+\begin{abstract}
+This document describes the methods developed for robot localization, safe navigation and plan excution related to Task T4.1.  
+\end{abstract}
+
+\vspace*{2.0cm}
+
+\fbox{
+\begin{minipage}{1.0\textwidth}
+\begin{center}
+ $\copyright$, THE COACHES CONSORTIUM \\
+The copyright in this document is the property of the COACHES Consortium. This document is supplied by the COACHES consortium on the express terms that it is to be treated as confidential. This document is not external distribution without the project manager's permission. 
+\end{center}
+\end{minipage}
+}
+\newpage
+
+
+
+
+\end{document}

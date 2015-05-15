@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# This file is called from the main update.bash script in coaches/src
+# This file is called from the main coaches_update.bash script
 
 # gradient_based_navigation
 if [ ! -d gradient_based_navigation ]; then
@@ -8,7 +8,6 @@ if [ ! -d gradient_based_navigation ]; then
     cd ../ros/catkin_ws/src/
     ln -sf ../../../external/gradient_based_navigation .
     cd -
-# ../../../external/
 else
     cd gradient_based_navigation; git pull; cd ..
 fi
@@ -18,9 +17,8 @@ fi
 if [ ! -d PetriNetPlans ]; then
     git clone https://github.com/iocchi/PetriNetPlans
     cd ../ros/catkin_ws/src/
-    ln -sf ../../../external/PetriNetPlans/PNPros .
-    cd - 
-#../../../external/
+    ln -sf ../../../external/PetriNetPlans/PNPros/ROS_bridge/* .
+    cd -
 else
     cd PetriNetPlans; git pull; cd ..
 fi

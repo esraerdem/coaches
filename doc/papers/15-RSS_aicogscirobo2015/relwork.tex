@@ -1,0 +1,18 @@
+\section{Related work}
+
+\todo{Models with compact representation of states and policy...}
+
+Our work 
+
+\subsection{Factored MDP}
+
+Factored Markov Decision Processes \cite{BoDeGo00} are special MDPs where the state space is made of several state variables. The transition function describes the effect of any action upon each state variable. The main interest of this representation is that independent variables may be split and dealt with separately.
+
+For example, a waiter-robot could bring coffee to clients. Its state space would include its position, the fact it's holding coffee or not, and the fact some doors are opened or not. It could also include facts about clients being sat or not, and waiting for being served too. This implies an exponential flat state space since the robot has to memorise the current situation (all of it) even if it has no effect on its current mission: filling a cup of coffee do not depend on the door being open, or on the number of clients waiting...
+A factored MDP will simply state what are the relevant variables, and what is being changed on them: Going to a client only changes the robot position, whether it's holding a cup or not. Serving a client changes only the waiting-state of this client, leaving of the other variables untouched.
+
+Solving a Factored MDP, however, may need to consider all of the variables, because they are related one way or another. This means that the value function (respectively the policy) is to express the value (respectively the optimal action) for any state instance (that is any value for all the variables). One way of handling this without flattening the whole state space is using Acyclic Decision Diagrams (ADD): the function is represented as a decision tree, taking into account one variable at each level of the tree. But each variable may be present or not in any branch of the diagram. This allows for factoring whole branches as single leafs. For example, if the robot is low on energy, it has to recharge, whatever could be the value of the other variables. SPUDD \cite{Hoey99spudd} is such an algorithm. 
+
+\subsection{Execution monitoring and replanning}
+
+\todo{...}

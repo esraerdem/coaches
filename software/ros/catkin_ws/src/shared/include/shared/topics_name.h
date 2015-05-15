@@ -12,6 +12,11 @@
 #define SERVICE_GET_LOCATION "get_location"
 #define SERVICE_GET_ALL_SITES "get_all_sites"
 
+// T31
+#define TOPIC_SAY "say"
+#define TOPIC_STAGE_SAY "stage_say"
+#define TOPIC_HRI_GOAL "t31_hri_goal"
+
 // T41
 #define TOPIC_POLICY_RESULT "t41_policy_result"
 #define TOPIC_PLANTOEXEC "planToExec"

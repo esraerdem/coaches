@@ -1,0 +1,65 @@
+\section{Introduction}
+
+% Motivation
+
+\todo{The COACHES project ...}
+
+Planning under uncertainty, execution monitoring and interleaving planning and execution are crucial features for an autonomous robot acting in a real environment, specially when human interaction is involved, 
+as for the COACHES robots. Indeed, in complex scenarios, it is not possible to model and foresee all the possible situations that may occur. Moreover, at planning time, several information about the real environment are not known. Therefore, generated plans may not be optimal or feasible at execution time.
+
+It is thus necessary to explicitly model and consider possible plan failures and to devise a mechanism that is able to properly react to these failures.
+
+
+% Problem
+
+\todo{The problem considered in this paper is the following...}
+
+Input: domain description  (PRU+ / standard definition of factored MDPs)
+
+Output: planning, execution and monitoring of a behavior (policy) implementing the optimal solution for the domain.
+
+
+
+% Analysis of standard techniques
+
+A standard way of approaching this problem is to model the problem as an MDP, apply a standard solver to produce the policy and then execute the policy, monitoring its success.
+However, the execution of a policy generated from standard MDP techniques requires the full evaluation of the current state in order to determine the actions to be performed. When the state is composed by several independent variables, all of them must be evaluated in order to properly choose the next action.
+This can be achieved in two ways: 1) \emph{passive observability} in which sensor processing routines are implemented to automatically determine at any time the value of all the variables needed to assess the current state, 2) \emph{active observability}, in which sensor processing to determine the value of each variable can be activated on demand.
+The problem with the first approach is that it forces the system to execute a lot of computation for sensor processing, most of which is not really needed at each time.
+Obviously, it is also possible a mixed approach in which a subset of variables can be continuously observed, while another subset will be observed only when needed. Typically, we want to apply \emph{active observability} for all those variables that require high computational load for determining their value (this is a typical case for variables determined through image processing procedures).
+
+Therefore, when the cost of sensing and evaluating (a subset of) variables forming the state is relevant for the application, the plain execution of a policy is not adequate, since it is not possible to know which are the variables that we must check at any time, and thus we cannot apply \emph{active observability}.
+
+When compact representations of the Value function and of the policy in Factored MDP is used (e.g., \cite{Hoey99spudd,KoPa00}), the variables to be determined at any execution step are limited by the structure of the compact representation (e.g., decision trees). But it is necessary to traverse all the decision tree or the decision list, in order to determine the action to be executed.
+
+\todo{PRU+ vs. language for defining Factored MDP (e.g.,  Relational Dynamic Influence Diagram
+Language (RDDL) or the one used in SPUDD}
+
+\todo{Transformation from compact representation of the policy ADD/DL  to PNP}
+
+\todo{Describe the general concept that given the entire set of state variables that can be used to represent the domain, only a subset of them is used at MDP level.}
+
+\todo{Example...}
+
+A robot operates in the corridor of a shopping mall composed by a set of shops ${\mathbf S} = \{ S_1, \ldots, S_n \}$. Each shop keepers cane define a set of advertisements that the robot is asked to communicate to customers of the mall. The set of advertisements for shop $S_i$ is denoted by ${\mathbf A}_i = \{ A_{i,1}, \ldots, A_{i,m_i} \}$. Each advertisement has associated two properties: a customer profile $c_{i,j}$ and a nominal reward $\tilde r_{i,j}$, with $i=1, \ldots, n$ and $j=1, \ldots, m_i$. For example, a customer profile can be a set of constraints on gender and age, while the nominal reward is a real value associated to how good is for the system that a customer receives this advertisement.
+Given a customer $P$ to whom the robot shows the advertisement $A_{i,j}$ and the distance $d$ of the pair robot and person $P$ (that we assume are close each other) to the shop $S_i$, an actual reward is computed as a function $r_{i,j,P,d} = f({\tilde r}_{i,j},c_{i,j},P,d)$, that consider the nominal reward discounted by a factor considering a possible mismatch between $P$ and the customer profile $c_{i,j}$ and another discount factor related to the distance $d$. A possible implementation of this function is $ f({\tilde r}_{i,j},c_{i,j},P,d) =
+{\tilde r}_{i,j} (1 - \alpha(c_{i,j},P)) \beta (d)$, where $\alpha(\cdot)$ is the function computing the matching between a person and a customer profile (a value in $[0,1]$)
+and  $\alpha(\cdot)$ can be a sigmoid decay function.
+The robot can execute the following actions in the environment: move to any location (i.e., in front of any shop), avoiding obstacles and considering people with social navigation techniques; approach a specific person or a group of poeple; ask a customer to slide his/her fidelity card to get information about him/her, perform a simple advertisement action (when no information about the customer are known), perform a more complex user dependent advertisement action (when information about the customer are known).
+The problem we want to solve is the following: given the current position of the robot,
+the information about shops and advertisements: ${\mathbf S}$, ${\mathbf A}_i$, $c_{i,j}$, and  $\tilde r_{i,j}$, and an initial probability distribution of the presence of people in the shopping mall (for example, provided by an external system of video-cameras), plan and execute the behavior that maximizes the global actual reward, also recovering from possible failures.
+
+
+
+\todo{Our Contributions}
+
+A hierarchical representation of the information needed for planning and execution where the state variables used for planning are a subset of the ones used for execution. This means that some execution states (i.e., states at execution level) will not be distinguishable at planning level.
+
+
+Dealing with action failures and incomplete/incorrect model of the environment, that will enable the planner to improve the plan in correspondence with indistinguishable execution states, without extending the state representation at planning level.
+
+
+
+
+
+

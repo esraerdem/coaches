@@ -1,0 +1,7 @@
+{
+   spuriousWild
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:/lib/x86_64-linux-gnu/ld-2.19.so
+}
