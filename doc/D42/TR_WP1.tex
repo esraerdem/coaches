@@ -72,7 +72,7 @@
 \begin{document}
 \includegraphics[height=2cm]{logoUNICAEN}
 \includegraphics[height=2cm]{logoSapienza.png}
-\includegraphics[height=2cm]{logo-vub}
+%\includegraphics[height=2cm]{logo-vub}
 \includegraphics[height=2cm]{logoSebanci}
 
 
@@ -108,39 +108,60 @@ This document consists of describing different principles of the Knowledge-based
 In this section we present the main concepts we will consider to detect events in the environnement due to external units or human activities. To this end, we consider the semantic map, spatial information and human activities 
 \subsection {Semantic map}
 For the mall map, we consider different type of areas: restaurant, rest, WC, café, shops, halls, corridors, offices and doors. For shops, services and restaurants we consider different categories:
-\begin{itemize}\item {\it Shop categories}: dress shop , women dress shop, kid dress shop, men dress shop, makeup store, store perfume, sport store,\item {\it Restaurant categories}: French, Japanese, Chinese, Italian, Oriental, African, fastfood, .. 
+\begin{itemize}
+\item {\it Shop categories}: dress shop , women dress shop, kid dress shop, men dress shop, makeup store, store perfume, sport store,
+\item {\it Restaurant categories}: French, Japanese, Chinese, Italian, Oriental, African, fastfood, .. 
 \item {\it Service categories}: security, information, healthcare
 \end{itemize}
 Other areas and categories could be considered according to the use case requirements.
-For all areas, we have to define their localisation using local or global position using local map or GPS.To this end, we introduce different predicates: type, category and position\subsection{Type predicate}{\tt\bf type}(id, door $\|$ shop $\|$ restaurant $\|$ service $\|$ café $\|$ corridor $\|$ rest $\|$ wc)
+For all areas, we have to define their localisation using local or global position using local map or GPS.
+To this end, we introduce different predicates: type, category and position
+\subsection{Type predicate}
+{\tt\bf type}(id, door $\|$ shop $\|$ restaurant $\|$ service $\|$ café $\|$ corridor $\|$ rest $\|$ wc)
 
 \paragraph*{\bf Example}~\\
-{\tt\bf type}(McDonald, restaurant); 
+
+{\tt\bf type}(McDonald, restaurant); 
 
 {\tt\bf type}(main\_entrance\_ouest\_1, door); 
 
 {\tt\bf type}(hall\_rive\_marin, hall).
 
-\subsection{Category predicate}{\tt\bf category}(shop\_id, kid\_dress $\|$ men\_dress$\|$woman\_dress $\|$ dress $\|$ sport $\|$ perfume $\|$ decoration)\\{\tt\bf category}(restaurant\_id, fastfood $\|$Italian$\|$French $\|$Chinese $\|$Japenese $\|$ Orient)\\
+\subsection{Category predicate}
+{\tt\bf category}(shop\_id, kid\_dress $\|$ men\_dress$\|$woman\_dress $\|$ dress $\|$ sport $\|$ perfume $\|$ decoration)\\
+{\tt\bf category}(restaurant\_id, fastfood $\|$Italian$\|$French $\|$Chinese $\|$Japenese $\|$ Orient)\\
 {\tt\bf category}(service\_id, Security$\|$information $\|$ healtcare)\\
-\paragraph*{\bf Example}~\\type(HM\_id, shop) ; category(HM\_id, dress) 
+
+\paragraph*{\bf Example}~\\
+type(HM\_id, shop) ; category(HM\_id, dress) 
 type(macdonald, restaurant) ;  category(macdonald, fastfood)\\
 
 \subsection{Areas status predicate}
 \begin{itemize}
-\item {\tt\bf Isopen} \\{\tt\bf Isopen}(id\_door, true$\|$false): meaning that the door is open or not.\\{\tt\bf Isopen}(id\_hall, true) meaning that the robot can navigate in this hall\\
+\item {\tt\bf Isopen} \\
+{\tt\bf Isopen}(id\_door, true$\|$false): meaning that the door is open or not.\\
+{\tt\bf Isopen}(id\_hall, true) meaning that the robot can navigate in this hall\\
 \item {\tt\bf Connect} \\
- {\bf\tt Connect} (id\_door; area1, area2), for example connect(door\_hm, HM\_id,hall\_rive\_marine) meaning that door\_hm connects the shop HM to the hall Rivemarine of the mall.\item {\tt\bf Position} \\
+ {\bf\tt Connect} (id\_door; area1, area2), for example connect(door\_hm, HM\_id,
+hall\_rive\_marine) meaning that door\_hm connects the shop HM to the hall Rive
+marine of the mall.
+\item {\tt\bf Position} \\
  {\tt\bf Position}(id\_area, local$\|$GPS, coordinates)
  \end{itemize}
 
 \subsection{Spatial relations}
 In this section we consider all spatial relations and information:
-\begin{itemize}\item {\tt\bf Infrontof}(person\_id, area\_id)\item {\tt\bf Nearby}(person\_id, area\_id)\item {\tt\bf At}(person\_id, location)\item {\tt\bf In}(person\_id $\|$ object\_id, areas\_id)
+\begin{itemize}
+\item {\tt\bf Infrontof}(person\_id, area\_id)
+\item {\tt\bf Nearby}(person\_id, area\_id)
+\item {\tt\bf At}(person\_id, location)
+\item {\tt\bf In}(person\_id $\|$ object\_id, areas\_id)
  \end{itemize}
 \subsection{Human activities}
 \begin{itemize}
-\item {\tt\bf Motionless}(person\_id, time\_t, location)\item {\tt\bf Request} (request\_id,request\_type, person\_id, location\_t) where {\it Request\_type}  could be escorting\_to(location),informing\_about(area\_id), guiding\_to(location)\item {\tt\bf Rest\_Area} (person\_id, time\_t, location)
+\item {\tt\bf Motionless}(person\_id, time\_t, location)
+\item {\tt\bf Request} (request\_id,request\_type, person\_id, location\_t) where {\it Request\_type}  could be escorting\_to(location),informing\_about(area\_id), guiding\_to(location)
+\item {\tt\bf Rest\_Area} (person\_id, time\_t, location)
  \end{itemize}
   \subsection{Commonsense and event-based Reasoning}
   \subsubsection{Event Definition}
@@ -154,11 +175,14 @@ In this section we consider all spatial relations and information:
    \begin{itemize}
 \item  {\bf joint escorting goal generation}: \\
   If request\_type=escorting\_to(location) and in(location,hall\_id1) and in(robot, hall\_id2) and hall\_id1 $\neq$ hall\_id2 then \\
-  add(list\_goal, create\_task (task\_id joint\_escorting\_task, hall\_id2, hall\_id1, location))\item  {\bf Surveillance goal generation} \\
+  add(list\_goal, create\_task (task\_id joint\_escorting\_task, hall\_id2, hall\_id1, location))
+\item  {\bf Surveillance goal generation} \\
   If event(object\_id,location,time\_t,in(object\_id,hall\_id)) then \\
-  add(list\_goal, create\_task(task\_id, surveillance\_task, location, object\_id))\item {\bf Advertising goal generation} \\
+  add(list\_goal, create\_task(task\_id, surveillance\_task, location, object\_id))
+\item {\bf Advertising goal generation} \\
    If event(person\_id,location,time\_t,infrontof(person\_id, shop\_id) then \\
-   add(list\_goal, create\_task(task\_id, advertising\_task, location, person\_id, shop\_id)\item $\dots$
+   add(list\_goal, create\_task(task\_id, advertising\_task, location, person\_id, shop\_id)
+\item $\dots$
    \end{itemize}
    
   \section{Conclusion}

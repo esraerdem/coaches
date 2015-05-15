@@ -72,8 +72,8 @@
 \begin{document}
 \includegraphics[height=2cm]{logoUNICAEN}
 \includegraphics[height=2cm]{logoSapienza.png}
-\includegraphics[height=2cm]{logo-vub}
-\includegraphics[height=2cm]{logoSebanci}
+%\includegraphics[height=2cm]{logo-vub}
+%\includegraphics[height=2cm]{logoSebanci}
 
 
 \makemadtitle
@@ -106,21 +106,31 @@ Robots receive from KB module a set of goals $G = \{ g_{1}, g_{2}, \ldots, g_{k}
 %\label{Fig-1}
 %\end{center}
 %\end{figure}
-\section {Description of Tasks}The global structure of tasks will be based on a hierarchy of modules to execute: \begin{figure}[htbp]
+\section {Description of Tasks}
+
+The global structure of tasks will be based on a hierarchy of modules to execute: 
+
+\begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{GeneralTask}
 \caption{General task structure }
 \label{FigTaskstructure}
 \end{center}
-\end{figure}The two subtasks goto and advertise are supposed to be executed in parallel where goto $X$ is a subtask sent to the module navigation for execution and advertise is sent to the module multi-modale interaction for advertisement considering the current location of the robot. This subtask is optional and the human can stop the advertisement when needed. This structure will serve to express different tasks that we consider in the project: 
-\begin{enumerate}\item {\it Assistance Task (AT)}: this task consists in joining the location of the person and then use a dialogue subtask to exchange with him to make clear his needs. The structure of the task. Dialogue can concern: showing a direction, searching a shop, advertise and transporting goods. The schema of this dialogue is given in the next section.
+\end{figure}
+
+The two subtasks goto and advertise are supposed to be executed in parallel where goto $X$ is a subtask sent to the module navigation for execution and advertise is sent to the module multi-modale interaction for advertisement considering the current location of the robot. This subtask is optional and the human can stop the advertisement when needed. 
+
+This structure will serve to express different tasks that we consider in the project: 
+\begin{enumerate}
+\item {\it Assistance Task (AT)}: this task consists in joining the location of the person and then use a dialogue subtask to exchange with him to make clear his needs. The structure of the task. Dialogue can concern: showing a direction, searching a shop, advertise and transporting goods. The schema of this dialogue is given in the next section.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{AssistanceTask}
 \caption{Assistance task }
 \label{FigAssistanceTask}
 \end{center}
-\end{figure}\item {\it Escorting task (ET)}: this task consists of joining the person and escorting him to his target destination by maintaining the joint intention. When the behavior of the human is not appropriate, a dialogue between the robot and him js performed. This dialogue is described in the next section. 
+\end{figure}
+\item {\it Escorting task (ET)}: this task consists of joining the person and escorting him to his target destination by maintaining the joint intention. When the behavior of the human is not appropriate, a dialogue between the robot and him js performed. This dialogue is described in the next section. 
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{EscortingTask}
@@ -128,21 +138,24 @@ Robots receive from KB module a set of goals $G = \{ g_{1}, g_{2}, \ldots, g_{k}
 \label{FigEscortTask}
 \end{center}
 \end{figure}
-\item {\it Collaborative Task (CT)}: this task consists in joining the location execute the part of the task, send message to the other robots during the travel and then inform the person.
+
+\item {\it Collaborative Task (CT)}: this task consists in joining the location execute the part of the task, send message to the other robots during the travel and then inform the person.
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{JointTask}
 \caption{Joint task }
 \label{FigjointTask}
 \end{center}
-\end{figure}\item {\it Welcoming visitor task  (PT)}: this task consists in going to the entrance and initiating a dialogue with a visitor. The dialogue is described bellow  and is the same as for assistance task. 
+\end{figure}
+\item {\it Welcoming visitor task  (PT)}: this task consists in going to the entrance and initiating a dialogue with a visitor. The dialogue is described bellow  and is the same as for assistance task. 
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{patrolTask}
 \caption{Patrol task }
 \label{FigPatrolTask}
 \end{center}
-\end{figure}\item {\it Surveillance task (ST)}: this task consists in heading a destination where an abnormal object has been detected, taking a picture, send it and then call the security unit when informing people to be away from this object. 
+\end{figure}
+\item {\it Surveillance task (ST)}: this task consists in heading a destination where an abnormal object has been detected, taking a picture, send it and then call the security unit when informing people to be away from this object. 
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[height=10cm]{SecurityTask}
