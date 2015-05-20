@@ -93,4 +93,29 @@
       </Outcome>
     </Action>
   </Layer>
+  <Constraint id='uniqueAd' score='10'>
+    <!-- Do not advertise more than once per location -->
+    <On>
+      <Action id='advertise'/>
+      <!--ActionParameter id='X'-->
+      <StateVariable id='location'/>
+    </On>
+    <NoMore than='1'/>
+  </Constraint>
+  <Constraint id='uniqueComplex' score='10'>
+    <!-- Do not advertise-complex more than once per location -->
+    <On>
+      <Action id='advertiseComplex'/>
+      <!--ActionParameter id='X'-->
+      <StateVariable id='location'/>
+    </On>
+    <NoMore than='1'/>
+  </Constraint>
+  <Constraint id='interact' score='1'>
+    <!-- Interact at least once -->
+    <On>
+      <Action id='interact'/>
+    </On>
+    <NoLess than='1'/>
+  </Constraint>
 </pru>

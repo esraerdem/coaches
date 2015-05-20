@@ -139,6 +139,27 @@ class PRUlayer {
 
 std::ostream& operator<<(std::ostream& os, const PRUlayer& layer);
 
+class PRUon;
+class PRUconstraint {
+ private:
+  void readXML(xmlpp::TextReader &reader);
+  int count;
+ public:
+  string name;
+  float score;
+  /** The elements this constraint evaluates. This is valid if all elements are valid */
+  vector<const PRUon*> elements;
+  ~PRUconstraint();
+  //--- Policy-evaluation ---
+  /** Reset the constraint, readying for a new evaluation */
+  void reset();
+  /** Updates the constraint, matching current action and state or not */
+  void match(string actionId, PRUstate actionParam, PRUstate stateVariables);
+  /** Returns the score if the constraint is satisfied, 0 otherwise */
+  float getScore() const;
+};
+
+
 /** Represents a PRU+. */
 class PRUplus {
  private:
@@ -157,6 +178,8 @@ class PRUplus {
    */
   vector<string> firstEnabledModules;
   vector<PRUlayer*> layers;
+  /** A list of valuated global-constraints to assess the plan quality */
+  vector<PRUconstraint> constraints;
 
   PRUplus();
   PRUplus(string xlmFileName);
