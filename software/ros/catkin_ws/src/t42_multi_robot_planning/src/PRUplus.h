@@ -139,22 +139,28 @@ class PRUlayer {
 
 std::ostream& operator<<(std::ostream& os, const PRUlayer& layer);
 
+/** Converts a constrint part into a vector of strings to check for equality */
 class PRUon;
+/** Stores a PRU constraint */
 class PRUconstraint {
  private:
   void readXML(xmlpp::TextReader &reader);
-  int count;
+  /** Stores each matching tuple along with the number of times it has been matched */
+  map<vector<string>,int> matched;
+  int validIfNoLessThan,validIfEachNoLessThan,validIfAnyNoLessThan;
+  int validIfNoMoreThan,validIfEachNoMoreThan,validIfAnyNoMoreThan;
  public:
   string name;
   float score;
   /** The elements this constraint evaluates. This is valid if all elements are valid */
   vector<const PRUon*> elements;
+  PRUconstraint(xmlpp::TextReader &reader);
   ~PRUconstraint();
   //--- Policy-evaluation ---
   /** Reset the constraint, readying for a new evaluation */
   void reset();
   /** Updates the constraint, matching current action and state or not */
-  void match(string actionId, PRUstate actionParam, PRUstate stateVariables);
+  void match(string &actionId, PRUstate &actionParam, PRUstate &stateVariables);
   /** Returns the score if the constraint is satisfied, 0 otherwise */
   float getScore() const;
 };

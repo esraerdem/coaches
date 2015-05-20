@@ -109,7 +109,7 @@
       <!--ActionParameter id='X'-->
       <StateVariable id='location'/>
     </On>
-    <NoMore than='1'/>
+    <EachNoMore than='1'/>
   </Constraint>
   <Constraint id='interact' score='1'>
     <!-- Interact at least once -->

@@ -109,6 +109,8 @@ void PRUplus::readXML(xmlpp::TextReader &reader) {
       readVector(firstEnabledModules, reader, "\n ");
     else if (name == "Layer")
       layers.push_back(new PRUlayer(reader));
+    else if (name == "Constraint")
+      constraints.push_back(PRUconstraint(reader));
     else
       std::cerr << "Unexpected tag " << name << "!" << std::endl;
   } // while reader.read()
