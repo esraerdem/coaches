@@ -1,5 +1,7 @@
 #include "PRUplus.h"
 
+#include <stdlib.h>
+
 #include <libxml++/libxml++.h>
 #include <libxml++/parsers/textreader.h>
 
@@ -128,6 +130,19 @@ void PRUconstraint::match(string &actionId, PRUstate &actionParam, PRUstate &sta
   matched[res]++;
 }
 
+static float readConstValue(xmlpp::TextReader &reader) {
+  string v="0";
+  if (reader.has_attributes()) {
+    reader.move_to_first_attribute();
+    do {
+      if (reader.get_name() == "than")
+	v = reader.get_value();
+    } while (reader.move_to_next_attribute());
+    reader.move_to_element();
+  }
+  return atof(v.c_str());
+}
+
 PRUconstraint::PRUconstraint(xmlpp::TextReader &reader) {
   validIfNoLessThan = validIfEachNoLessThan = validIfAnyNoLessThan = 0;
   validIfNoMoreThan = validIfEachNoMoreThan = validIfAnyNoMoreThan = 1000000; // Many
@@ -205,13 +220,52 @@ PRUconstraint::PRUconstraint(xmlpp::TextReader &reader) {
 	  elements.push_back(new PRUOn::onSVvalue(id,val));
       }
     } else if (name == "NoLess") {
+      validIfNoLessThan = readConstValue(reader);
     } else if (name == "EachNoLess") {
+      validIfEachNoLessThan = readConstValue(reader);
     } else if (name == "AnyNoLess") {
+      validIfAnyNoLessThan = readConstValue(reader);
     } else if (name == "NoMore") {
+      validIfNoMoreThan = readConstValue(reader);
     } else if (name == "EachNoMore") {
+      validIfEachNoMoreThan = readConstValue(reader);
     } else if (name == "AnyNoMore") {
+      validIfAnyNoMoreThan = readConstValue(reader);
     }
   } // while reader.read()
 } // PRUconstraint(reader)
 
+float PRUconstraint::getScore() const {
+  bool valid = false;
+  bool invalid = false;
+  int sumAll = 0;
+  for (map<vector<string>,int>::const_iterator it=matched.begin();
+       it != matched.end(); ++it) {
+    int nb = it->second;
+    sumAll += nb;
+    if (nb < validIfEachNoLessThan) {
+      invalid = true;
+      break;
+    }
+    if (nb > validIfEachNoMoreThan) {
+      invalid = true;
+      break;
+    }
+    if (nb >= validIfAnyNoLessThan) {
+      valid = true;
+    }
+    if (nb > validIfAnyNoMoreThan) {
+      valid = true;
+    }    
+  }
+  if (valid)
+    if (sumAll < validIfNoLessThan)
+      valid = false;
+    else if (sumAll > validIfNoMoreThan)
+      valid = false;
+    else if (! invalid)
+      return score;
+  // otherwise
+  return 0;
+}
 
