@@ -1,0 +1,41 @@
+\section{Short-term Personalized Interactions}
+
+One of the main goals of the COACHES project is personalized short-term interactions with non-expert users, that are typical customers of a shopping mall.
+
+Short-term ...
+
+Personalized ...
+
+Description of the Interaction Manager component...
+
+IM is a complex component of the system that integrates different information produced by other components or available in the system and controls the interaction with a user.
+The goal of the IM is to provide effective personalized short-term interactions.
+
+IM component takes as input:a goal-oriented plan, the user profile, a set of general social norms and a media library. The plan and the user profile dynamically change over time, depending on the current situation the robot is facing, while the social rules and the media library are stored before the start of the robot task.
+
+...
+
+\section{Examples of personalized interactions}
+
+...
+
+Social norms:
+- Big font for elderly
+- Animations for children 
+- Before presenting an offer to a child, ask for permission to his/her parents
+- ...
+
+
+In this section we will show through a set of examples how general purpose social norms are used to affect the behavior of the robot in a declarative way. More specifically, the different behavior of the robot is obtained through a general purpose algorithm, and not by specifying specific exceptions in the implementation of each single behavior.
+This solution separates the implementation of the basic behaviors from their composition in a complex task and it thus provides for high scalability. For example, it is possible to add social norms without changing the basic behaviors, or add new behaviors without changing the social norms, and obtain an overall more complex task.
+
+
+...
+
+
+
+
+
+
+
+

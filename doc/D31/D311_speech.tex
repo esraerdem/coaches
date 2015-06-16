@@ -1,0 +1,22 @@
+\section{Speech sub-system}
+
+The speech system allows the robot to communicate with humans through vocal interactions. 
+It  is formed by two main components:
+Automatic Speech Recognition (ASR) and Text-To-Speech (TTS),.
+
+The ASR component analyzes audio data coming from a microphone and extract semantic information about the spoken sentences, according to a predefined grammar. This component allows the robot to understand user spoken commands.
+The speech recognition module is based on the Microsoft engine and on a further processing module that builds the semantic frames of the recognized sentences.
+More details on the approach are available in \cite{Ba...}.
+
+The TTS component transforms text messages in audio data that are then emitted by the speakers on-board the robot. This enables the robot to speak to people. The Microsoft TTS engine is used for this module.
+
+
+The speech sub-system implements and provide to the DM the following elements:
+
+\begin{description}
+\item[\emph{Say}]: actions that allow the robot to speak information to the user.
+\item[\emph{ASR}]: conditions associated to the results of the speech recognition module that enable conditional branching in the PNP behavior.
+\end{description}
+
+
+

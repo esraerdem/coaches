@@ -1,0 +1,19 @@
+\section{Introduction}
+
+This report contains the description of several sub-systems developed for implementing the human-robot interaction capabilities of the COACHES robots.
+
+These interaction sub-systems that are described in the next sections are: 1) speech sub-system, that enables the robot with voice interactions with users, 2) GUI sub-system, that allows for interaction through a graphical interface, ???
+
+All these interaction sub-systems are coordinated by an Interaction Manager (IM).
+The IM coordinates all the robot modules (both the ones related with human-robot interaction and the ones used for implementing the basic robotic functionalities).
+
+The IM module is implemented using the Petri Net Plans (PNP) formalism, since this allows to represent at the same time the behavior of the robots (perception and navigation) and the different forms of interaction.
+PNP are based on two main concepts: \emph{actions} (i.e., output operations) and \emph{conditions} (i.e., input operations). Actions include motion of the robot in the environment, spoken sentences issued by the on-board speakers, text, images, videos or animations shown on the on-board screen, etc.
+Conditions include the result of perception routines (e.g., image processing or speech recognition), the input given by a user through a GUI on the on-board screen, information about personal data of user acquired through a reader of fidelity cards, etc.
+
+The use of PNP for representing in an integratied ways all these different kinds of actions and conditions allows for a strong coordination between the different sub-systems of the robot and for showing more complex behaviors and, in particular, a multi-modal interaction that can be easily customized according to the user.
+
+
+
+
+
