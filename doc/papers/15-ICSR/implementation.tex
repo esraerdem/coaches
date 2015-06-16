@@ -1,0 +1,46 @@
+\section{Examples of personalized interactions}
+
+...
+
+Social norms:
+- Big font for elderly
+- Animations for children 
+- Before presenting an offer to a child, ask for permission to his/her parents
+- ...
+
+
+In this section we will show through a set of examples how general purpose social norms are used to affect the behavior of the robot in a declarative way. More specifically, the different behavior of the robot is obtained through a general purpose algorithm, and not by specifying specific exceptions in the implementation of each single behavior.
+This solution separates the implementation of the basic behaviors from their composition in a complex task and it thus provides for high scalability. For example, it is possible to add social norms without changing the basic behaviors, or add new behaviors without changing the social norms, and obtain an overall more complex task.
+
+
+...
+
+
+
+
+
+
+
+
+\textit{Scenario 1}: 
+A boy is lost in a mall. Parents communicate with the mall manager and provide a description of the child, name, height, how he was dressed... Occassionally they can also provide a photo of the boy. The manager enters this information into the robotic system which starts the following procedure to find the child.
+
+Procedure: 
+The parents have provided a photo of the child which is communicated to the robots. The robots navigate the environment while establishing conversations with several people, asking if they have seen the boy. In case of positive answer, robot shows on the display a map of the mall and asks the person to indicate approximately the place where he has seen him. At this point, the robot can move towards the place or communicate with other robot which is closer to the place or transmit this information to the security system.
+
+\textit{Scenario 2}: 
+In the shopping mall there are several baby care rooms. For privacy reasons, only one mother with its baby can enter at a time and when the room is free, it remains blocked for security reasons as it contains electrical appliances, so one must ask for permission to use them. 
+A mother with its baby needs to make use of a baby care room.
+
+Procedure: 
+The mother approaches the robot asking for directions for a baby care room. The robot connects to the network and computes the nearest free room. Then it shows on the display the location of the room. At the same time, the robot communicates to the security system so the guard goes to the room to open the door and greets the mother letting her know that the guard is going so she can use the room. \textbf{Alternative with more interaction:} the robot asks if the mother agrees to go to that room and to swipe her fidelity card in the robot's reader to introduce the information in the system. After this, the room's door will be automatically opened when the woman swipes her card in the room's card reader. This way also for security reasons, it is registered who used that room.
+{\color{blue} Here the plan to be executed could depend if the person has a fidelity card or not.}
+
+
+
+
+
+
+
+
+
