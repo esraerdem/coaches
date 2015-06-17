@@ -3,15 +3,16 @@
 
 \begin{figure}[t!]
 \centering
-\includegraphics[width=0.65\textwidth]{fig/rivedelorne}
-\hspace{0.8cm}
-\includegraphics[width=0.255\textwidth]{fig/diago1}
-\caption{\coaches environment and robot.}
+\includegraphics[width=0.6\textwidth]{fig/rivedelorne}
+\hspace{0.1cm}
+\includegraphics[width=0.18\textwidth]{fig/diago1}
+\includegraphics[width=0.18\textwidth]{fig/coaches_robot}
+\caption{\coaches environment and robots.}
 \label{fig:env}
 \end{figure}
 
 In the \coaches project, we aim at further developing this technology, but specifically study, develop and test integration of Artificial Intelligence and Robotics technology in order to develop robots that can suitable interact with users in a complex large public environment, like a shopping mall.
-Figure \ref{fig:env} shows the \emph{Rive de l'orne} shooping mall in Caen (France) where the experimental activities of the project will be carried out, as well as a prototype of the robot that will be used.
+Figure \ref{fig:env} shows, on the left, the \emph{Rive de l'orne} shooping mall in Caen (France) where the experimental activities of the project will be carried out, on the middle a prototype of the robot that will be used for the preliminary experiments, on the right, the design of the robots that will be realized (within fall 2015) and tested during the project.
 
 
 As shown in the figure, in contrast with previous work on social robotics and human-robot interaction, the \coaches environment is very challenging, because populated by many people.
@@ -20,12 +21,9 @@ and the robot's goals.
 Consequently, the required level of ``intelligence'' of the \coaches robots in order to adequately perform complex and effective tasks in this environment in presence of people is much higher than in previous projects.
 
 The \coaches project (October 2014 - September 2017) will provide important insights for actual deployment of intelligent social robots in large populated public areas. 
-In this paper, we describe the main overall architecture of the system (Section 2), mostly focusing on the components that implement the integration between Artificial Intelligence and Robotics techniques (Section 3): 1) knowledge representation for the semantic map of the environment,
-2) planning under uncertainty using MDP, 3) hierarchical task structure for plan execution and monitoring. 
-Moreover, in Section 4 we present some preliminary results of such an integration, showing the feasibility of the proposed architecture.
 
 
-\subsection{Software Architecture}
+%\subsection{Software Architecture}
 
 \begin{figure}
 \centering
@@ -34,7 +32,7 @@ Moreover, in Section 4 we present some preliminary results of such an integratio
 \label{fig:swarch}
 \end{figure}
 
-The software architecture of the \coaches robots is shown in Figure \ref{fig:swarch}).
+The software architecture of the \coaches robots is shown in Figure \ref{fig:swarch}.
 An open architecture (hard/soft) and standard technologies available will be used, 
 so that it will be easy to extend and/or adapt the capabilities of the system during the whole length of 
 the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors).  
@@ -59,12 +57,6 @@ The main software components that will be developed for control, reasoning and i
 
 \end{itemize}
 
-In the next section we will detail the components 
-\emph{Knowledge-based representation and reasoning} and
-\emph{Planning and execution monitoring},
-where Artificial Intelligence techniques have a fundamental role.
-
-
-
-
+In the next section we will describe the \emph{Short-Term Multi-Modal HRI} component
+and, in particular, we show our approach to personalized interactions with users of the shopping mall.
 
