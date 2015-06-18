@@ -1,10 +1,8 @@
 \section{Personalized Short-term Multi-Modal Interactions}
+\label{sec:pers}
 
 As already mentioned, 
 one of the main goals of the \coaches project is personalized short-term multi-modal interactions with non-expert users, that are typical customers of a shopping mall.
-
-
-
 
 \begin{figure}
 \centering
@@ -54,13 +52,16 @@ Some examples of social norms implemented in our system and considered in the ex
 \begin{tabular}{|l|} \hline
 ( child, use\_animation ) \\ 
 ( elder, use\_big\_font ) \\ 
-( elder $\vee$ deaf, display\_spoken\_text ) \\ 
 ( elder, use\_simple\_GUI ) \\
 ( deaf, $\neg$ use\_speech ) \\
 ( blind, $\neg$ use\_display ) \\
+( elder $\vee$ deaf, display\_spoken\_text ) \\ 
+( elder $\vee$ deaf $\vee$ blind, ask\_for\_guidance ) \\
 ( blind, use\_detailed\_speech ) \\
+( blind, notify\_guidance ) \\
 ( first\_time\_user, detailed\_instructions ) \\ 
 ( $\neg$ first\_time\_user $\wedge$ young, $\neg$ detailed\_instructions ) \\ 
+( child $\vee$ very\_young, $\neg$ use\_baby\_care\_room ) \\ 
 ( foreign, speak\_English ) \\ 
 \hline
 \end{tabular}
