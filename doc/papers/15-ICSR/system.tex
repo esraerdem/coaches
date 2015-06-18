@@ -54,12 +54,14 @@ Some examples of social norms implemented in our system and considered in the ex
 \begin{tabular}{|l|} \hline
 ( child, use\_animation ) \\ 
 ( elder, use\_big\_font ) \\ 
-( elder, display\_spoken\_text ) \\ 
+( elder $\vee$ deaf, display\_spoken\_text ) \\ 
 ( elder, use\_simple\_GUI ) \\
 ( deaf, $\neg$ use\_speech ) \\
 ( blind, $\neg$ use\_display ) \\
 ( blind, use\_detailed\_speech ) \\
-( $\neg$ first\_time\_user, $\neg$ detailed\_instructions ) \\ 
+( first\_time\_user, detailed\_instructions ) \\ 
+( $\neg$ first\_time\_user $\wedge$ young, $\neg$ detailed\_instructions ) \\ 
+( foreign, speak\_English ) \\ 
 \hline
 \end{tabular}
 \caption{Domain-independent social norms.}
