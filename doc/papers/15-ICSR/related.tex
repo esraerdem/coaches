@@ -1,19 +1,26 @@
 \section{Related Work}
 
+The use of service robots interacting daily with people in public
+spaces or workplaces has become of increased interest in the last
+years.
+In this context, the development of the robotic system should focus on
+creating confortable interactions with the people the robot has to
+share its space.
 
-service robots interacting daily with people ...
+Gockley \textit{et al.}~\cite{gockley2005} showed that people usually
+express more interest and spend more time during the first contact
+with the robot. However, after the novelty effect, the time of the
+interactions decreases which suggests people's preference for
+\textit{short-term} interactions.
 
-\cite{gockley2005} shows after the first contact with the robot which
-usually takes more time, the time of the interactions decreases after
-the novelty effect, suggesting people's preference for short-terms
-interactions. 
-
-\cite{Lee2012} shows in a 4-month experiment that personalized
-interactions allow to maintain the interest of the users over time.
-The experiment consisted of a robot delivering snacks in a workplace
-and the personalization was carried out through customized dialogues where the
-robot addressed the users by their names and commented the users'
-behaviours like their frequency of usage of the service or their snack choice patterns.
+In order to address this decrease in the people engagement, Lee
+\textit{et al.}~\cite{Lee2012} demonstrated in a 4-month experiment
+that \textit{personalized} interactions allow to maintain the interest of the
+users over time.  The experiment consisted of a robot delivering
+snacks in a workplace and the personalization was carried out through
+customized dialogues where the robot addressed the users by their
+names and commented the users' behaviours like their frequency of
+usage of the service or their snack choice patterns.
 
 Conversely, in certain contexts like in rehabilitation robotics, it is
 desired to have longer interactions with the patient, so the robot can
@@ -22,14 +29,22 @@ is shown how adapting the robot behaviour to the patient personality
 (introvert or extrovert) increases the level of engagement in the
 interaction.
 
+Certain works aim at personalize the interaction by learning from its
+user. For example, in \cite{mason2011robot} a certain task is
+commanded to the robot which receives a feedback from the user if the
+final state of an action is desirable for him.  In this way, robot
+learns from the user's preferences which are registered in a user
+profile. With this knowledge and the feedback it keeps receiving from
+the user, the robot can anticipate his needs and pro-actively act to
+fullfil his needs.  In \cite{mitsunaga2008adapting} the robot adapts
+its behaviour defined by parameters like the distance to the person or
+its motion speed, among others, using a reinforcement learning technique
+where feedback from the user is given subsconciously through body
+signals read directly from the robot sensors.
 
-
-\cite{mason2011robot} User commands tasks to robot which learns user's preferences
-registered in a user profile where the world states are defined as
-good or bad. With this knowledge and the feedback it receives from the user, the robot can anticipate his needs and
-pro-actively act to fullfil his preferences.
-
-\cite{mitsunaga2008adapting} the robot adapts its behaviour defined by
-parameters like the distance to the person or its motion speed among
-others using a reinforcement learning technique where feedback from
-the user is given subsconciously and is read from the robot sensors.
+In contrast to these works, our approach for personalized human-robot
+interaction is not based on learning the personality of the user but
+on a set of \textit{social norms} that are present in our everyday
+lifes in human interactions.  To do so, we extend our previous work
+\cite{Nardi14} about the design of social plans to automatically
+adjust them to the user profile using the established social norms
