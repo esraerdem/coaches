@@ -1,13 +1,20 @@
 \section{Introduction}
 
-Public spaces in large cities are increasingly becoming complex and unwelcoming environments because of the overcrowding and complex information in signboards. It is in the interest of cities to make their public spaces easier to use, friendlier to visitors and safer to increasing elderly population and to the people with disabilities.
+%Public spaces in large cities are increasingly becoming complex and unwelcoming environments because of the overcrowding and complex information in signboards. It is in the interest of cities to make their public spaces easier to use, friendlier to visitors and safer to increasing elderly population and to the people with disabilities.
+%In the last decade, we observe tremendous progress in the development of robots in dynamic environments %with presence of including people. 
 
-In the last decade, we observe tremendous progress in the development of robots in dynamic environments %with presence of
-including people. The new challenge for the near future is that robots will be deployed in public areas (malls, touristic sites, parks, etc.) to offer services to make the use of the environment welcoming and easy to use by visitors, elderly or disabled people. 
+The new challenge for robotics in the near future is to deploy robots in public areas (malls, touristic sites, parks, etc.) to offer services and to provide customers, visitors, elderly or disabled people, children, etc.  with increased welcoming and easy to use environments. 
 
-Such application domains require robots with new capabilities leading to new scientific challenges: robots should assess the situation, estimate the needs of people, socially interact in a dynamic way and in a short time, with many people, the navigation should be safe and respect the social norms. These capabilities require new skills including robust and safe navigation, robust image and video processing, short-term human-robot interaction models, human need estimation techniques and distributed and scalable multi-agent planning.
+Such application domains require robots with new capabilities leading to new scientific challenges: robots should assess the situation, estimate the needs of people, socially interact in a dynamic way and in a short time with many people, exhibit safe navigation and respect the social norms. These capabilities require the integration of many skills and technologies.
+Among all these capabilities, in this paper we focus on a particular form of human-robot interaction:
+Personalized Short-term Multi-Modal Interactions.
+In this context, \emph{Personalized} means that the robot should use different forms of interactions to communicate the same concept to different users, in order to increase its social acceptability;
+\emph{Short-term} means that the interactions are short and focused on only one particular communicative objective, avoiding long and complex interactions; while
+\emph{Multi-modality} is obtained by using different interaction devices on the robot (although in this study, we focus only on speech and graphical interfaces).
 
-The integration of these technologies is the objective of our project \coaches where we will develop an autonomous multi-robot system deployed in a shopping mall. Robots will provide personalized assistance to customers and shop managers.
+The solution described in this paper is developed within the context of the \coaches  project, that aims at developing and deploying autonomous robots providing personalized and socially appropriate assistance to customers and shop managers of the shopping mall.
+The main contribution of this paper is on the architecture of the Interaction Module that has several novelties and advantages: 1) integrated management of all the robotic activities (including basic robotic functionalities and interactions), 2) explicit representation of social norms that are domain and task independent, 3) personalized interactions obtained through explicit representation of information and not hand-coded in the implementation of the robot behavior.
+
 
 In the rest of this paper, after an analysis of the literature in personalized human-robot interaction (Section 2) and a brief description of the general architecture of the \coaches system (Section 3), we describe the human-robot interaction component and, in particular, our approach to personalized short-term multi-modal interaction (Section 4). Then, in Section 5, we provide some examples of application of the proposed system and finally conclusions are drafted in Section 6.
 

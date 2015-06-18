@@ -29,10 +29,10 @@ is shown how adapting the robot behaviour to the patient personality
 (introvert or extrovert) increases the level of engagement in the
 interaction.
 
-Certain works aim at personalize the interaction by learning from its
+Certain works aim at personalizing the interaction by learning from its
 user. For example, in \cite{mason2011robot} a certain task is
 commanded to the robot which receives a feedback from the user if the
-final state of an action is desirable for him.  In this way, robot
+final state of an action is desirable for him.  In this way, the robot
 learns from the user's preferences which are registered in a user
 profile. With this knowledge and the feedback it keeps receiving from
 the user, the robot can anticipate his needs and pro-actively act to
@@ -43,8 +43,10 @@ where feedback from the user is given subsconciously through body
 signals read directly from the robot sensors.
 
 In contrast to these works, our approach for personalized human-robot
-interaction is not based on learning the personality of the user but
+interaction is not based on learning the personality of the user, but
 on a set of \textit{social norms} that are present in our everyday
-lifes in human interactions.  To do so, we extend our previous work
-\cite{Nardi14} about the design of social plans to automatically
-adjust them to the user profile using the established social norms
+lifes in human interactions.  Moreover, our architecture is designed on domain and task-independent representation of information, providing for a high variability of personalized behaviors, with a simple declarative definition of the social norms that we want the robot to apply. This provides many advantages in terms of extendibility and scalability of the system.
+
+The approach proposed in this paper extends a previous work \cite{Nardi14} about the design of social plans, by adding the notions of user profiles and of personalized interactions.
+
+
