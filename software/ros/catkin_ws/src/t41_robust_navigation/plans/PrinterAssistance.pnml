@@ -77,7 +77,7 @@
     </place>
     <place id="p4">
       <graphics>
-        <position x="396" y="200" />
+        <position x="410" y="199" />
         <size width="32" height="32" />
       </graphics>
       <name>
