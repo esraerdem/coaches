@@ -35,6 +35,8 @@ public:
     void interact(string params, bool *run);
     void swipe(string params, bool *run);
     void wait(string params, bool *run);
+    void turn(string params, bool *run);
+    void followcorridor(string params, bool *run);
 
 };
 

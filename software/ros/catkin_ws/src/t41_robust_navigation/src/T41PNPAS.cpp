@@ -24,6 +24,8 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("swipe",&T41PNPActionServer::swipe,this);
     register_action("interact",&T41PNPActionServer::interact,this);
     register_action("wait",&T41PNPActionServer::wait,this);
+    register_action("turn",&T41PNPActionServer::turn,this);
+    // register_action("followcorridor",&T41PNPActionServer::followcorridor,this);
 
     handle.param("robot_name",robotname,string("diago"));
 }
@@ -47,6 +49,14 @@ int T41PNPActionServer::evalCondition(string cond) {
 /*
  * ACTIONS
  */
+
+void T41PNPActionServer::turn(string params, bool *run) {
+  cout << "### Executing Turn " << params << " ... " << endl;
+
+  float th_deg = atof(params.c_str());
+  do_turn(robotname,th_deg,run);
+}
+
 
 void T41PNPActionServer::advertise(string params, bool *run) {
   cout << "### Executing Advertise " << params << " ... " << endl;

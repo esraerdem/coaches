@@ -48,9 +48,11 @@ bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
 
 
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;
+actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
+
+std::string turn_topic = "turn";
 
 #if 0
-std::string turn_topic = "turn";
 
 std::string followcorridor_topic = "follow_corridor";
 std::string followperson_topic = "follow_person";
@@ -338,7 +340,14 @@ void pnpSuccess(string params, bool *run){
     ros::Duration(1).sleep();
 }
 
-void turn(string params, bool *run) {
+void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& pedestrianInfo){
+    pedestrianDistance = pedestrianInfo->distance;
+}
+
+#endif
+
+void do_turn(string robotname, float GTh_DEG, bool *run) {
+
     if (ac_turn==NULL) {
       ac_turn = new actionlib::SimpleActionClient<rococo_navigation::TurnAction>(turn_topic, true);
 
@@ -346,16 +355,16 @@ void turn(string params, bool *run) {
               ROS_INFO("Waiting for turn action server to come up");
       }
     }
-    float angle = atof(params.c_str());
+
     rococo_navigation::TurnGoal goal;
 
-    goal.target_angle = angle;
-    goal.absolute_relative_flag = "REL";
+    goal.target_angle = GTh_DEG;
+    goal.absolute_relative_flag = "ABS";
     goal.max_ang_vel = 45.0;  // deg/s
 
     // Send the goal
-    ROS_INFO("Sending goal TURN %f", angle);
-    ac_turn->cancelAllGoals();ros::Duration(1).sleep();
+    ROS_INFO("Sending goal TURN %f", GTh_DEG);
+    ac_turn->cancelAllGoals(); ros::Duration(1).sleep();
     ac_turn->sendGoal(goal);
 
     while (!ac_turn->waitForResult(ros::Duration(0.5)) && (*run)){
@@ -363,9 +372,6 @@ void turn(string params, bool *run) {
     }
     ac_turn->cancelAllGoals();
 }
-void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& pedestrianInfo){
-    pedestrianDistance = pedestrianInfo->distance;
-}
 
-#endif
+
 
