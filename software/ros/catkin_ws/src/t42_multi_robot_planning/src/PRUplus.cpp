@@ -91,6 +91,8 @@ PRUplus::~PRUplus() {
   DEBUG("Destroying PRU" <<std::endl);
   for (vector<PRUlayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     delete *it;
+  for (vector<PRUconstraint*>::iterator it = constraints.begin(); it != constraints.end(); ++it)
+    delete *it;
 };
 
 void PRUplus::readXML(xmlpp::TextReader &reader) {
@@ -110,7 +112,7 @@ void PRUplus::readXML(xmlpp::TextReader &reader) {
     else if (name == "Layer")
       layers.push_back(new PRUlayer(reader));
     else if (name == "Constraint")
-      constraints.push_back(PRUconstraint(reader));
+      constraints.push_back(new PRUconstraint(reader));
     else
       std::cerr << "Unexpected tag " << name << "!" << std::endl;
   } // while reader.read()

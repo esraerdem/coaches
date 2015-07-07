@@ -27,7 +27,7 @@ class PRUmodule;
 // Defines class xmlpp::TextReader so that libxml++ is necessary only for linking
 namespace xmlpp {
   class TextReader;
-};
+}
 
 /* The PRU function profile */
 typedef float (*PRUfunction)(const PRUstate& fromState,
@@ -108,7 +108,7 @@ class PRUmodule {
   /** The list of possible outcomes of this module */
   vector<PRUoutcome*> outcomes;
 
-  PRUmodule() { };
+  PRUmodule() { }
   PRUmodule(xmlpp::TextReader &reader);
   ~PRUmodule();
 
@@ -129,7 +129,7 @@ class PRUlayer {
   /** The list of PRUmodules that can be used here */
   vector<PRUmodule*> modules;
 
-  PRUlayer() { };
+  PRUlayer() { }
   PRUlayer(xmlpp::TextReader &reader);
   ~PRUlayer();
 
@@ -138,6 +138,7 @@ class PRUlayer {
 };
 
 std::ostream& operator<<(std::ostream& os, const PRUlayer& layer);
+
 
 /** Converts a constrint part into a vector of strings to check for equality */
 class PRUon;
@@ -171,7 +172,7 @@ class PRUplus {
  private:
   void readXML(xmlpp::TextReader &reader);
  public:
-  /** Stores the domain of any action that can be specified outside of the XML file.*/
+  /** Stores the domain of any action parameter that can be specified outside of the XML file.*/
   static map<string, domain_type> actionsDomain;
   /** Stores the domain-dependant function used for computing reward and distances */
   static PRUfunction domainFunction;
@@ -185,7 +186,7 @@ class PRUplus {
   vector<string> firstEnabledModules;
   vector<PRUlayer*> layers;
   /** A list of valuated global-constraints to assess the plan quality */
-  vector<PRUconstraint> constraints;
+  vector<PRUconstraint*> constraints;
 
   PRUplus();
   PRUplus(string xlmFileName);

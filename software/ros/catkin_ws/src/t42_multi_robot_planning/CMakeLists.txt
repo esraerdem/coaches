@@ -115,18 +115,18 @@ include_directories(
 add_executable(t42 src/T42.cpp src/main.cpp)
 add_executable(pruPlanner src/T42.cpp src/PRUplanner.cpp)
 
-#add_executable(pruReader src/PRUplus.cpp src/PRUprint.cpp)
+add_executable(pruPlanner2 src/PRUplus.cpp src/PRUprint.cpp src/MDP.cpp src/MDPsolve.cpp src/PRU2MDP.cpp src/PRU2MDPprogress.cpp src/PRU2MDPstateStore.cpp src/PRUconstraint.cpp src/PRUplannerClean.cpp src/T42.cpp )
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(t42 ${catkin_EXPORTED_TARGETS})
 add_dependencies(pruPlanner ${catkin_EXPORTED_TARGETS})
-#add_dependencies(pruReader ${catkin_EXPORTED_TARGETS})
+add_dependencies(pruPlanner2 ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(t42 ${catkin_LIBRARIES} )
 target_link_libraries(pruPlanner ${catkin_LIBRARIES} )
-#target_link_libraries(pruReader ${catkin_LIBRARIES} ${LibXML++_LIBRARIES})
+target_link_libraries(pruPlanner2 ${catkin_LIBRARIES} ${LibXML++_LIBRARIES})
 
 #############
 ## Install ##

@@ -75,7 +75,7 @@ int main() {
   PRUplus::actionsDomain["AvailableAds"].insert("Restaurant");
   PRUplus::actionsDomain["AvailableAds"].insert("DoorE");
   // First reads the PRU
-  PRUplus pru("pru.xml");
+  PRUplus pru("pruDIAG.xml");
 
   // Next builds a MDP from it
   PRU2MDP p2m(pru);
