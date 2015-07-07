@@ -22,4 +22,7 @@ doc/**/*.log
 doc/**/*.gz
 frames.gv
 frames.pdf
+**/*.o
+**/*.d
+**/a.out
 
