@@ -50,9 +50,9 @@
     <node pkg="t41_robust_navigation" type="t41_pnpas" name="pnpas" args="" output="screen">      
     </node>
 
-    <node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+    <!-- node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
       <remap from="t21_robot_location" to="amcl_pose" />
-    </node>
+    </node -->
 
     <group ns="planner">
       <node pkg="move_base" type="move_base" respawn="false" name="planner" output="screen">

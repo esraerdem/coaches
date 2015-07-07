@@ -25,7 +25,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("interact",&T41PNPActionServer::interact,this);
     register_action("wait",&T41PNPActionServer::wait,this);
     register_action("turn",&T41PNPActionServer::turn,this);
-    // register_action("followcorridor",&T41PNPActionServer::followcorridor,this);
+    register_action("followcorridor",&T41PNPActionServer::followcorridor,this);
 
     handle.param("robot_name",robotname,string("diago"));
 }
@@ -57,6 +57,15 @@ void T41PNPActionServer::turn(string params, bool *run) {
   do_turn(robotname,th_deg,run);
 }
 
+void T41PNPActionServer::followcorridor(string params, bool *run) {
+  cout << "### Executing Follow Corridor " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_follow_corridor(robotname,GX,GY,run);
+  }
+
+}
 
 void T41PNPActionServer::advertise(string params, bool *run) {
   cout << "### Executing Advertise " << params << " ... " << endl;

@@ -11,7 +11,7 @@ from std_msgs.msg import String
 from shared.msg import Event
 
 
-Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)']
+Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'personPrinter', 'nohelp', 'helpbringdoc', 'helptecnician' ]
 
 
 class DIP(tk.Frame):
@@ -60,11 +60,14 @@ class DIP(tk.Frame):
         else:
             if (cond=='desire(unknown,swipe)'):
                 scond = 'D_unknown_swipe'
-            print "CondGUI: Sending condition %s ..." %(scond)
-            for i in range(0,3):
-	      pubCond.publish(scond)
-	      rospy.sleep(2)
-	    print "CondGUI: Done."
+                print "CondGUI: Sending condition %s ..." %(scond)
+                for i in range(0,3):
+                    pubCond.publish(cond)
+                    rospy.sleep(2)
+            else:
+                print "CondGUI: Sending condition %s ..." %(cond)
+                pubCond.publish(cond)              
+	print "CondGUI: Done."
 	
 
 
