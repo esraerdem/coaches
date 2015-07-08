@@ -203,7 +203,7 @@ bool getLocationPosition(string loc, double &GX, double &GY) {
 
     if (siteLoc.call(srv)) {
         GX = srv.response.coords.position.x; GY = srv.response.coords.position.y;
-        ROS_DEBUG_STREAM("Location " << loc << " at " << GX  << " , " << GY);
+        ROS_INFO_STREAM("Location " << loc << " at " << GX  << " , " << GY);
     }
     else {
         ROS_ERROR_STREAM("Location "<<loc<<" unknown.");
@@ -347,7 +347,7 @@ void do_follow_corridor(string robotname, float GX, float GY, bool *run) {
 
     // Wait for the action server to come up
     while(!ac_followcorridor->waitForServer(ros::Duration(5.0))){
-            ROS_INFO("Waiting for move_base action server to come up");
+            ROS_INFO("Waiting for follow_corridor action server to come up");
     }
   }
 

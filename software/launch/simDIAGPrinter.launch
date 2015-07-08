@@ -1,6 +1,9 @@
 <launch>
 
   <arg name="robot_name" default="diago" />
+  <arg name="laser_topic" default="scan"/>
+  <arg name="laser_frame" default="laser_frame"/>
+
   <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
   <arg name="PNPGUI" default="false" />
 
@@ -9,11 +12,27 @@
   <include file="sim.launch">
     <arg name="world_file" value="AUTOGEN_DISB1_diago.world" />
     <arg name="map_name" value="DISB1" />
+    <arg name="initial_pose_x" default="2.6" />
+    <arg name="initial_pose_y" default="13.0" />
+    <arg name="initial_pose_a" default="3.14" />
   </include>
 
   <group ns="$(arg robot_name)">
     <param name="robot_name" value="$(arg robot_name)" />
 
+     <node pkg="gradient_based_navigation" name="gradientBasedNavigation" type="gradient_based_navigation" args="80"  output="screen">
+                  <param name="GUI" value="true" />
+                  <param name="attractiveDistanceInfluence_m" value="0.5" />
+                  <param name="obstaclesDistanceInfluence_m" value="1.0" />
+                  <param name="laser_frame" value="/$(arg robot_name)/$(arg laser_frame)" />
+                  <remap from="base_scan" to="/$(arg robot_name)/$(arg laser_topic)" />       
+    </node>
+    
+    <node pkg="rococo_navigation" type="follow_corridor_node" name="follow_corridor"  args="-server $(arg robot_name)" respawn="false" output="screen">
+        <remap from="cmd_vel" to="desired_cmd_vel" />
+    </node>
+    <node pkg="rococo_navigation" type="turn_node" name="turn"  args="-server $(arg robot_name)" respawn="false" output="screen" />
+    
     <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
       <remap from="t21_robot_location" to="amcl_pose" />
     </node>

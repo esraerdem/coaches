@@ -11,7 +11,7 @@ from std_msgs.msg import String
 from shared.msg import Event
 
 
-Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'personPrinter', 'nohelp', 'helpbringdoc', 'helptecnician' ]
+Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'personPrinter', 'nohelp', 'helpbringdoc', 'helptechnician' ]
 
 
 class DIP(tk.Frame):

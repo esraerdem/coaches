@@ -37,6 +37,7 @@ public:
     void wait(string params, bool *run);
     void turn(string params, bool *run);
     void followcorridor(string params, bool *run);
+    void say(string params, bool *run);
 
 };
 

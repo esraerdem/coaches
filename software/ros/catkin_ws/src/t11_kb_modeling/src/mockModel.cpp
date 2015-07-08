@@ -114,8 +114,8 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["carPark"]=mkPoint(27,20);
   //Printer DIAG Demo
   locations["home"]=mkPoint(2.6,13);
-  locations["printer"]=mkPoint(3,21);
-  locations["technician"]=mkPoint(1.6,0.6);
+  locations["printer"]=mkPoint(3,20);
+  locations["technician"]=mkPoint(1.6,1.3);
   locations["office1"]=mkPoint(1.2,23.9);
   locations["office2"]=mkPoint(1.3,19.5);
   locations["office3"]=mkPoint(1.3,15.1);
@@ -178,6 +178,12 @@ bool MockModel::getLocation(t11_kb_modeling::GetLocation::Request  &req,
   ROS_DEBUG("Requesting %s", req.loc.c_str());
   std::string id(req.loc);
   lmap::iterator it,end;
+  
+  if (id == "office") {
+      id = "office5";
+  }
+
+  
   if (id.substr(0, 3) == "_P_") {
     it = peoples.find(id);
     res.fixed = false;
