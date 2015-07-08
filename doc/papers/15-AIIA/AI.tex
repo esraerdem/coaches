@@ -14,7 +14,7 @@ From these information, the reasoning module is able to infer the list of possib
 
 Although there are many existing approaches to semantic representations of the environment (see \cite{KoGa14} for a survey), a standard formalism does not exist.
 In this section, we thus define the main features of the knowledge base used in the project,
-based on experience in previous work \cite{icar13bastianelli}. We first introduce the semantic labels used to describe elements of the world, then predicates that determine relations among these labels, and finally its application to the use case if the project.
+based on experience in previous work \cite{icar13bastianelli}. We first introduce the semantic labels used to describe elements of the world, then predicates that determine relations among these labels, and finally its application to the use case in the project.
 
 \vspace{1em}
 
@@ -28,7 +28,7 @@ These concepts are organized in a hierarchical way according to the ``is-a'' rel
 In this way, we can express, for example, that the concept \emph{FrenchRestaurant} is a \emph{Restaurant}. 
 
 A second set of labels will be used to denote objects. Each object belongs to a concept implementing the relation ``instance-of''. Object labels always start with a lowercase letter.
-Thus, a particular restaurant in the mall will be denoted with an object label \emph{caf\'eMarcel} that will be instance of the concept \emph{FrenchRestaurant}. 
+Thus, a particular restaurant in the mall will be denoted with an object label \emph{caf\'eMarcel} that will be an instance of the concept \emph{FrenchRestaurant}. 
 
 \vspace{1em}
 
@@ -66,7 +66,7 @@ will represent the color property \emph{red} of the particular object  \emph{dre
 
 For representing the \emph{Rive de l'orne} shopping mall, we consider different types of areas: shops, restaurants, halls, corridors, rest areas, offices, toilettes, etc. For shops, services and restaurants we consider different categories:
 \begin{itemize}
-\item {\it Shop categories}: dress shop , women dress shop, kid dress shop, men dress shop, makeup store, store perfume, sport store, etc.
+\item {\it Shop categories}: dress shop, women dress shop, kid dress shop, men dress shop, makeup store, store perfume, sport store, etc.
 \item {\it Restaurant categories}: French, Japanese, Chinese, Italian, Oriental, African, fast-food, etc.
 \item {\it Service categories}: security, information, health-care, etc.
 \end{itemize}
@@ -80,7 +80,7 @@ Doors are also considered as connections of these areas. \emph{Door} is a concep
 \end{quote}
 
 \noindent
-where \emph{door12} $\in$ \emph{Door} \emph{area1}, \emph{area2} $\in$ \emph{Area}  are objects belonging to the corresponding concepts. Moreover, the status of the door can be expressed with a predicate {\tt\bf open}. For example,
+where \emph{door12} $\in$ \emph{Door} and \emph{area1}, \emph{area2} $\in$ \emph{Area}  are objects belonging to the corresponding concepts. Moreover, the status of the door can be expressed with a predicate {\tt\bf open}. For example,
 
 \begin{quote}
 {\tt\bf open}(door12) \\
