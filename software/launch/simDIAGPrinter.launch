@@ -31,7 +31,9 @@
     <node pkg="rococo_navigation" type="follow_corridor_node" name="follow_corridor"  args="-server $(arg robot_name)" respawn="false" output="screen">
         <remap from="cmd_vel" to="desired_cmd_vel" />
     </node>
-    <node pkg="rococo_navigation" type="turn_node" name="turn"  args="-server $(arg robot_name)" respawn="false" output="screen" />
+    <node pkg="rococo_navigation" type="turn_node" name="turn"  args="-server $(arg robot_name)" respawn="false" output="screen">
+        <remap from="cmd_vel" to="desired_cmd_vel" />
+    </node>
     
     <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
       <remap from="t21_robot_location" to="amcl_pose" />

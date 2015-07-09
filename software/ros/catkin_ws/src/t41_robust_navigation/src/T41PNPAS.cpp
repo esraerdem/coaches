@@ -11,7 +11,7 @@
 #include "T41PNPAS.h"
 #include "T41Actions.h"
 
-
+#define DEG(a) ((a)*180.0/M_PI)
 
 
 T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
@@ -64,12 +64,13 @@ void T41PNPActionServer::followcorridor(string params, bool *run) {
   double GX,GY;
   if (getLocationPosition(params,GX,GY)) {
       do_follow_corridor(robotname,GX,GY,run);
-      // robot pose getRobotPose function RX RY
-      // atan...
+      // robot oriented towards the goal
+      double RX,RY,RTH;
+      getRobotPose(robotname,RX,RY,RTH);
+      double angle = atan2(GY-RY,GX-RX);
       // turn
+      do_turn(robotname, DEG(angle), run);
   }
-
-
 }
 
 
@@ -86,9 +87,9 @@ void T41PNPActionServer::say(string params, bool *run) {
     ros::Duration(0.5).sleep();
 
   if (*run)
-      cout << "### Finished Advertise " << params << endl;
+      cout << "### Finished Say " << params << endl;
   else
-      cout << "### Aborted Advertise " << params << endl;
+      cout << "### Aborted Say " << params << endl;
 
 }
 

@@ -35,17 +35,26 @@ else
     cd stage_environments; svn up; cd ..
 fi
 
-
-# rococo navigation
+# Rococo Navigation
 
 if [ ! -d rococo_navigation ]; then
     svn co https://labrococo.dis.uniroma1.it/svn/software-open/trunk/rococo-ros/rococo_navigation/
     cd ../ros/catkin_ws/src/
     ln -sf ../../../external/rococo_navigation .
     cd -
+# ../../../external/
 else
     cd rococo_navigation; svn up; cd ..
 fi
 
+# Rococo Laser Analysis
 
-
+if [ ! -d laser_analysis ]; then
+    svn co https://labrococo.dis.uniroma1.it/svn/software-open/trunk/rococo-ros/laser_analysis/
+    cd ../ros/catkin_ws/src/
+    ln -sf ../../../external/laser_analysis .
+    cd -
+# ../../../external/
+else
+    cd laser_analysis; svn up; cd ..
+fi
