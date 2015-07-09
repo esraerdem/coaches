@@ -24,6 +24,9 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("swipe",&T41PNPActionServer::swipe,this);
     register_action("interact",&T41PNPActionServer::interact,this);
     register_action("wait",&T41PNPActionServer::wait,this);
+    register_action("turn",&T41PNPActionServer::turn,this);
+    register_action("goto",&T41PNPActionServer::followcorridor,this);
+    register_action("say",&T41PNPActionServer::say,this);
 
     handle.param("robot_name",robotname,string("diago"));
 }
@@ -47,6 +50,48 @@ int T41PNPActionServer::evalCondition(string cond) {
 /*
  * ACTIONS
  */
+
+void T41PNPActionServer::turn(string params, bool *run) {
+  cout << "### Executing Turn " << params << " ... " << endl;
+
+  float th_deg = atof(params.c_str());
+  do_turn(robotname,th_deg,run);
+}
+
+void T41PNPActionServer::followcorridor(string params, bool *run) {
+  cout << "### Executing Follow Corridor " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_follow_corridor(robotname,GX,GY,run);
+      // robot pose getRobotPose function RX RY
+      // atan...
+      // turn
+  }
+
+
+}
+
+
+void T41PNPActionServer::say(string params, bool *run) {
+  cout << "### Executing Say " << params << " ... " << endl;
+
+  shared::Goal hri_goal;
+  hri_goal.kind = GOAL_SPEECH;
+  hri_goal.param = params;
+  hri_pub.publish(hri_goal);
+
+  int sleeptime=6; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+    ros::Duration(0.5).sleep();
+
+  if (*run)
+      cout << "### Finished Advertise " << params << endl;
+  else
+      cout << "### Aborted Advertise " << params << endl;
+
+}
+
 
 void T41PNPActionServer::advertise(string params, bool *run) {
   cout << "### Executing Advertise " << params << " ... " << endl;

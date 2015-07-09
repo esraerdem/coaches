@@ -31,9 +31,21 @@ if [ ! -d stage_environments ]; then
     cd ../ros/catkin_ws/src/
     ln -sf ../../../external/stage_environments .
     cd -
-# ../../../external/
 else
     cd stage_environments; svn up; cd ..
 fi
+
+
+# rococo navigation
+
+if [ ! -d rococo_navigation ]; then
+    svn co https://labrococo.dis.uniroma1.it/svn/software-open/trunk/rococo-ros/rococo_navigation/
+    cd ../ros/catkin_ws/src/
+    ln -sf ../../../external/rococo_navigation .
+    cd -
+else
+    cd rococo_navigation; svn up; cd ..
+fi
+
 
 

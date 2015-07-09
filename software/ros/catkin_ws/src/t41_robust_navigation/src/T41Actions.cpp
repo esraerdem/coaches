@@ -48,17 +48,21 @@ bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
 
 
 actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;
+actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
+actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction> *ac_followcorridor = NULL;
+
+std::string turn_topic = "turn";
+std::string followcorridor_topic = "follow_corridor";
 
 #if 0
-std::string turn_topic = "turn";
 
-std::string followcorridor_topic = "follow_corridor";
+
 std::string followperson_topic = "follow_person";
 std::string askquestion_topic = "interaction";
 
 
 actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
-actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction> *ac_followcorridor = NULL;
+
 actionlib::SimpleActionClient<rococo_navigation::FollowPersonAction> *ac_followperson = NULL;
 actionlib::SimpleActionClient<coaches_reasoning::AskQuestionAction> *ac_askquestion = NULL;
 rococo_navigation::FollowCorridorGoal goal;
@@ -70,45 +74,7 @@ void variableCallback(const std_msgs::String::ConstPtr& msg){
     variableValues = msg->data;
 }
 
-void start_followcorridor(float GX, float GY, bool *run) {
 
-  if (ac_followcorridor==NULL) {
-    // Define the action client (true: we want to spin a thread)
-    ac_followcorridor = new actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction>(followcorridor_topic, true);
-
-    // Wait for the action server to come up
-    while(!ac_followcorridor->waitForServer(ros::Duration(5.0))){
-            ROS_INFO("Waiting for move_base action server to come up");
-    }
-  }
-
-  // Read time
-  double secs =ros::Time::now().toSec();
-  while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
-      ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
-      ros::Duration(1.0).sleep();
-    secs =ros::Time::now().toSec();
-  }
-
-  // Set the goal (MAP frame)
-  rococo_navigation::FollowCorridorGoal goal;
-  goal.target_X = GX;  goal.target_Y = GY;   // goal
-  goal.max_vel = 0.7;  // m/s
-
-  // Send the goal
-  ROS_INFO("Sending goal");
-  ac_followcorridor->sendGoal(goal);
-
-  // Wait for termination
-  double d_threshold=0.5, d=d_threshold+1.0;
-  while (!ac_followcorridor->waitForResult(ros::Duration(0.5)) && (*run) && (d>d_threshold)) {
-    ROS_INFO("Running...");
-    double RX,RY,RTH;
-  }
-
-  // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
-  ac_followcorridor->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
-}
 
 #endif
 
@@ -237,7 +203,7 @@ bool getLocationPosition(string loc, double &GX, double &GY) {
 
     if (siteLoc.call(srv)) {
         GX = srv.response.coords.position.x; GY = srv.response.coords.position.y;
-        ROS_DEBUG_STREAM("Location " << loc << " at " << GX  << " , " << GY);
+        ROS_INFO_STREAM("Location " << loc << " at " << GX  << " , " << GY);
     }
     else {
         ROS_ERROR_STREAM("Location "<<loc<<" unknown.");
@@ -338,7 +304,14 @@ void pnpSuccess(string params, bool *run){
     ros::Duration(1).sleep();
 }
 
-void turn(string params, bool *run) {
+void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& pedestrianInfo){
+    pedestrianDistance = pedestrianInfo->distance;
+}
+
+#endif
+
+void do_turn(string robotname, float GTh_DEG, bool *run) {
+
     if (ac_turn==NULL) {
       ac_turn = new actionlib::SimpleActionClient<rococo_navigation::TurnAction>(turn_topic, true);
 
@@ -346,16 +319,16 @@ void turn(string params, bool *run) {
               ROS_INFO("Waiting for turn action server to come up");
       }
     }
-    float angle = atof(params.c_str());
+
     rococo_navigation::TurnGoal goal;
 
-    goal.target_angle = angle;
-    goal.absolute_relative_flag = "REL";
+    goal.target_angle = GTh_DEG;
+    goal.absolute_relative_flag = "ABS";
     goal.max_ang_vel = 45.0;  // deg/s
 
     // Send the goal
-    ROS_INFO("Sending goal TURN %f", angle);
-    ac_turn->cancelAllGoals();ros::Duration(1).sleep();
+    ROS_INFO("Sending goal TURN %f", GTh_DEG);
+    ac_turn->cancelAllGoals(); ros::Duration(1).sleep();
     ac_turn->sendGoal(goal);
 
     while (!ac_turn->waitForResult(ros::Duration(0.5)) && (*run)){
@@ -363,9 +336,45 @@ void turn(string params, bool *run) {
     }
     ac_turn->cancelAllGoals();
 }
-void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& pedestrianInfo){
-    pedestrianDistance = pedestrianInfo->distance;
+
+
+
+void do_follow_corridor(string robotname, float GX, float GY, bool *run) {
+
+  if (ac_followcorridor==NULL) {
+    // Define the action client (true: we want to spin a thread)
+    ac_followcorridor = new actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction>(followcorridor_topic, true);
+
+    // Wait for the action server to come up
+    while(!ac_followcorridor->waitForServer(ros::Duration(5.0))){
+            ROS_INFO("Waiting for follow_corridor action server to come up");
+    }
+  }
+
+  // Read time
+  double secs =ros::Time::now().toSec();
+  while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
+      ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
+      ros::Duration(1.0).sleep();
+    secs =ros::Time::now().toSec();
+  }
+
+  // Set the goal (MAP frame)
+  rococo_navigation::FollowCorridorGoal goal;
+  goal.target_X = GX;  goal.target_Y = GY;   // goal
+  goal.max_vel = 0.7;  // m/s
+
+  // Send the goal
+  ROS_INFO("Sending goal");
+  ac_followcorridor->sendGoal(goal);
+
+  // Wait for termination
+  double d_threshold=0.5, d=d_threshold+1.0;
+  while (!ac_followcorridor->waitForResult(ros::Duration(0.5)) && (*run) && (d>d_threshold)) {
+    ROS_INFO("Running...");
+    double RX,RY,RTH;
+  }
+
+  // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
+  ac_followcorridor->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
 }
-
-#endif
-
