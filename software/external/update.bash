@@ -35,6 +35,17 @@ else
     cd stage_environments; svn up; cd ..
 fi
 
+# glocalizer
+
+if [ ! -d glocalizer ]; then
+    svn co https://labrococo.dis.uniroma1.it/svn/software-open/trunk/rococo-ros/glocalizer/
+    cd ../ros/catkin_ws/src/
+    ln -sf ../../../external/glocalizer .
+    cd -
+else
+    cd rococo_navigation; svn up; cd ..
+fi
+
 # Rococo Navigation
 
 if [ ! -d rococo_navigation ]; then
@@ -42,7 +53,6 @@ if [ ! -d rococo_navigation ]; then
     cd ../ros/catkin_ws/src/
     ln -sf ../../../external/rococo_navigation .
     cd -
-# ../../../external/
 else
     cd rococo_navigation; svn up; cd ..
 fi
@@ -54,7 +64,7 @@ if [ ! -d laser_analysis ]; then
     cd ../ros/catkin_ws/src/
     ln -sf ../../../external/laser_analysis .
     cd -
-# ../../../external/
 else
     cd laser_analysis; svn up; cd ..
 fi
+
