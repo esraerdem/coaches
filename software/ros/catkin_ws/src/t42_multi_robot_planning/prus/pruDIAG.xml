@@ -1,0 +1,133 @@
+<pru>
+  <Start>
+    <Next> 
+      1.wait
+    </Next>
+  </Start>
+  <Layer id='1'>
+    <Action id='wait'>
+      <Outcome id='entry' p='0.25'>
+	<Duration kind='null' const='1' />
+	<Observe> ! personHere &amp; ! personPrinter </Observe>
+	<Next> 
+	  1.wait
+	  2.welcome
+	</Next>
+      </Outcome>
+      <Outcome id='entry' p='0.25'>
+	<Duration kind='null' const='1' />
+	<Observe> personHere &amp; ! personPrinter </Observe>
+	<Next> 
+	  1.wait
+	  2.welcome
+	</Next>
+      </Outcome>
+      <Outcome id='print' p='0.25'>
+	<Duration kind='null' const='1' />
+	<Observe> personPrinter &amp; ! personHere </Observe>
+	<Next> 
+	  1.wait
+	  2.goto_printer
+	</Next>
+      </Outcome>
+      <Outcome id='both' p='0.25'>
+	<Duration kind='null' const='1' />
+	<Observe> personHere &amp; personPrinter </Observe>
+	<Next> 
+	  1.wait
+	  2.welcome
+	  2.goto_printer
+	</Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='2'>
+    <Action id='welcome'>
+      <Outcome id='done' p='1'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='30' />
+	<Next> 4.restart </Next>
+      </Outcome>
+    </Action>
+    <Action id='goto_printer'>
+      <Outcome id='ok' p='0.75'>
+	<Duration kind='distanceEntrancePrinter' const='1' />
+	<Observe> personPrinter </Observe>
+	<Next>
+	  2.say_hello
+	</Next>
+      </Outcome>
+      <Outcome id='err' p='0.25'>
+	<Duration kind='distanceEntrancePrinter' const='1' />
+	<Observe> ! personPrinter </Observe>
+	<Next>
+	  4.goto_home
+	</Next>
+      </Outcome>
+    </Action>
+    <Action id='say_hello'>
+      <Outcome id='done' p='0.34'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='15' />
+	<Observe> nohelp </Observe>
+	<Next> 4.goto_home </Next>
+      </Outcome>
+      <Outcome id='bring' p='0.33'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='30' />
+	<Observe> helpbringdoc </Observe>
+	<Next> 3.goto_office </Next>
+      </Outcome>
+      <Outcome id='help' p='0.34'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='15' />
+	<Observe> helptecnician </Observe>
+	<Next> 3.goto_tecnician </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='3'>
+    <Action id='goto_office'>
+      <Outcome id='done' p='1.0'>
+	<Duration kind='null' const='1' /> <!-- No way to estimate cost -->
+	<Next> 3.say_receiver </Next>
+      </Outcome>
+    </Action>
+    <Action id='goto_tecnician'>
+      <Outcome id='done' p='1.0'>
+	<Duration kind='distancePrinterTech' const='1' />
+	<Next> 3.say_tecnician </Next>
+      </Outcome>
+    </Action>
+    <Action id='say_receiver'>
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='15' />
+	<Next> 4.goto_home </Next>
+      </Outcome>
+    </Action>
+    <Action id='say_tecnician'>
+      <Outcome id='done' p='1.0'>
+	<Quality kind='null' const='100' />
+	<Duration kind='null' const='15' />
+	<Next> 4.goto_home </Next>
+      </Outcome>
+    </Action>
+  </Layer>
+  <Layer id='4'>    
+    <Action id='goto_home'>
+      <Outcome id='done' p='1.0'>
+	<Duration kind='null' const='1' /> <!-- No way to estimate cost -->
+	<Next> 4.restart </Next>
+      </Outcome>
+    </Action>
+    <Action id='restart'>
+      <Outcome id='done' p='1.0'>
+	<Duration kind='null' const='1' />
+	<Next> 4.restart </Next>
+	<Final label='restart'/>
+      </Outcome>
+    </Action>
+  </Layer>
+</pru>
+

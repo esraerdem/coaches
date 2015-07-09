@@ -47,6 +47,7 @@ class MDPstate {
   /** Builds a string using variables as predicates separated by '&'. 
    */
   const string getPredicates() const;
+  const string getPredicates(std::string stepPredicate) const;
 
   ~MDPstate(); 
 };

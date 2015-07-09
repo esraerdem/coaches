@@ -6,15 +6,21 @@
 #include "PRU2MDP.h"
 #include "MDP.h"
 
-
 #include <boost/format.hpp>
+
+// <node pkg="t42_multi_robot_planning" type="pruPlanner2" name="PRU_planner" respawn="false" output="screen" launch-prefix="valgrind --db-attach=yes">
 
 #define DEBUG_VI
 
-#define PATIENCE 0.99
-#define HORIZON 10
+//#define PATIENCE 0.99
+//#define HORIZON 10
 
-#define ROBOT_NAME std::string("diago")
+//#define ROBOT_NAME std::string("diago")
+
+static float testFunction(const PRUstate& fromState, const PRUstate& toState,
+       const string& kind, float parameter) {
+  return 0;
+}
 
 class PRUplanner : public T42 {
 private:
@@ -22,6 +28,11 @@ private:
   ros::Publisher policy_pub;
   ros::Subscriber result_sub;
   void resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg);
+
+  // parameters
+  std::string ROBOT_NAME, pruFolder, pruFile;
+  int HORIZON;
+  double PATIENCE;
 
   PRUplus *pru;
   MDP *mdp;
@@ -35,8 +46,28 @@ public:
 };
 
 PRUplanner::PRUplanner(ros::NodeHandle node) : T42(node) {
+  ros::NodeHandle lnode("~");
+  lnode.param("pru_folder",pruFolder,std::string("."));
+  lnode.param("patience",PATIENCE,0.99);
+  lnode.param("horizon",HORIZON,10);
+  lnode.param("robot_name",ROBOT_NAME, std::string("diago"));
+  lnode.param("PRU",pruFile,std::string("pruDiag.xml"));
+  if (*pruFolder.rbegin() != '/')
+    pruFolder += '/';
+  if (*pruFile.begin() == '/')
+    pruFile.erase(pruFile.begin(),pruFile.begin());
+
   policy_pub = node.advertise<t41_robust_navigation::Policy>(TOPIC_POLICY, 100);
   result_sub = node.subscribe(TOPIC_POLICY_RESULT, 10, &PRUplanner::resultCallback, this);
+
+  // Reads the PRU
+  //static PRUplus pru2 (pruFolder+pruFile);
+  //PRUplus *pru2 = new PRUplus(pruFolder+pruFile);
+  PRUplus::domainFunction = &testFunction;
+  pru = new PRUplus();
+  pru->readXML(pruFolder+pruFile);
+  ROS_INFO("PRU %s%s has been read.",pruFolder.c_str(),pruFile.c_str());
+  std::cout << *pru;
 }
 
 void PRUplanner::resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg)
@@ -64,14 +95,18 @@ void PRUplanner::plan() {
   t41_robust_navigation::Policy msg;
   std::string ostep = " & _step( 0 )";
   std::vector<t41_robust_navigation::StatePolicy> pol;
+  MDPstate* goalState = NULL;
   for (int steps=0; steps<HORIZON; steps++) {
+    bool firstStep = (steps==HORIZON-1);
     mdp->iterate(PATIENCE);
-    const vector<const MDPaction*> policy;
+    const vector<const MDPaction*> &policy = mdp->getPolicy(steps);
 
     std::string cstep = str(boost::format(" & _step( %d )") %steps);
-    for (int s=0; s<mdp->getStates().size(); ++s) {
+    for (int s=(firstStep?0:1); s<mdp->getStates().size(); ++s) { // put Init state only on first step
       t41_robust_navigation::StatePolicy stateAction;
-      stateAction.state = mdp->getState(s)->getPredicates() + cstep;
+      if ((mdp->getState(s) == goalState) && !firstStep)
+        continue;
+      stateAction.state = mdp->getState(s)->getPredicates(cstep);
       const MDPaction *a = policy[s];
       stateAction.action = a->actionName;
       if (! a->parameters.empty()) {
@@ -87,18 +122,22 @@ void PRUplanner::plan() {
         stateAction.action += " )";
       } // if parametric action
       for (std::set<MDPstate*>::const_iterator it = a->outcomes.begin(); it!= a->outcomes.end(); ++it) {
-        stateAction.successors.push_back((*it)->getPredicates() + ostep);
+        stateAction.successors.push_back((*it)->getPredicates(ostep));
+        if ((*it)->prevOutcome->isFinal)
+          goalState = *it;
       } // for it in outcomes of a
       pol.push_back(stateAction);
       std::cout << s << " - " << stateAction.state ;
       std::cout << ": " << stateAction.action << std::endl;
-      ostep = cstep;
     } //for s
+    ostep = cstep;
   } // for int steps
 
   msg.policy = pol;
 
-  msg.initial_state = str(boost::format("%s & _step( %d )") %mdp->getState(0)->getPredicates() %(HORIZON-1));
+  msg.initial_state = mdp->getState(0)->getPredicates();
+  if (goalState != NULL)
+    msg.final_state = goalState->getPredicates();
 /*
   if (TARGETaction<0)
     msg.goal_name = *specialActions[-1-TARGETaction].action;
@@ -114,8 +153,7 @@ void PRUplanner::plan() {
 }
 
 void PRUplanner::prepareModel() {
-  // First reads the PRU
-  pru = new PRUplus("pruDIAG.xml");
+
 }
 
 int main(int argc, char **argv)

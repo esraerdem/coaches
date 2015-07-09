@@ -10,7 +10,7 @@
 
 #include "MDP.h"
 
-#undef PRINT
+#define PRINT
 #include "DEBUGprint.h"
 
 map<string, domain_type> PRUplus::actionsDomain;
@@ -56,44 +56,60 @@ void PRUoutcome::initDefaultValues() {
   durationConstant=0;
   isFinal = false;
   finalLabel = "";
-};
+}
 PRUoutcome::PRUoutcome() { 
   initDefaultValues(); 
-};
+}
 PRUoutcome::~PRUoutcome() { 
   DEBUG("||+Destroying outcome " << name <<std::endl);
-};
+}
 
 PRUplus::PRUplus(string xmlFileName) {
+  DEBUG("XML constructor of PRU+\n");
   try {
     xmlpp::TextReader reader(xmlFileName.c_str());
     readXML(reader);
   } catch(const std::exception& e) {
     std::cerr << "Exception caught: " << e.what() << std::endl;
   }
+  DEBUG(*this<<std::endl);
 }
 PRUmodule::~PRUmodule() {
   DEBUG("|+Destroying Module "<<actionName <<std::endl);
   for (vector<PRUoutcome*>::iterator it = outcomes.begin(); it != outcomes.end(); ++it)
     delete *it;
-};
+}
 
 PRUlayer::~PRUlayer() {
   DEBUG("+Destroying Layer " << name <<std::endl);
   for (vector<PRUmodule*>::iterator it = modules.begin(); it != modules.end(); ++it)
     delete *it;
-};
+}
 
-PRUplus::PRUplus() { 
+PRUplus::PRUplus() {
   // Nothing to do
-};
+  //this->firstEnabledModules.push_back("empty");
+  DEBUG("empty constructor of PRU+ _n");
+}
+
 PRUplus::~PRUplus() {
   DEBUG("Destroying PRU" <<std::endl);
   for (vector<PRUlayer*>::iterator it = layers.begin(); it != layers.end(); ++it)
     delete *it;
   for (vector<PRUconstraint*>::iterator it = constraints.begin(); it != constraints.end(); ++it)
     delete *it;
-};
+}
+
+bool PRUplus::readXML(string xmlFileName) {
+  try {
+    xmlpp::TextReader reader(xmlFileName.c_str());
+    readXML(reader);
+    return true;
+  } catch(const std::exception& e) {
+    std::cerr << "Exception caught: " << e.what() << std::endl;
+    return false;
+  }
+}
 
 void PRUplus::readXML(xmlpp::TextReader &reader) {
   while(reader.read()) {

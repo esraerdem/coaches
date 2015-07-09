@@ -189,7 +189,8 @@ class PRUplus {
   vector<PRUconstraint*> constraints;
 
   PRUplus();
-  PRUplus(string xlmFileName);
+  PRUplus(string xmlFileName);
+  bool readXML(string xmlFileName);
   ~PRUplus() ;
   /** Fills the specified domain with values from the SVUs of all the modules of all the layers of this PRU. */  
   void fillSVdomain (map<string, domain_type> &stateVariableDomain) const;
