@@ -1,0 +1,80 @@
+<launch>
+
+  <arg name="robot_name" default="diago" />
+  <arg name="laser_topic" default="scan"/>
+  <arg name="laser_frame" default="laser_frame"/>
+
+  <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
+  <arg name="PNPGUI" default="false" />
+
+  <master auto="start"/>  
+
+  <group ns="$(arg robot_name)">
+    <param name="robot_name" value="$(arg robot_name)" />
+    
+    <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node>
+
+    <node pkg="t12_kb_reasoning" type="mockSites" name="kb_reasoning" respawn="false" output="screen">
+    </node>
+    
+    <node pkg="t21_image_processing" type="mockPeople" name="perception" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t22_situation_awareness" type="t22" name="situation_awareness" respawn="false" output="screen">
+    </node>
+    
+    <node pkg="t31_multimodal_hri" type="mockHRI" name="multimodal_hri" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t32_human_needs_estimation" type="t32" name="human_needs_estimation" respawn="false" output="screen">
+    </node>
+
+    <node pkg="t41_robust_navigation" type="t41" name="robust_navigation" respawn="false" output="screen">
+      <remap from="t41_low_level" to="move_base_simple/goal" />
+      <param name="plan_folder" value="$(arg plan_folder)" />
+    </node>
+
+    <node pkg="t41_robust_navigation" type="controlGUI.py" name="control_gui" respawn="false" output="screen" required="true">
+    </node>
+
+    <node pkg="pnp_ros" type="pnp_node" name="pnp" args="" output="screen">
+      <param name="plan_folder" value="$(arg plan_folder)" />
+      <param name="current_plan" value="stop" />
+      <param name="use_java_connection" value="$(arg PNPGUI)" />
+    </node>
+    
+    <node pkg="t41_robust_navigation" type="t41_pnpas" name="pnpas" args="" output="screen">      
+    </node>
+
+    <!-- node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+      <remap from="t21_robot_location" to="amcl_pose" />
+    </node -->
+
+    <group ns="planner">
+      <node pkg="move_base" type="move_base" respawn="false" name="planner" output="screen">
+        <remap from="map" to="/map" />
+        <remap from="odom" to="dummy" />
+        <remap from="cmd_vel" to="dummy2" />
+
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/move_base_params.yaml" command="load" />
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find stage_environments)/config/$(arg robot_name)/navigation/base_local_planner_params.yaml" command="load" />
+
+        <!-- Override MOVE_BASE Frame Params to include prefix -->
+        <param name="global_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robot_name)/LASER_FRAME"/>
+        <param name="global_costmap/laser_scan_sensor/topic" value="/$(arg robot_name)/LASER_TOPIC"/>
+        <param name="global_costmap/robot_base_frame" value="/$(arg robot_name)/base_frame"/>   
+        <param name="local_costmap/global_frame" value="/$(arg robot_name)/odom"/>
+        <param name="local_costmap/laser_scan_sensor/sensor_frame" value="/$(arg robot_name)/LASER_FRAME"/>
+        <param name="local_costmap/laser_scan_sensor/topic" value="/$(arg robot_name)/LASER_TOPIC"/>
+        <param name="local_costmap/robot_base_frame" value="/$(arg robot_name)/base_frame"/> 
+      </node>
+    </group>
+  </group>
+
+</launch>

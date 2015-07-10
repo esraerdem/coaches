@@ -33,13 +33,15 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
 
 int T41PNPActionServer::evalCondition(string cond) {
 
-    printf("-- Evaluating condition %s \n",cond.c_str());
+    // printf("-- Evaluating condition %s \n",cond.c_str());
 
     if (cond.find("L_diago")!=string::npos)
         return 1; // the robot is in the correct position -> always true
 
+    // if (cond == "personHere"  )  return 1; 
 
-    printf("-- Evaluating condition %s = %d\n",cond.c_str(),-1);
+
+    // printf("-- Evaluating condition %s = %d\n",cond.c_str(),-1);
 
     return -1;   // Test, all conditions are true!!!
 
@@ -70,9 +72,11 @@ void T41PNPActionServer::followcorridor(string params, bool *run) {
       // robot oriented towards the goal
       double RX,RY,RTH;
       getRobotPose(robotname,RX,RY,RTH);
-      double angle = atan2(GY-RY,GX-RX);
-      // turn
-      do_turn(robotname, DEG(angle), run);
+      if (params.find("printer")==string::npos) { // if not printer
+        double angle = atan2(GY-RY,GX-RX);
+        // turn
+        do_turn(robotname, DEG(angle), run);
+      }
   }
 }
 

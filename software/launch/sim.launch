@@ -15,6 +15,7 @@
   <arg name="use_glocalizer" default="false" />
   <arg name="use_move_base" default="true" />
   <arg name="use_gradient_based_navigation" default="false" />
+  <arg name="use_joystick" default="true" />
 
 
   <master auto="start"/>
@@ -37,6 +38,13 @@
     <param name="robot_name" value="$(arg robot_name)" />
     <param name="tf_prefix" value="$(arg robot_name)" />
 
+    <group if="$(arg use_joystick)">
+        <node pkg="joy" type="joy_node" name="joy" output="screen">
+            <param name="dev" type="string" value="/dev/input/js0" />
+            <param name="deadzone" value="0.12" />
+        </node>
+        <node pkg="gradient_based_navigation" name="joystick_control" type="joystick_control" output="screen"/>
+    </group>
 
     <!-- AMCL -->
 
