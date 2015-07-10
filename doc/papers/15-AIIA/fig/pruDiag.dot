@@ -1,0 +1,53 @@
+digraph {
+	rankdir=LR
+	Init [shape=Mcircle]
+	subgraph cluster1 {
+		label="Layer 1"
+		wait
+	}
+	subgraph cluster2 {
+		label="Layer 2"
+		welcome [shape=octagon] gotoPrinter say_hello [shape=octagon]
+	}
+	subgraph cluster3 {
+		label="Layer 3"
+		gotoOffice gotoTech giveDocument [shape=octagon] explain [shape=octagon]
+	}
+	subgraph cluster4 {
+		label="Layer 4"
+		gotoHome restart [shape=Mcircle]
+	}
+	
+	Init->wait
+	
+	wait->wait //[label="!personHere & !personPrinter"]
+//	wait->wait //[label="personHere & !personPrinter"]
+	wait->welcome [label="personHere & !personPrinter"]
+//	wait->wait //[label="personPrinter & !personHere"]
+	wait->gotoPrinter [label="personPrinter & !personHere"]
+//	wait->wait //[label="personHere&personPrinter"]
+	wait->welcome [label="personHere&personPrinter"]
+	wait->gotoPrinter [label="personHere&personPrinter"]
+
+	welcome->restart 
+
+	gotoPrinter->say_hello [label="personPrinter"]
+	gotoPrinter->gotoHome [label="!personPrinter"]
+
+	say_hello->gotoOffice [label="helpBringDoc"]
+	say_hello->gotoTech [label="helpTech"]
+	say_hello->gotoHome [label="noHelp"]
+
+	gotoOffice->giveDocument
+
+	gotoTech->explain
+
+	giveDocument->gotoHome
+
+	explain->gotoHome
+
+	gotoHome->restart
+
+	restart->restart
+	
+}
