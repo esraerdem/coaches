@@ -16,10 +16,9 @@ Although there are many existing approaches to semantic representations of the e
 In this section, we thus define the main features of the knowledge base used in the project,
 based on experience in previous work \cite{icar13bastianelli}. We first introduce the semantic labels used to describe elements of the world, then predicates that determine relations among these labels, and finally its application to the use case in the project.
 
-\vspace{1em}
 
-\noindent 
-\textbf{Semantic labels}
+
+\paragraph{\textbf{Semantic labels.}}
 
 In order to refer to objects and classes of objects in the knowledge base, we introduce a set of labels that will be associated to semantic meanings. 
 
@@ -30,39 +29,10 @@ In this way, we can express, for example, that the concept \emph{FrenchRestauran
 A second set of labels will be used to denote objects. Each object belongs to a concept implementing the relation ``instance-of''. Object labels always start with a lowercase letter.
 Thus, a particular restaurant in the mall will be denoted with an object label \emph{caf\'eMarcel} that will be an instance of the concept \emph{FrenchRestaurant}. 
 
-\vspace{1em}
 
-\noindent 
-\textbf{Predicates}
+\paragraph{\textbf{Predicates.}}
 
-Predicates are used to describe relations among the semantic labels. For example, the ``is-a'' and the ``instance-of'' relations can be represented by the corresponding predicates {\tt\bf is-a} and {\tt\bf instance-of}. For example, we can write
-
-\begin{quote}
-{\tt\bf is-a}(FrenchRestaurant, Restaurant)\\
-{\tt\bf instance-of}(caf\'eMarcel, FrenchRestaurant)\\
-\end{quote}
-
-%Sometimes,  the ``is-a'' and the ``instance-of'' relations will be abbreviated respectively by
-%the operators $\subset$ and $\in$.
-%Thus, the above example can also be described as \emph{FrenchRestaurant} $\subset$ \emph{Restaurant} and \emph{caf\'eMarcel} $\in$ \emph{FrenchRestaurant}.
-
-
-Predicates are also used to denote properties of objects. For example, given the concepts \emph{Color} and \emph{Dress} and the objects \emph{red} $\in$ \emph{Color} and \emph{dress\_123} $\in$ \emph{Dress}, the predicate 
-
-\begin{quote}
-{\tt\bf color}(dress\_123,  red)
-\end{quote}
-
-\noindent
-will represent the color property \emph{red} of the particular object  \emph{dress\_123}.
-
-
-
-
-\vspace{1em}
-
-\noindent 
-\textbf{Example of representation of the environment}
+Predicates are used to describe relations among the semantic labels. For example, the ``is-a'' and the ``instance-of'' relations can be represented by the corresponding predicates {\tt\bf is-a} and {\tt\bf instance-of}. Predicates are also used to denote properties of objects (e.g., the color of a dress and the status of a door). 
 
 For representing the \emph{Rive de l'orne} shopping mall, we consider different types of areas: shops, restaurants, halls, corridors, rest areas, offices, toilettes, etc. For shops, services and restaurants we consider different categories:
 \begin{itemize}
@@ -73,81 +43,72 @@ For representing the \emph{Rive de l'orne} shopping mall, we consider different 
 
 All these areas are represented as concepts that are grouped in a more general concept \emph{Area}. The hierarchy of these areas will be defined through the ``is-a'' relation of the semantic labels described before.
 
-Doors are also considered as connections of these areas. \emph{Door} is a concept containing door objects and connections of areas through doors are represented with the {\tt\bf connect} predicate (see also below).
+Some examples of predicates for representing the shopping mall are:
 
 \begin{quote}
-{\tt\bf connect}(door12, area1, area2)
-\end{quote}
-
-\noindent
-where \emph{door12} $\in$ \emph{Door} and \emph{area1}, \emph{area2} $\in$ \emph{Area}  are objects belonging to the corresponding concepts. Moreover, the status of the door can be expressed with a predicate {\tt\bf open}. For example,
-
-\begin{quote}
+{\tt\bf is-a}(FrenchRestaurant, Restaurant)\\
+{\tt\bf instance-of}(caf\'eMarcel, FrenchRestaurant)\\
+{\tt\bf color}(dress\_123,  red)\\
+{\tt\bf connect}(door12, area1, area2)\\
 {\tt\bf open}(door12) \\
 \end{quote}
+\vspace{-2em}
 
+\paragraph{\textbf{Reasoning.}} 
 
-%\vspace{1em}
-
-\noindent 
-\textbf{Reasoning} 
-
-
-The KB is used by reasoning procedures that will be implemented in order to reason about the current situation and to define a set of goals that the \coaches robots have to achieve.
-To this end, the reasoning engine takes into account the available information in the KB related to: semantic map, common-sense knowledge and dynamic knowledge coming from the Scene analysis module and determine which goals for the system are consistent with the current situation. This set of goals is then passed to the Planning module described below.
-
-
+The KB is used by reasoning processes that define the goals for the \coaches robots.
+To this end, the reasoning engine takes into account the available information in the KB related to: semantic map, common-sense knowledge and dynamic knowledge coming from the scene analysis module and determine which goals for the system are consistent with the current situation. These goals are then passed to the Planning module described below.
 
 \subsection{Planning under uncertainty}
 
 In this section we describe the Markov Decision Process (MDP) used to model the \coaches planning domain and the algorithm implemented for computing the optimal policy.
 
-\vspace{1em}
-\noindent
-{\bf Task structure}
+\paragraph{{\bf Task structure.}}
 
 The result of the reasoning module (KB module) is a set of goals $G = \{ g_{1}, g_{2}, \ldots, g_{k} \}$ concerning advertisement, patrolling, assisting and escorting.  We note also that advertising goals could be performed in parallel with the moving ones.  Consequently, the task structure is a hierarchy of modules to execute. This structure is  inspired by progressive processing units \cite{CarMouIjcai01}, that we  name PRU+. In our application, we define four PRU+. Each PRU+ is composed of levels where the first level concerns the execution of the subtask {\sc goto site $X$}, the second level concerns the advertisement at a location $(x,y)$ and the third level consists of {\sc do task $X$} where $X$ could be  the assistance, the patrolling, the escorting or the surveillance.% (see Figure \ref{FigureEscortTask}). 
 With such task structures we can also define some joint goals requiring joint PRU+.  For example, escorting a people from one location in a building to another location in the other building requires a cooperation between robots. Indeed, the first robot executes a policy of PRU+ for escorting a user to the exit of the first building, provide him/her information to reach the other building and then send information to the other robots in the other building to continue the escorting task at the second building. The structure of tasks we propose for single robot tasks is  {\sc \{goto $x$, advertisement, do $x$\}}, while for the joint task is {\sc \{goto $x$, advertisement, inform people, send message to the other robots\}}. 
 The task {\sc do $x$} concerns different tasks of assistance. 
 
-More formally, a PRU+ is defined by a set of levels $\{ l_{1}, l_{2}, \ldots, l_{k} \}$, where each level $l_i$ is composed by a set of modules $\{m_{i}^{1}, m_{i}^{2}, \ldots, m_{i}^{p_{i}} \}$ and each module $m_i^j$ is defined by different execution outcomes that we name options $\{ \alpha_{i}^{j}, \beta_{i}^{j}, \ldots \}$.  From these elements, a PRU+ language is defined allowing to define tasks as PRU+ as given in the following example.  
+More formally, a PRU+ is defined by a set of levels $\{ l_{1}, l_{2}, \ldots, l_{k} \}$, where each level $l_i$ is composed by a set of modules $\{m_{i}^{1}, m_{i}^{2}, \ldots, m_{i}^{p_{i}} \}$ and each module $m_i^j$ is defined by different execution outcomes that we name options $\{ \alpha_{i}^{j}, \beta_{i}^{j}, \ldots \}$.  
 
-\vspace{-1em}
-\begin{small}
-\begin{verbatim}
-<pru>
-  <Start>
-    <SVU>
-      location := RobotPos
-      desire := nil
-    </SVU>
-    <Next> 
-      1.advertise 
-      1.advertiseComplex 
-      1.interact
-    </Next>
-  </Start>
-  <Layer id='1'>
-    <StateVariable id='location' />
-    <StateVariable id='desire' />
-    <Action id='advertise'>
-      <Parameter id='X' domain='AvailableAds' />
-      <Outcome id='done' p='1.0'>
-      <Quality kind='null' const='100' />
-      <Duration kind='distance' const='3' />
-      <SVU> location := $X </SVU>
-      <Next> 
-        1.advertise 
-        1.advertiseComplex 
-        1.interact
-      </Next>
-      </Outcome>
-    </Action>
-    <Action id='advertiseComplex'>
-    ...
-</pru>
-\end{verbatim}
-\end{small}
+%From these elements, a PRU+ language is defined allowing to define tasks as PRU+ as given in the following example.  
+
+%\vspace{-1em}
+%\begin{small}
+%\begin{verbatim}
+%<pru>
+%  <Start>
+%    <SVU>
+%      location := RobotPos
+%      desire := nil
+%    </SVU>
+%    <Next> 
+%      1.advertise 
+%      1.advertiseComplex 
+%      1.interact
+%    </Next>
+%  </Start>
+%  <Layer id='1'>
+%    <StateVariable id='location' />
+%    <StateVariable id='desire' />
+%    <Action id='advertise'>
+%      <Parameter id='X' domain='AvailableAds' />
+%      <Outcome id='done' p='1.0'>
+%      <Quality kind='null' const='100' />
+%      <Duration kind='distance' const='3' />
+%      <SVU> location := $X </SVU>
+%      <Next> 
+%        1.advertise 
+%        1.advertiseComplex 
+%        1.interact
+%      </Next>
+%      </Outcome>
+%    </Action>
+%    <Action id='advertiseComplex'>
+%    ...
+%</pru>
+%\end{verbatim}
+%\end{small}
 
 \vspace{1em}
 \noindent
