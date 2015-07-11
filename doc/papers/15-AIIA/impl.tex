@@ -1,11 +1,19 @@
 \section{Implementation and tests}
 
-Before experimenting the robots in the actua<l environment, it is necessary to develop and test the solutions in a simulator and in a more controlled environment. To this end, we report here the development of a simulated environment for the project and some preliminary tests made with the robot in the DIAG Department.
+Before experimenting the robots in the actual environment, it is necessary to develop and test the solutions in a simulator and in a more controlled environment. To this end, we report here the development of a simulated environment for the project and some preliminary tests made with the robot in the DIAG Department.
+
+\coaches architecture is implemented within the ROS framework\footnote{www.ros.org}.
+ROS includes several ready-to-use modules for basic functionalities of the robots, hardware drivers, simulation, and debugging.
+Moreover, the ROS environment guarantees an easy porting from simulation to real robots and in particular, our software architecture is implemented in such a way to remain unchanged when passing from simulation to robots.
 
 
-\subsection{Simulator environment}
+\subsection{2D Simulator environment}
 
-The simulation environment is based on 2D Stage simulator, that is integrated in the ROS infrastructure. The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
+The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
+
+In \coaches, the simulation environment is based on Stage and in particular on its ROS version\footnote{http://wiki.ros.org/stage}. We have extended the original simulator by adding a characterization of people in the environment and some simple for of HRI: the simulated robot can speak to person and the text appears in the simulation window
+and a GUI can be used by a person to simulate human-robot inputs.
+
 
 \begin{figure}
 \centering
@@ -15,37 +23,32 @@ The simulation environment is based on 2D Stage simulator, that is integrated in
 \end{figure}
 
 
-In the Stage simulator a map of the \emph{Rive de l'orne} shopping center has been realized (Figure \ref{fig:stage}).
-Additional maps have been realized for reproducing the environments of the partners in which some experiments will be performed.
-
+In the Stage simulator a map of \emph{Rive de l'orne} shopping center (Figure \ref{fig:stage}) and of  DIAG Department have been realized.
 The Stage environment models one or more robots that have the same 2D sensor and actuator configurations as the real ones and some additional mobile obstacles that represent people moving in the environment. Several behaviors can be tested in this simulated environment such as: 2D perception of human behaviors, human-robot social navigation (e.g., following a person or guiding a person), safe navigation in the environment.
 
-The Stage environment has been fully realized and tested and this configuration will be used as a reference also for the development of the real robotic system.
-
+%The Stage environment has been fully realized and tested and this configuration will be used as a reference also for the development of the real robotic system.
+Several tests have been performed on the simulator, showing that it is a suitable tool for developing high-level robot behaviors. 
 
 %\subsection{Plan generation and execution tests}
 
-The following tests have been performed in the simulator to verify the suitability of the proposed software architecture and of its components. In particular, we have used the simulated environment to assess the suitability of the AI components described in the previous section.
+%The following tests have been performed in the simulator to verify the suitability of the proposed software architecture and of its components. In particular, we have used the simulated environment to assess the suitability of the AI components described in the previous section.
+%
+%\begin{itemize}
+%\item Simple Move-To behavior: moving the robot from one place to another allows for testing the map description, path planning, and the global architecture.
+%\item Patrol behavior: moving the robot across several places allows for testing the sequential decision-making, along with the dynamic addition of new places to visit or new obstacles.
+%\item Simple interaction: going to some people for initiating an interaction allows for testing the difficulties introduced by non-stationary goals, along with the dialog system. It also makes it easier to test for branching behaviors since the dialogs may have several different outcomes.
+%\end{itemize}
+%
+%When executing these behaviors, we have tested many possible causes of failures (that are implemented in Stage by manually moving with the mouse elements that represents people in the environment or by injecting specific conditions through a GUI). We have thus verified that the system is able to respond quickly and effectively also to unpredicted and non-modeled events.
+%
+%At this moment, we do not aim at a quantitative evaluation of the developed components, but at demonstrating the entire flow of information and the feasibility of the approach.
+%The results of the tests confirm that the effectiveness of the adopted solution integrating the three main components described in this paper: KB representation and reasoning, MDP planner and PNP execution. Moreover, we have successfully experimented in several cases how the feedback provided by the execution layer can be used to improve the model and thus the robustness of the plan generated by the planner.
 
-\begin{itemize}
-\item Simple Move-To behavior: moving the robot from one place to another allows for testing the map description, path planning, and the global architecture.
-\item Patrol behavior: moving the robot across several places allows for testing the sequential decision-making, along with the dynamic addition of new places to visit or new obstacles.
-\item Simple interaction: going to some people for initiating an interaction allows for testing the difficulties introduced by non-stationary goals, along with the dialog system. It also makes it easier to test for branching behaviors since the dialogs may have several different outcomes.
-\end{itemize}
-
-When executing these behaviors, we have tested many possible causes of failures (that are implemented in Stage by manually moving with the mouse elements that represents people in the environment or by injecting specific conditions through a GUI). We have thus verified that the system is able to respond quickly and effectively also to unpredicted and non-modeled events.
-
-At this moment, we do not aim at a quantitative evaluation of the developed components, but at demonstrating the entire flow of information and the feasibility of the approach.
-The results of the tests confirm that the effectiveness of the adopted solution integrating the three main components described in this paper: KB representation and reasoning, MDP planner and PNP execution. Moreover, we have successfully experimented in several cases how the feedback provided by the execution layer can be used to improve the model and thus the robustness of the plan generated by the planner.
-
-\subsection{Preliminary test at DIAG}
+\subsection{Preliminary tests at DIAG}
 
 %\subsection {A detailed example}
 In order to test the developed modules on a robot, we have defined a task (similar to the \coaches use cases) that can be run in an office environment.
 We consider a robot assisting users in an office. The robot welcomes people at the entrance and tell them about the latest news. It may also offer assistance for the printer: bringing the printed document to some other person, or informing technicians about printer troubles.
-
-FIGURA ENVIRONMENT
-
 
 \begin{figure}
 \centering
@@ -54,10 +57,10 @@ FIGURA ENVIRONMENT
 \label{fig:pru}
 \end{figure}
 
-The mission is described in the PRU+ depicted in Figure \ref{fig:pru}. It has 4 layers: 1) waiting for people, 2) welcoming people and offering assistance, 3) bringing documents and fetching for technicians, and 4) returning to its home position, near the entrance.
-
-To be more precise, considering action `wait' from layer 1, we can see that four outcomes are possible: nobody is there, somebody has been detected near the entrance, near the printer, or both. When the wait action completes, the robot might decide to wait again. If somebody is at the entrance, the robot can welcome and announce news. If somebody is at the printer, the robot can go there.
-Modules `welcome', `say\_hello', `say\_technicians' and `give\_document' are also granting the robot a reward. They are represented by octagons on the figure  \ref{fig:pru}.
+The mission is described in the PRU+ depicted in Figure \ref{fig:pru}. It has 4 layers: 1) waiting for people, 2) welcoming people and offering assistance, 3) bringing documents and fetching for technicians, and 4) returning to home position.
+The expected behavior is the following:
+from action `wait' in Layer 1 four outcomes are possible: nobody is there, somebody has been detected near the entrance, near the printer, or both. When the `wait' action completes, the robot might decide to wait again. If somebody is close to it, the robot can welcome and announce news. If somebody is at the printer, the robot can go there.
+Modules `welcome', `say\_hello', `say\_technicians' and `give\_document' are also granting the robot a reward. They are represented by octagons in Figure  \ref{fig:pru}.
 
 %This PRU+ is read from a XML file. Figure \ref{fig:xml} shows a short extract of it that describes the module `say\_hello' from layer 2.
 %
@@ -120,8 +123,17 @@ Once solved, it produces the following policy:
   \end{small}
 \end{multicols}
 
-This policy is then translated into a PNP that has been executed by the robot.
+This policy is then translated into a PNP and executed by the robot.
 
-Figure ... shows some snapshot of the execution....
+\begin{figure}
+\centering
+\includegraphics[width=0.8\textwidth]{fig/DIAGPrinter-demo}
+\caption{Example of plan execution.}
+\label{fig:DIAGtest}
+\end{figure}
+
+
+Figure \ref{fig:DIAGtest} shows some snapshots of plan execution, in the situation where the robot is asked to bring a document to a person. 
+Notice that, although in a simplified setting\footnote{At this moment HRI and perceptions modules are not fully implemented and thus we replaced them with the remote control of an operator.}, with these tests we have verified suitability and effectiveness of most of the components of our software architecture and their interconnection.
 
 
