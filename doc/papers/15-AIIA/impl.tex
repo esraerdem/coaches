@@ -6,24 +6,23 @@ Before experimenting the robots in the actual environment, it is necessary to de
 ROS includes several ready-to-use modules for basic functionalities of the robots, hardware drivers, simulation, and debugging.
 Moreover, the ROS environment guarantees an easy porting from simulation to real robots and in particular, our software architecture is implemented in such a way to remain unchanged when passing from simulation to robots.
 
-
-\subsection{2D Simulator environment}
-
-The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
-
-In \coaches, the simulation environment is based on Stage and in particular on its ROS version\footnote{http://wiki.ros.org/stage}. We have extended the original simulator by adding a characterization of people in the environment and some simple for of HRI: the simulated robot can speak to person and the text appears in the simulation window
-and a GUI can be used by a person to simulate human-robot inputs.
-
-
-\begin{figure}
+\begin{figure}[t!]
 \centering
-\includegraphics[width=0.95\textwidth]{fig/Rive1.png}
-\caption{2D map of the \emph{Rive de l'orne} shopping center.}
+\includegraphics[height=3.6cm]{fig/Rive1.png}
+\includegraphics[height=3.6cm]{fig/stage-demoDIAGPrinter2.png}
+\caption{2D map of the \emph{Rive de l'orne} shopping center and Stage simulator snapshot of the DIAG example.}
 \label{fig:stage}
 \end{figure}
 
+\subsection{2D Simulator environment}
 
-In the Stage simulator a map of \emph{Rive de l'orne} shopping center (Figure \ref{fig:stage}) and of  DIAG Department have been realized.
+In \coaches, the simulation environment is 2D and is based on Stage, in particular on its ROS version\footnote{http://wiki.ros.org/stage}.
+The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
+
+We have extended the original simulator by adding a characterization of people in the environment and simple forms of HRI: i) the words spoken by the robot appears in the simulation window; ii) a GUI can be used by an operator to simulate human-robot inputs.
+
+
+In the Stage simulator a map of \emph{Rive de l'orne} shopping center (Fig. \ref{fig:stage} left) and of  DIAG Department (Fig. \ref{fig:stage} right) have been realized.
 The Stage environment models one or more robots that have the same 2D sensor and actuator configurations as the real ones and some additional mobile obstacles that represent people moving in the environment. Several behaviors can be tested in this simulated environment such as: 2D perception of human behaviors, human-robot social navigation (e.g., following a person or guiding a person), safe navigation in the environment.
 
 %The Stage environment has been fully realized and tested and this configuration will be used as a reference also for the development of the real robotic system.
@@ -52,7 +51,7 @@ We consider a robot assisting users in an office. The robot welcomes people at t
 
 \begin{figure}
 \centering
-\includegraphics[width=0.95\textwidth]{fig/PRU}
+\includegraphics[width=0.99\textwidth]{fig/PRU}
 \caption{PRU+ for printer-assistance and welcome}
 \label{fig:pru}
 \end{figure}
@@ -127,7 +126,7 @@ This policy is then translated into a PNP and executed by the robot.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{fig/DIAGPrinter-demo}
+\includegraphics[width=0.9\textwidth]{fig/DIAGPrinter-demo}
 \caption{Example of plan execution.}
 \label{fig:DIAGtest}
 \end{figure}
