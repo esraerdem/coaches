@@ -6,9 +6,9 @@
   </Start>
   <Layer id='1'>
     <Action id='wait'>
-      <Outcome id='entry' p='0.25'>
+      <Outcome id='none' p='0.25'>
 	<Duration kind='null' const='1' />
-	<Observe> ! personHere &amp; ! personPrinter </Observe>
+	<Observe> not personHere &amp; not personPrinter </Observe>
 	<Next> 
 	  1.wait
 	  2.welcome
@@ -16,7 +16,7 @@
       </Outcome>
       <Outcome id='entry' p='0.25'>
 	<Duration kind='null' const='1' />
-	<Observe> personHere &amp; ! personPrinter </Observe>
+	<Observe> personHere &amp; not personPrinter </Observe>
 	<Next> 
 	  1.wait
 	  2.welcome
@@ -24,7 +24,7 @@
       </Outcome>
       <Outcome id='print' p='0.25'>
 	<Duration kind='null' const='1' />
-	<Observe> personPrinter &amp; ! personHere </Observe>
+	<Observe> personPrinter &amp; not personHere </Observe>
 	<Next> 
 	  1.wait
 	  2.goto_printer
@@ -59,7 +59,7 @@
       </Outcome>
       <Outcome id='err' p='0.25'>
 	<Duration kind='distanceEntrancePrinter' const='1' />
-	<Observe> ! personPrinter </Observe>
+	<Observe> not personPrinter </Observe>
 	<Next>
 	  4.goto_home
 	</Next>
@@ -114,7 +114,7 @@
       </Outcome>
     </Action>
   </Layer>
-  <Layer id='4'>    
+  <Layer id='4'> 
     <Action id='goto_home'>
       <Outcome id='done' p='1.0'>
 	<Duration kind='null' const='1' /> <!-- No way to estimate cost -->
@@ -130,4 +130,3 @@
     </Action>
   </Layer>
 </pru>
-

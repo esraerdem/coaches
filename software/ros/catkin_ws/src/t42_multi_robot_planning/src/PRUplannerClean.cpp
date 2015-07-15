@@ -122,7 +122,10 @@ void PRUplanner::plan() {
         stateAction.action += " )";
       } // if parametric action
       for (std::set<MDPstate*>::const_iterator it = a->outcomes.begin(); it!= a->outcomes.end(); ++it) {
-        stateAction.successors.push_back((*it)->getPredicates(ostep));
+	t41_robust_navigation::StateOutcome so;
+	so.observation = (*it)->prevOutcome->observable;
+	so.successor = (*it)->getPredicates(ostep);
+        stateAction.outcomes.push_back(so);
         if ((*it)->prevOutcome->isFinal)
           goalState = *it;
       } // for it in outcomes of a
