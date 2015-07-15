@@ -343,10 +343,13 @@ bool PRUplanner::publishPlan(int horizon) {
       
       for (std::vector<struct outcome>::const_iterator itRes=a->outcomes.begin();
 	   itRes != a->outcomes.end(); ++itRes) {
+	t41_robust_navigation::StateOutcome so;
+	so.observation = "";
 	if (itRes->s < 0)
-	  stateAction.successors.push_back(specialStates[-1-itRes->s].name + ostep);
+	  so.successor = specialStates[-1-itRes->s].name + ostep;
 	else
-	  stateAction.successors.push_back(states[itRes->s].name + ostep);
+	  so.successor = states[itRes->s].name + ostep;
+	stateAction.outcomes.push_back(so);
       } // for *itRes in successors of a
       pol.push_back(stateAction);
       std::cout << s << " - " << stateAction.state ;
@@ -371,10 +374,13 @@ bool PRUplanner::publishPlan(int horizon) {
 
       for (std::vector<struct outcome>::const_iterator itRes=a->outcomes.begin();
 	   itRes != a->outcomes.end(); ++itRes) {
+	t41_robust_navigation::StateOutcome so;
+	so.observation = "";
 	if (itRes->s < 0)
-	  stateAction.successors.push_back(specialStates[-1-itRes->s].name + ostep);
+	  so.successor = specialStates[-1-itRes->s].name + ostep;
 	else
-	  stateAction.successors.push_back(states[itRes->s].name + ostep);
+	  so.successor = states[itRes->s].name + ostep;
+	stateAction.outcomes.push_back(so);
       } // for *itRes in successors of a
       pol.push_back(stateAction);
       std::cout << (-1-s) << " - " << stateAction.state ;

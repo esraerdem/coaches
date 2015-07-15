@@ -52,7 +52,8 @@ string extractName(string s) {
     if (i!=string::npos) {
        r = s.substr(0,i);
        trim(r);
-    }
+    } else 
+      return s;
     return r;
 }
 
@@ -133,7 +134,7 @@ string extractCondition(string s) {
         r = r + vc[0];
     }
     else {
-        r = r + "and";
+        r = r + " and";
         for (i=vc.begin(); i!=vc.end(); i++) {
             r = r + " " + *i;
         }
@@ -176,7 +177,8 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
         // printf("   %s : %s -> ", sa.state.c_str(), sa.action.c_str());
 
         string tstate = transformState(sa.state);
-        transformedconditions[tstate] = extractCondition(sa.state);
+
+        //transformedconditions[tstate] = extractCondition(sa.state);
         string aname = extractName(sa.action);
         string aparam = transformParamsWith_(extractParams(sa.action));
         string taction = aname+"_"+aparam;
@@ -184,12 +186,17 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
         policy[tstate] = taction;
         //cout << "### Added policy " << tstate << " -> " << taction << endl;
 
-        vector<string> ss = sa.successors;
-        vector<string>::iterator is;
-        for (is=ss.end(); is!=ss.begin(); ) {
+//        vector<string> ss = sa.successors;
+	vector<t41_robust_navigation::StateOutcome> &so = sa.outcomes;
+	
+//        vector<string>::iterator is;
+//        for (is=ss.end(); is!=ss.begin(); ) {
+        for (vector<t41_robust_navigation::StateOutcome>::const_iterator is=so.end(); is!=so.begin(); ) {
             is--;
-            string succ = *is;
+//            string succ = *is;
+            string succ = is->successor;
             string tsucc = transformState(succ);
+	    transformedconditions[tsucc] = extractCondition(is->observation);  // Not really sure of this, condition should be attached to source state instead of destination state I think
             //printf(" %s [%s] ",succ.c_str(),tsucc.c_str());
             transition_fn[make_pair(tstate,taction)].push_back(tsucc);
             //cout << "### Added transition " << tstate << "," << taction << " -> " << tsucc << endl;
@@ -204,6 +211,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
     Place *p0 = pnp.addPlace("init"); p0->setInitialMarking();
     string current_state = transformState(initial_state);
     bool PNPgen_error = false;
+    transformedconditions[current_state] = "[true]";
 
     pair<Transition*,Place*> pa = pnp.addCondition(transformedconditions[current_state],p0);
     Place *p1 = pa.second;
