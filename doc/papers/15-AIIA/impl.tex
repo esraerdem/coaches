@@ -16,13 +16,13 @@ Moreover, the ROS environment guarantees an easy porting from simulation to real
 
 \subsection{2D Simulator environment}
 
-In \coaches, the simulation environment is 2D and is based on Stage, in particular on its ROS version\footnote{http://wiki.ros.org/stage}.
-The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robot that does not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptop, thus not requiring advanced graphical cards for running 3D simulations.
+The simulation environment in \coaches  is 2D and is based on Stage, in particular on its ROS version\footnote{wiki.ros.org/stage}.
+The choice of a 2D simulator (instead of a 3D one) is motivated by: 1) the need of modeling and testing high-level behaviors of the robots that do not involve 3D perception, 2) the possibility of using the simulator for multiple robots and other moving elements representing people in the environment, 3) the possibility of using the simulator on standard laptops, thus not requiring advanced graphical cards for running 3D simulations.
 
-We have extended the original simulator by adding a characterization of people in the environment and simple forms of HRI: i) the words spoken by the robot appears in the simulation window; ii) a GUI can be used by an operator to simulate human-robot inputs.
+We have extended the original Stage simulator by adding a characterization of people in the environment and simple forms of HRI: i) the words spoken by the robot appears in the simulation window; ii) a GUI can be used by an operator to simulate human-robot inputs.
 
 
-In the Stage simulator a map of \emph{Rive de l'orne} shopping center (Fig. \ref{fig:stage} left) and of  DIAG Department (Fig. \ref{fig:stage} right) have been realized.
+In the Stage simulator maps of the \emph{Rive de l'orne} shopping center (Fig. \ref{fig:stage} left) and of the DIAG Department (Fig. \ref{fig:stage} right) have been realized.
 The Stage environment models one or more robots that have the same 2D sensor and actuator configurations as the real ones and some additional mobile obstacles that represent people moving in the environment. Several behaviors can be tested in this simulated environment such as: 2D perception of human behaviors, human-robot social navigation (e.g., following a person or guiding a person), safe navigation in the environment.
 
 %The Stage environment has been fully realized and tested and this configuration will be used as a reference also for the development of the real robotic system.
