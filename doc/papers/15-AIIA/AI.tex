@@ -22,17 +22,18 @@ based on experience in previous work \cite{icar13bastianelli,Capobianco2015}. We
 
 In order to refer to objects and classes of objects in the knowledge base, we introduce a set of labels that will be associated to semantic meanings. 
 
-A first set of these labels are called \emph{Concepts} and they are associated to classes of objects. For example, \emph{Restaurant} is a concept used in the semantic map to denote the class of restaurants in the shopping mall. Concept labels always start with an uppercase letter.
+A first set of these labels are called \emph{Concepts}. Concept labels are associated to classes of objects and in this paper they are denoted with an uppercase initial letter.
+For example, \emph{Restaurant} is a concept used in the semantic map to denote the class of restaurants in the shopping mall. 
 These concepts are organized in a hierarchical way according to the ``is-a'' relation.
 In this way, we can express, for example, that the concept \emph{FrenchRestaurant} is a \emph{Restaurant}. 
 
-A second set of labels will be used to denote objects. Each object belongs to a concept implementing the relation ``instance-of''. Object labels always start with a lowercase letter.
+A second set of labels will be used to denote objects. Each object belongs to a concept implementing the relation ``instance-of''. Object labels are  denoted with lowercase letters.
 Thus, a particular restaurant in the mall will be denoted with an object label \emph{caf\'eMarcel} that will be an instance of the concept \emph{FrenchRestaurant}. 
 
 
 \paragraph{\textbf{Predicates.}}
 
-Predicates are used to describe relations among the semantic labels. For example, the ``is-a'' and the ``instance-of'' relations can be represented by the corresponding predicates {\tt\bf is-a} and {\tt\bf instance-of}. Predicates are also used to denote properties of objects (e.g., the color of a dress and the status of a door). 
+Predicates are used to describe relations among the semantic labels. For example, the ``is-a'' and the ``instance-of'' relations can be represented by the corresponding predicates {\tt\bf is-a} and {\tt\bf instance-of}. Predicates are also used to denote properties of objects or locations (e.g., the status of a door or the presence of air-conditioned in a shop). 
 
 For representing the \emph{Rive de l'orne} shopping mall, we consider different types of areas: shops, restaurants, halls, corridors, rest areas, offices, toilettes, etc. For shops, services and restaurants we consider different categories:
 \begin{itemize}
@@ -48,23 +49,25 @@ Some examples of predicates for representing the shopping mall are:
 \begin{quote}
 {\tt\bf is-a}(FrenchRestaurant, Restaurant)\\
 {\tt\bf instance-of}(caf\'eMarcel, FrenchRestaurant)\\
-{\tt\bf color}(dress\_123,  red)\\
 {\tt\bf connect}(door12, hall, caf\'eMarcel)\\
 {\tt\bf open}(door12) \\
+{\tt\bf airconditioned}(caf\'eMarcel)\\
 \end{quote}
-%\vspace{-2em}
+
 
 \paragraph{\textbf{Reasoning.}} 
 
 The KB is used by reasoning processes that define the goals for the \coaches robots.
-To this end, the reasoning engine takes into account the available information in the KB related to: semantic map, common-sense knowledge, and dynamic knowledge coming from the scene analysis and HRI modules and determine which goals for the system are consistent with the current situation. These goals are then passed to the Planning module described below.
+To this end, the reasoning engine takes into account the available information in the KB related to: semantic map, common-sense knowledge, and dynamic knowledge coming from the scene analysis and HRI modules. With this input, this module determines which goals for the system are consistent with the current situation. Then these goals are passed to the Planning module described below.
+
+A further function of reasoning on the KB is to determine conditions for plan execution that are derived from direct perception. In this way, plan execution can consider properties not directly observable from perception, but coming from a reasoning process that interpret perception with common-sense reasoning.
 
 \subsection{Planning under uncertainty}
 
 In this section we describe the Markov Decision Process (MDP) used to model the \coaches planning domain and the algorithm implemented for computing the optimal policy.
 
-\paragraph{{\bf Task structure.}}
 
+\paragraph{\textbf{Task structure.}}
 The result of the reasoning module (KB module) is a set of goals $G = \{ g_{1}, g_{2}, \ldots, g_{k} \}$ concerning advertisement, patrolling, assisting and escorting.  We note also that advertising goals could be performed in parallel with the moving ones.  Consequently, the task structure is a hierarchy of modules to execute. This structure is  inspired by progressive processing units \cite{CarMouIjcai01}, that we  name PRU+. In our application, we define four PRU+. Each PRU+ is composed of levels where the first level concerns the execution of the subtask {\sc goto site $X$}, the second level concerns the advertisement at a location $(x,y)$ and the third level consists of {\sc do task $X$} where $X$ could be  the assistance, the patrolling, the escorting or the surveillance. % (see Figure \ref{FigureEscortTask}). 
 With such task structures we can also define some joint goals requiring joint PRU+.  For example, escorting a people from one location in a building to another location in the other building requires a cooperation between robots. Indeed, the first robot executes a policy of PRU+ for escorting a user to the exit of the first building, provide him/her information to reach the other building and then send information to the other robots in the other building to continue the escorting task at the second building. The structure of tasks we propose for single robot tasks is  {\sc \{goto $x$, advertisement, do $x$\}}, while for the joint task is {\sc \{goto $x$, advertisement, inform people, send message to the other robots\}}. 
 The task {\sc do $x$} concerns different tasks of assistance. 
@@ -73,7 +76,7 @@ More formally, a PRU+ is defined by a set of levels $\{ l_{1}, l_{2}, \ldots, l_
 
 %From these elements, a PRU+ language is defined allowing to define tasks as PRU+ as given in the following example.  
 
-%\vspace{-1em}
+
 %\begin{small}
 %\begin{verbatim}
 %<pru>
@@ -110,9 +113,8 @@ More formally, a PRU+ is defined by a set of levels $\{ l_{1}, l_{2}, \ldots, l_
 %\end{verbatim}
 %\end{small}
 
-\vspace{1em}
-\noindent
-{\bf MDP definition and planning}
+
+\paragraph{\textbf{MDP definition and planning.}}
 
 The planning procedure consists of formalizing the robot activities as an MDP using the PRU+ task definition. This procedure is based on two steps: 1) generating an MDP from a PRU+, 2) compute the optimal policy for the generated MDP.
 In the following we define the $MDP = <S, A, R, T> $ where : 
@@ -157,9 +159,8 @@ PNPs are used to model the behavior (i.e., the policy) that is generated by the 
 The two main components of this process will be described in the rest of this section:
 1) Policy to PNP transformation; 2) Model updater.
 
-\vspace{1em}
-\noindent
-{\bf Policy to PNP transformation}
+
+\paragraph{\textbf{Policy to PNP transformation.}}
 
 The policy generated by the MDP planner is automatically transformed in a PNP.
 For this process, the MDP planner produces the following information: the initial state,
@@ -180,10 +181,7 @@ In the latter case, the executor sends to the Model updater module the following
 1) action failed, 2) condition that was checked to determine action failure, 3) status of the plan (that can contain additional conditions useful for diagnosis of the failure).
 Given this input, the Model updater module (described in the next paragraph) modifies the MDP model of the domain and activates a new planning procedure to generate a new plan (policy) that aims at avoiding at least the failure cause just occurred.
 
-\vspace{1em}
-
-\noindent
-{\bf Model update}
+\paragraph{\textbf{Model update.}}
 
 The problem of updating a planning model, given the feedback of the execution of the plan, is very relevant for actual application of planning techniques to real problems, but, to the best of our knowledge, a general solution suitable for our needs does not exists.
 

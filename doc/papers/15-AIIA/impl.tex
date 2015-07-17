@@ -51,7 +51,7 @@ We consider a robot assisting users in an office. The robot welcomes people at t
 
 \begin{figure}
 \centering
-\includegraphics[width=0.99\textwidth]{fig/PRU_U}
+\includegraphics[width=0.99\textwidth]{fig/pruDiag_U.png}
 \caption{PRU+ for printer-assistance and welcome}
 \label{fig:pru}
 \end{figure}
@@ -59,7 +59,7 @@ We consider a robot assisting users in an office. The robot welcomes people at t
 The mission is described in the PRU+ depicted in Figure \ref{fig:pru}. It has 4 layers: 1) waiting for people, 2) welcoming people and offering assistance, 3) bringing documents and fetching for technicians, and 4) returning to home position.
 The expected behavior is the following:
 from action `wait' in Layer 1 four outcomes are possible: nobody is there, somebody has been detected near the entrance, near the printer, or both. When the `wait' action completes, the robot might decide to wait again. If somebody is close to it, the robot can welcome and announce news. If somebody is at the printer, the robot can go there.
-Modules `welcome', `say\_hello', `say\_technicians' and `give\_document' are also granting the robot a reward. They are represented by octagons in Figure  \ref{fig:pru}.
+Tasks `welcome', `say\_hello', `call\_tech' and `give\_document' are also granting the robot a reward. They are represented by octagons in Figure  \ref{fig:pru}.
 
 %This PRU+ is read from a XML file. Figure \ref{fig:xml} shows a short extract of it that describes the module `say\_hello' from layer 2.
 %
@@ -97,6 +97,8 @@ Modules `welcome', `say\_hello', `say\_technicians' and `give\_document' are als
 %\label{fig:xml}
 %\end{figure}
 
+
+
 From this PRU+, a 16-states MDP is built. %We will not show it here for space considerations. 
 Once solved, it produces the following policy:
 \begin{multicols}{2}
@@ -110,29 +112,30 @@ Once solved, it produces the following policy:
     \item (2,goto\_printer,ok): say\_hello
     \item (2,say\_hello,bring): goto\_office
     \item (2,say\_hello,done): goto\_home
-    \item (2,say\_hello,help): goto\_tecnician
+    \item (2,say\_hello,help): goto\_tech
     \item (2,welcome,done): restart
-    \item (3,goto\_office,done): say\_receiver
-    \item (3,goto\_tecnician,done): say\_tecnician
-    \item (3,say\_receiver,done): goto\_home
-    \item (3,say\_tecnician,done): goto\_home
+    \item (3,goto\_office,done): give\_document
+    \item (3,goto\_tech,done): call\_tech
+    \item (3,give\_document,done): goto\_home
+    \item (3,call\_tech,done): goto\_home
     \item (4,goto\_home,done): restart
     \item (4,restart,done): restart
     \end{itemize}
   \end{small}
 \end{multicols}
 
+The policy is denoted by state-action pairs, where states are represented as 
+$[l, m, v]$ (i.e., level, module and state variables, as described in the previous section) and actions correspond to the tasks defined in the PRU+.
 This policy is then translated into a PNP and executed by the robot.
 
-\begin{figure}
+\begin{figure}[ht]
 \centering
-\includegraphics[width=0.9\textwidth]{fig/DIAGprinter-demo}
+\includegraphics[width=0.99\textwidth]{fig/DIAGprinter-demo}
 \caption{Example of plan execution.}
 \label{fig:DIAGtest}
 \end{figure}
 
-
-Figure \ref{fig:DIAGtest} shows some snapshots of plan execution, in the situation where the robot is asked to bring a document to a person. 
+Figure \ref{fig:DIAGtest} shows some snapshots of plan execution, in the situation where the robot is asked to bring a document to a person. The interaction with the two persons involved and a few intermediate snapshots are reported.
 Notice that, although in a simplified setting\footnote{At this moment HRI and perceptions modules are not fully implemented and thus we replaced them with the remote control of an operator.}, with these tests we have verified suitability and effectiveness of most of the components of our software architecture and their interconnection.
 
 
