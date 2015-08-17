@@ -1,4 +1,4 @@
-# represents a pair of (observation, successor) for MDP policies
+# Represents one possible outcome of an action used in a state
 
-string observation  # a conjunction of predicates to observe
-string successor    # the next state to reach
+string observation # a predicate describing what should be observed when this outcome is active
+string successor   # a predicate describing the next state that will be reached
