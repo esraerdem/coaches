@@ -50,6 +50,7 @@ that correct? If so, maybe the paper should emphasize such specific
 contribution from the very beginning. 
 
 *** LI: add a sentence like this at the end of introduction
+=== DONE ===
 
 Are these social norms acquired from
 the literature? Should the paper list the complete set of norms that are
@@ -57,6 +58,7 @@ represented? That would be an interesting contribution to enable others to
 reproduce the work.
 
 *** LI: already in Table 1 (check if others can be added)
+
 
 Why are baby care rooms only used by mothers, and not by fathers?
 
@@ -202,7 +204,6 @@ Some details that could be fixed:
  
 *** LI: change Fig. 2
 === DONE ===
-
 
 
  - P.3, Sec. 3, first paraphraph: "shooping mall" -> "shopping mall".
