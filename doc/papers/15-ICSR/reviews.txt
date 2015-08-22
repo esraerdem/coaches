@@ -1,0 +1,265 @@
+
+Reports:
+
+---------------
+
+EVALUATION: Accept
+CONFIDENCE: MIDDLE
+
+ARGUMENTATION:
+
+General Comments:
+(please summarise the work, provide the rationale for your decision and/or constructive criticism):
+================================================
+
+This paper is a good contribution to the conference, as it regards the
+problem of having a robot interact with a varied number of people. The
+particular application scenario addressed is also interesting and
+challenging as the work consists in deploying a robot in a shopping mall.
+
+
+Novelty 
+(please score between 1[low] to 5 [high]):
+================================================
+
+3
+
+Relevance to Conference 
+(please score between 1[low] to 5 [high]):
+================================================
+
+5
+
+Technical Correctness 
+(please score between 1[low] to 5 [high]):
+================================================
+3
+
+Figure 2 is not easily readable and is not well explained. The reference
+to the figure is in the future tense "will be developed" is used in many
+places. The paper would benefit from clearly stating what is already
+developed and contribution of this paper, rather than a description of
+what will be developed. 
+
+*** LI: remove Fig. 2???
+
+It seems that the contribution of this paper at
+this time is the representation of the social norms using Petri Nets. Is
+that correct? If so, maybe the paper should emphasize such specific
+contribution from the very beginning. 
+
+*** LI: add a sentence like this at the end of introduction
+
+Are these social norms acquired from
+the literature? Should the paper list the complete set of norms that are
+represented? That would be an interesting contribution to enable others to
+reproduce the work.
+
+*** LI: already in Table 1 (check if others can be added)
+
+Why are baby care rooms only used by mothers, and not by fathers?
+
+*** LI: replace mother with parents
+=== DONE ===
+
+Will the robot be autonomous? What is the IM?
+
+*** LI: specify YES, IM = Interaction Manager check if properly defined
+
+
+
+
+
+Quality of Presentation
+(please score between 1[low] to 5 [high]):
+================================================
+
+4
+
+
+
+---------------
+
+---------------
+
+EVALUATION: Accept
+CONFIDENCE: MIDDLE
+
+ARGUMENTATION:
+
+General Comments:
+(please summarise the work, provide the rationale for your decision and/or constructive criticism):
+================================================
+This paper presents the design and implementation of an Interaction Module for social robots in shopping malls. The project is not yet completed but the key design decisions are already in place and the selected architecture and components appear to be good choices (ROS architecture, Windows speech). The interaction module fits into an existing overall framework (COACHES).
+
+There are interesting novel ideas (e.g. combining logic-based social norm representations and inputs from vision processing with Petri Net Plans). The paper is well structured and clearly written (but the singular subjects and plural verbs often do not agree). This is a good interim report from a good project.
+
+
+Novelty 
+(please score between 1[low] to 5 [high]): 5
+================================================
+
+
+
+Relevance to Conference 
+(please score between 1[low] to 5 [high]): 5
+================================================
+
+
+
+Technical Correctness 
+(please score between 1[low] to 5 [high]): 5
+================================================
+
+
+
+Quality of Presentation
+(please score between 1[low] to 5 [high]): 3
+================================================
+
+
+
+
+---------------
+
+---------------
+
+EVALUATION: Accept
+CONFIDENCE: MIDDLE
+
+ARGUMENTATION:
+
+General Comments:
+(please summarise the work, provide the rationale for your decision and/or constructive criticism):
+================================================
+This paper presents a complete software framework based on Petri-Net Plans (PNPs) to provide personalized, short-term interaction from robots in crowds such as a shopping mall.
+As the project presented in the paper is only beginning, no experiments or results are provided.
+
+The approach is interesting and generally well described.
+However, since the paper does not present any results to demonstrate that the system is really adaptive and personalizable, it is a bit hard to evaluate.
+Nonetheless, I believe it is suitable for the conference.
+
+Unfortunately the paper does not give enough details on how the general architecture in Sec. 3 helps solving the problem of personalizing short-term interaction.
+However, Sec. 4 describes much better their approach, which is contained in a single module of the architecture.
+Therefore, Sec. 3 is mostly superfluous.
+
+*** LI: reduce Sec. 3???
+
+
+Novelty 
+(please score between 1[low] to 5 [high]): 3
+================================================
+The project is ambitious, but it is not entirely clear how it is different from previous, similar attempts.
+I question the claim at the beginning of Sec. 3 that the COACHES project differs from previous work in social robotics because the environment is "populated by many people".
+
+
+*** LI: add that "the robot has to interact with many people"
+remove  "... much higher than in previous projects"  with " "
+=== DONE ===
+ 
+ 
+For instance, the ATR in Japan with ROBOVIE published a lot of work on robots in shopping malls, as have other groups.
+
+*** LI: check these projects and add references in the Related Work section
+
+Of course, these kind of projects are less common, but the claim is a bit high as is.
+Same goes for multi-modal interaction, a relatively common subject.
+Since the paper does not present actual results (which is understandable at this point in the project), the novelty claims could be toned down.
+
+*** LI: rephrase claim
+=== DONE ===
+
+
+Relevance to Conference 
+(please score between 1[low] to 5 [high]): 5
+================================================
+The paper is very relevant, as the presented architecture integrates social aspects directly in the design of the architecture.
+
+Technical Correctness 
+(please score between 1[low] to 5 [high]): 4
+================================================
+The approach seems sound and the project technically feasible.
+Software integration, even when it involves multiple, already known modules, is still a challenge in itself.
+However, I am not entirely sure how the authors plan to handle incertitudes, or any kind of unplanned events.
+It seems that the system relies on a lot of known items, such as the RFIDs of all possible users.
+I would also have liked to see more details on the "ROS-through-TCP" interface.
+I understand the need for a bridge between ROS and non-ROS environments (I worked on many such bridges), but the term "ROS-through-TCP" does not mean much by itself, since ROS already uses TCP (by default). Since it might not be in the scope of this paper, perhaps the term could be dropped.
+
+*** LI: explain better and provide reference
+=== DONE ===
+
+Quality of Presentation
+(please score between 1[low] to 5 [high]): 4
+================================================
+The paper is generally well written.
+Some details that could be fixed:
+ - Figure 1: The middle picture could be brighter.
+ - Figure 2: The text is way too small and would also benefit from being rendered as vector graphics (the compression artefacts do not help). Furthermore, most of its items are not described. I guess it is re-using a diagram of task items and work packages from the COACHES project, but it would have been preferable to generate a new figure for this paper.
+ 
+*** LI: Remove Fig.2 or produce a new simplified figure.
+
+
+
+ - P.3, Sec. 3, first paraphraph: "shooping mall" -> "shopping mall".
+=== DONE ===
+
+---------------
+
+---------------
+
+EVALUATION: Accept
+CONFIDENCE: MIDDLE
+
+ARGUMENTATION:
+
+General Comments:
+(please summarise the work, provide the rationale for your decision and/or constructive criticism):
+================================================
+
+The paper presents a robotic shopping assistance deployed in public spaces to interact with different types of lay users in short-term multi-modal interactions. Therefore, the system estimates which type of user is being served to choose an appropriate mode of (pre-definded) behavior. 
+
+Strengths: 
+The paper addresses a desirable robot competence: personalized, appropriate behavior depending on the users needs. For example, dividing between children and adults and actually adapting the robot’s utterance design is a beneficial approach. Additionally, the paper is well organized and the authors present an interesting related work-section. 
+
+Weaknesses/open questions:
+How are social norms defined, how to specify and perceive what social norm is adequate in the situation/for the particular user? How to decide what kind of behavior is appropriate for which type of social norm?
+
+*** LI: check if we can improve some sentences in the paper in order to precisely
+answer these questions.
+
+
+
+Furthermore, it seems to be not clear, whether the presented architecture has already been tested in the described environment and to what extend the robot does interact autonomously. 
+
+*** LI: specify that the robot interacts autonomously and that the approach has been tested in our lab and not yet in the real environment of the shopping mall with real users.
+
+
+Watch out for inappropriate behavior depending on the robot’s categorization and resulting behavior. For example, categorizing someone as ‘elderly’ does not necessarily mean that this person has difficulties to hear. When turning up the volume, this might appear as rude to the user. 
+
+*** LI: add in the conclusion that some times personalization based on social norms may not be enough because of individual exception. Future work includes a more detailed personalization level applied to single users.
+
+
+Novelty 3
+(please score between 1[low] to 5 [high]):
+================================================
+In recent years, the idea of assistive robots became very popular in the social robot’s community, but assisting in a shopping scenario is not well established yet. Furthermore, this approach is not limited to the shopping scenario.
+
+
+Relevance to Conference 5
+(please score between 1[low] to 5 [high]):
+================================================
+The presented approach does perfectly fit into the focus of the conference, as it addresses issues for the adaption to different users as well as the subject area of socially assistive robots in daily live.
+
+
+Technical Correctness 4
+(please score between 1[low] to 5 [high]):
+================================================
+The subject area of  ‘social norms’ might be elaborated (as described in the ‘open questions’-section).
+
+Quality of Presentation 4
+(please score between 1[low] to 5 [high]):
+================================================
+The paper is well organized and easily understandable, even though I would recommend a proofreading (esp. proof  the words with capitals). 
+
+
+---------------

@@ -9,14 +9,16 @@
 \label{fig:env}
 \end{figure}
 
-In the \coaches project, we aim at further developing this technology, but specifically study, develop and test integration of Artificial Intelligence and Robotics technology in order to develop robots that can suitable interact with users in a complex large public environment, like a shopping mall.
+In the {\coaches} project (October 2014 - September 2017), we aim at further developing this technology, but specifically study, develop and test integration of Artificial Intelligence and Robotics technology in order to develop robots that can suitable interact with users in a complex large public environment, like a shopping mall.
 Figure \ref{fig:env} shows, on the left, the \emph{Rive de l'orne} shopping mall in Caen (France) where the experimental activities of the project will be carried out, on the middle a prototype of the robot that will be used for the preliminary experiments and, on the right, the design of the robots that will be realized in Fall 2015.
 
-As shown in the figure, in contrast with previous work on social robotics and human-robot interaction, the \coaches environment is very challenging, because populated by many people.
+As shown in the figure, in contrast with previous work on social robotics and human-robot interaction, the {\coaches} environment is very challenging, because it is populated by many people and the robot is expected to interact with many unknown and non-expert users.
 Moreover, we aim at a more sophisticated interaction using multiple modalities (speech, gesture, touch user interfaces) and dialog generated on-line according to the current situation
 and the robot's goals.
-Consequently, the required level of ``intelligence'' of the \coaches robots in order to adequately perform complex and effective tasks in this environment in presence of people is much higher than in previous projects.
-The \coaches project (October 2014 - September 2017) will provide important insights for actual deployment of intelligent social robots in large populated public areas. 
+Although these characteristics are not completely new in related projects, we believe that the 
+{\coaches} 
+%Consequently, the required level of ``intelligence'' of the {\coaches} robots in order to adequately perform complex and effective tasks in this environment in presence of people is much higher than in previous projects.
+project  will provide important insights for actual deployment of intelligent social robots in large populated public areas. 
 
 
 %\subsection{Software Architecture}
@@ -28,7 +30,7 @@ The \coaches project (October 2014 - September 2017) will provide important insi
 \label{fig:swarch}
 \end{figure}
 
-The software architecture of the \coaches robots is shown in Figure \ref{fig:swarch}.
+The software architecture of the {\coaches} robots is shown in Figure \ref{fig:swarch}.
 An open architecture (hard/soft) and standard technologies available will be used, 
 so that it will be easy to extend and/or adapt the capabilities of the system during the whole length of 
 the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors).  
@@ -36,7 +38,7 @@ Such an open architecture will also simplify and optimize integration efficiency
 
 
 For the development of the robotic software components, the Robot Operating System (ROS)\footnote{www.ros.org}, which is the standard middleware for robotics applications, has been selected.
-ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, an interface (ROS-through-TCP) will be realized in order to share information among the robots and between ROS and non-ROS components of the system.
+ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, our software architecture includes an interface\footnote{\url{https://github.com/gennari/tcp\_interface}} for sharing information among the robots and between ROS and non-ROS components of the system, based on serializing and deserializing ROS messages as string sent over TCP.
 
 The main software components that will be developed for control, reasoning and interaction functionalities of the system are listed below.
 
