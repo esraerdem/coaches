@@ -5,7 +5,7 @@
 \includegraphics[height=4.2cm]{fig/rivedelorne}\hspace{0.1cm}\hfill
 \includegraphics[width=0.18\textwidth]{fig/diago3}\hspace{0.1cm}\hfill
 \includegraphics[width=0.18\textwidth]{fig/coaches_robot}
-\caption{\coaches environment and robots.}
+\caption{{\coaches} environment and robots.}
 \label{fig:env}
 \end{figure}
 
@@ -36,7 +36,7 @@ An open architecture (hard/soft) and standard technologies available will be use
 so that it will be easy to extend and/or adapt the capabilities of the system during the whole length of the  project  (especially  to  integrate  and  test  various  algorithms  and/or  sensors). Such an open architecture will also simplify and optimize integration efficiency as well as re-use of assets in other projects or products. 
 
 For the development of the robotic software components, the Robot Operating System (ROS)\footnote{www.ros.org}, which is the standard middleware for robotics applications, has been selected.
-ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, our software architecture includes an interface\footnote{\url{https://github.com/gennari/tcp\_interface}} for sharing information among the robots and between ROS and non-ROS components of the system, based on serializing and deserializing ROS messages as string sent over TCP.
+ROS provides the middleware infrastructure to effectively share information among the many modules implementing various functionalities on each robot. Moreover, our software architecture includes an interface\footnote{\url{https://github.com/gennari/tcp\_interface}} for sharing information among the robots and between ROS and non-ROS components of the system, based on serializing and deserializing ROS messages as strings sent over TCP.
 
 The main software components that are under development for control, reasoning and interaction functionalities of the system are briefly described below.
 

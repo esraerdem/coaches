@@ -244,7 +244,7 @@ Furthermore, it seems to be not clear, whether the presented architecture has al
 Watch out for inappropriate behavior depending on the robot’s categorization and resulting behavior. For example, categorizing someone as ‘elderly’ does not necessarily mean that this person has difficulties to hear. When turning up the volume, this might appear as rude to the user. 
 
 *** LI: add in the conclusion that some times personalization based on social norms may not be enough because of individual exception. Future work includes a more detailed personalization level applied to single users.
-
+=== DONE ===
 
 Novelty 3
 (please score between 1[low] to 5 [high]):
