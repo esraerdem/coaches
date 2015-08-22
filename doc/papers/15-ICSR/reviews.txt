@@ -41,7 +41,8 @@ places. The paper would benefit from clearly stating what is already
 developed and contribution of this paper, rather than a description of
 what will be developed. 
 
-*** LI: remove Fig. 2???
+*** LI: change Fig. 2
+=== DONE ===
 
 It seems that the contribution of this paper at
 this time is the representation of the social norms using Petri Nets. Is
@@ -65,7 +66,7 @@ Why are baby care rooms only used by mothers, and not by fathers?
 Will the robot be autonomous? What is the IM?
 
 *** LI: specify YES, IM = Interaction Manager check if properly defined
-
+=== DONE ===
 
 
 
@@ -194,9 +195,13 @@ Quality of Presentation
 The paper is generally well written.
 Some details that could be fixed:
  - Figure 1: The middle picture could be brighter.
+ 
+=== DONE===
+ 
  - Figure 2: The text is way too small and would also benefit from being rendered as vector graphics (the compression artefacts do not help). Furthermore, most of its items are not described. I guess it is re-using a diagram of task items and work packages from the COACHES project, but it would have been preferable to generate a new figure for this paper.
  
-*** LI: Remove Fig.2 or produce a new simplified figure.
+*** LI: change Fig. 2
+=== DONE ===
 
 
 
@@ -232,6 +237,7 @@ answer these questions.
 Furthermore, it seems to be not clear, whether the presented architecture has already been tested in the described environment and to what extend the robot does interact autonomously. 
 
 *** LI: specify that the robot interacts autonomously and that the approach has been tested in our lab and not yet in the real environment of the shopping mall with real users.
+=== DONE ===
 
 
 Watch out for inappropriate behavior depending on the robot’s categorization and resulting behavior. For example, categorizing someone as ‘elderly’ does not necessarily mean that this person has difficulties to hear. When turning up the volume, this might appear as rude to the user. 
