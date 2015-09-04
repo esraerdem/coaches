@@ -1,87 +1,29 @@
 \section{Introduction}
 
-COACHES project aims at developing a prototype robotic system for user assistance in a shopping mall.
-The COACHES robots will use different modalities, i.e., speech and displayed information,
-to interact with the mall visitors, shopkeepers and mall managers.
+This document describes the work carried out within Task 5.2 in WP5 concerning the definition of several use cases considered in the project to show the overall functionalities of the system.
+The use cases are organized in 5 scenarios where different capabilities of the system are demonstrated. Each scenario contains multiple use cases.
 
-The scenario where the COACHES robots and systems will be deployed is provided
-by the mall ``Rives de l'Orne'', located in the city of Caen, France.
+The scenarios and a general description of the use cases are given in Section \ref{sec:usecases}, while Section \ref{sec:demo} contains a description of the test facility in Caen.
+Finally, in Section \ref{sec:usecase_sapienza} we provide a detailed description of some of the use cases that are more related with short-term human-robot interaction and safe navigation, which are the activities of the project led by Sapienza University.
 
-A set of use cases will be implemented to show the feasibility of the approach and to assess the effectiveness of the proposed solutions with actual users.
-In particular, this document contains:
-\begin{enumerate}
-\item A brief description of the test facilities;
-\item The descriptions of four use cases that focus on two main components of the entire system,
-namely short-term human-robot interaction and safe navigation.
-\end{enumerate}
 
-\section{Test facilities: Collaboration with the Mall Rives de l'Orne}
+\input{usecases}
 
-\begin{figure}[!t]
-\begin{center}
-\includegraphics[width=0.55\linewidth]{outsiderivesdelorne}
-\caption{The mall Rives de l'Orne.}
-\label{fig:outsidemall}
-\end{center}
-\end{figure}
+\input{demo}
 
-The test facilities concerns the mall ``Rives de l'Orne'' (see Fig. \ref{fig:outsidemall}). Rives de l'Orne\footnote{\url{http://www.rivesdelorne.com}} is a 
-new and modern mall
-situated in the city of Caen (France). It is composed of two face-to-face buildings separated by a large
-main square (see Fig. \ref{fig:map}). At the first floor of the two buildings, there are many shops and restaurants. In the main square, there is a cinema. This space is surrounded by tramway stations and a train station.
 
-\begin{figure}[!t]
-\begin{center}
-\includegraphics[width=1.0\linewidth]{mallplan}
-\caption{The map of the mall.}
-\label{fig:map}
-\end{center}
-\end{figure}
-
-The mall is visited by more than 100,000 customers every year. In addition to customers,
-several elderly people
-live in the apartments located at the other floors of the buildings. These people have their habit and there are frequent customers of the mall (see Fig. \ref{fig:insidemall}).
-
-\begin{figure}[!t]
-\begin{center}
-\includegraphics[width=0.5\linewidth]{InsideRivedelOrne}
-\caption{Inside the mall Rives de l'Orne.}
-\label{fig:insidemall}
-\end{center}
-\end{figure}
-
-Two meetings have been organized ($23^{th}$ October 2014 and $12^{th}$ December 2014) to define the equipment to be installed, in terms of cameras and sensors.
-Regarding the sensors, Radio-Frequency IDentification (RFID) tags and receivers will be used.
-Cameras and sensors are in charge of sending information to the COACHES robots
-about
-\begin{itemize}
-\item the shops;
-\item the planning of the robot deployment in the mall;
-\item the scheduled dissemination actions.
-\end{itemize}
-
-A visit of all COACHES project partners have been organized during the kickoff meeting,
-held on $27^{th}$ and $28^{th}$ October 2014 in Caen. 
 
 
 \section{Use cases for short-term interaction and safe navigation}
+\label{sec:usecase_sapienza}
 
+As described in the previous sections,
 COACHES project envisages the implementation of a set of use cases
 to show the feasibility of the approach and to assess the effectiveness
 of the proposed solutions with actual users.
-To this end, several use cases will be implemented. 
-%, focusing on two main
-%components of the entire system:
-%\begin{enumerate}
-%\item Short-term human-robot interaction;
-%\item Safe navigation.
-%\end{enumerate}
 
-Four use cases are described in the following. The use cases are designed
-to allow a short-term interaction between the COACHES robots and the human users.
-%In order to accomplish the required tasks, the robot must navigate
-%safely in the environment. Navigation inside a populated environment, i.e., a mall
-%during opening hours, must be done in order to avoid damage and non-social behaviors to people and goods.
+Four use cases that are mainly related with short-term human-robot interaction and safe navigation are described in the following. These use cases correspond to the ones in Scenarios 4 and 5 described above\footnote{Use Case 5.2 is not reported in details here since it is similar to Use Case 4.1.}.
+Other use cases illustrated before can be considered as preliminary tests to the ones described in this section. Therefore, we report here in details only the most complex ones.
 
 For each use case, the following data are provided:
 \begin{itemize}
@@ -90,10 +32,10 @@ For each use case, the following data are provided:
 \item An optimistic sequence of actions.
 \end{itemize}
 
-Furthermore, a detailed overview of the preconditions and post-conditions for each used action is given at the end of this section.
+Furthermore, a detailed overview of the preconditions and post-conditions for each action executed by the robots is given in Section \ref{sec:robot_actions}.
 
 
-\subsection{Customers ask for help carrying bags}
+\subsection{Use Case 4.1: Customer asks for help carrying his/her bag}
 
 The objective of this use case is to highlight the social awareness
 of the robot in the completion of a given task. There are many ways
@@ -148,59 +90,7 @@ In any case the robot modulates its speed taking into account the number of dete
 \item End conversation
 \end{enumerate}
 
-
-\subsection{Proposing an ice cream to a child}
-
-This use case serves to demonstrate the common sense reasoning capability
-of the robot. Since it is not socially acceptable for the robot to guide
-a child to a location without her/his parents permission, the robot
-asks for the parent's permission before completing the task.
-
-\subsubsection{Use case description}
-
-The manager of an ice cream shop asks the robot to inform children about
-a special offer. The robot looks around for children. When it detects
-a child, the robot approaches her/him and it informs her/him
-about the special offer. The child is passionate about having an ice cream, 
-but, before guiding her/him to the ice cream shop, the robot
-\begin{enumerate}
-\item asks for the parent's authorization,
-\item waits for the positive parent's reply.
-\end{enumerate}
-
-\noindent Once the parent agrees to allow the child to follow the robot, it proceeds
-to the ice cream shop.
-
-\subsubsection{Sequence diagrams}
-
-\begin{figure}[!h]
-\includegraphics[width=0.85\textwidth]{iceCreamA}
-\protect\caption{Option A: Parents are near the child.}
-\end{figure}
-
-
-\begin{figure}[!h]
-\includegraphics[width=0.85\textwidth]{iceCreamB}
-\protect\caption{Option B - Parents are not near the child.}
-\end{figure}
-
-
-
-\subsubsection{Optimistic robot action sequence}
-\begin{enumerate}
-\item Approach child
-\item Start conversation
-\item Describe ice cream offer
-\item Ask parents for permission
-\item Ask child to follow
-\item Go to IceCreamShop
-\item Inform customer destination has been reached
-\item End conversation
-\end{enumerate}
-
-\newpage
-
-\subsection{Customer refuses the first robot proposal and accepts a different one}
+\subsection{Use Case 4.2: Customer refuses first robot proposal and accepts a different one}
 
 This use case highlights how the robot is capable of
 recovering from a failure by exploiting automatic reasoning.
@@ -264,7 +154,7 @@ shop. The robot safely guides the customer to the shop.
 \end{enumerate}
 
 
-\subsection{Customer asks for directions in a crowded environment}
+\subsection{Use Case 4.3: Customer asks for directions in a crowded environment}
 
 The goal of this use case is to remark that the robot must always be
 aware of safety. The robot is not allowed to behave hazardously
@@ -334,7 +224,61 @@ receive further directions.
 \item End conversation
 \end{enumerate}
 
-\section{Robot actions}
+
+\subsection{Use Case 5.1: Proposing an ice cream to a child}
+
+This use case serves to demonstrate the common sense reasoning capability
+of the robot. Since it is not socially acceptable for the robot to guide
+a child to a location without her/his parents permission, the robot
+asks for the parent's permission before completing the task.
+
+\subsubsection{Use case description}
+
+The manager of an ice cream shop asks the robot to inform children about
+a special offer. The robot looks around for children. When it detects
+a child, the robot approaches her/him and it informs her/him
+about the special offer. The child is passionate about having an ice cream, 
+but, before guiding her/him to the ice cream shop, the robot
+\begin{enumerate}
+\item asks for the parent's authorization,
+\item waits for the positive parent's reply.
+\end{enumerate}
+
+\noindent Once the parent agrees to allow the child to follow the robot, it proceeds
+to the ice cream shop.
+
+\subsubsection{Sequence diagrams}
+
+\begin{figure}[!h]
+\includegraphics[width=0.85\textwidth]{iceCreamA}
+\protect\caption{Option A: Parents are near the child.}
+\end{figure}
+
+
+\begin{figure}[!h]
+\includegraphics[width=0.85\textwidth]{iceCreamB}
+\protect\caption{Option B - Parents are not near the child.}
+\end{figure}
+
+
+
+\subsubsection{Optimistic robot action sequence}
+\begin{enumerate}
+\item Approach child
+\item Start conversation
+\item Describe ice cream offer
+\item Ask parents for permission
+\item Ask child to follow
+\item Go to IceCreamShop
+\item Inform customer destination has been reached
+\item End conversation
+\end{enumerate}
+
+
+
+
+\subsection{Robot actions}
+\label{sec:robot_actions}
 
 In this section, the actions that the robot has to perform in order to
 accomplish its tasks are described.
@@ -443,14 +387,6 @@ the conversation (``Hello human'') and make sure the human is interested
 \textit{Description}: The robot navigate in a socially aware way to
 the desired location.
 
-\section{Testing the use cases}
-
-The use cases described above will be tested with the following procedure:
-\begin{enumerate}
-\item Description to shop keepers and managers to collect feedback and apply modifications or provide more details
-\item Test with real users using a mock-up implementation where the robot is driven by a user operator
-\item Implementation and test of the fully autonomous behavior in an incremental way, by allowing at intermediate phases the use of non-fully autonomous components.
-\item Final test of the fully autonomous behaviors with real users.
-\end{enumerate}
+\input{conclu}
 
 

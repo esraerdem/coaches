@@ -12,6 +12,8 @@
 \newsavebox{\notenumber}
 \newsavebox{\notedate}
 
+\usepackage{url}
+
 \renewcommand{\title}[1]{\sbox{\notetitle}{\begin{minipage}{1.0\textwidth} \begin{center} \Large{\textbf{#1}} \end{center}\end{minipage} }}
 \renewcommand{\author}[1]{\sbox{\noteauthor}{\begin{minipage}{1.0\textwidth} \begin{center} \large{#1} \end{center}\end{minipage}}}
 \renewcommand{\date}[1]{\sbox{\notedate}{\large{#1}}}
@@ -95,6 +97,19 @@ The copyright in this document is the property of the COACHES Consortium. This d
 }
 \newpage
 
+\section{Introduction}
+
+This document is the outcome of Task 5.2 in WP5 and consists of describing different use cases considered in the project to show the overall functionalities of the system (Figure \ref{Fig-1}) and the data flow between different modules. 
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[height=10cm]{ArchitectureCoachesDF}
+\caption{Architecture and data flow }
+\label{Fig-1}
+\end{center}
+\end{figure}
+
 \input{usecases}
+\input{demo}
+\input{conclu}
 
 \end{document}
