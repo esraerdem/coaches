@@ -24,21 +24,24 @@ class GUI(tk.Frame):
       self.lbl.pack()
       
       imY = PIL.Image.open('img/yes_150.jpg')
-      phY = ImageTk.PhotoImage(imY)
+      self.phY = ImageTk.PhotoImage(imY)
       imN = PIL.Image.open('img/no_150.jpg')
-      phN = ImageTk.PhotoImage(imN)
-      
+      self.phN = ImageTk.PhotoImage(imN)
+            
       # Buttons
-      self.BtnY = Button(self, image=phY, command=self.ActionY)
-      self.BtnY.image = phY
+      self.BtnY = Button(self, image=self.phY, command=self.ActionY)
+      #self.BtnY.image = phY
       self.BtnY.pack(side=LEFT)
       
-      self.BtnN = Button(self, image=phN,command=self.ActionN)
-      self.BtnN.image = phN
+      self.BtnN = Button(self, image=self.phN,command=self.ActionN)
+      #self.BtnN.image = phN
       self.BtnN.pack(side=RIGHT)
  
    def ActionY(self):
       print('Yes')
+      self.BtnN.image = self.phY
+      self.BtnN.update()
+      self.update()
 
    def ActionN(self):
       print('No')
