@@ -13,14 +13,62 @@ import PIL
 from PIL import Image, ImageTk
 import numpy as np
 import cv2
+import socket
+import threading
 
-   
+class Network:
+   #This class starts the network and launches a thread to receive asynchronous messages
+   def __init__(self, parent, serverTcpIP, serverPort):
+      self.parent = parent
+      self.serverTcpIP = serverTcpIP
+      self.serverPort = serverPort
+      self.initNetwork()
+      self.recvmsg = ''
+      self.thread_stop= threading.Event()
+      self.recvThread = threading.Thread(target=self.receiveMessage)
+      self.recvThread.start()
+      print 'Network started.'
+
+   def initNetwork(self):
+      print "Connected to %s:%s." % (self.serverTcpIP,self.serverPort)
+      self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+      self.sock.connect((self.serverTcpIP, self.serverPort))
+      self.sock.settimeout(1)
+
+   def receiveMessage(self):
+      #generates events to update the GUI
+      BUFFER_SIZE = 1024
+      while 1:
+         try:
+            self.recvmsg = self.sock.recv(BUFFER_SIZE)
+            self.parent.ltext.event_generate("<<NewMessage>>");
+            print 'received: ', self.recvmsg
+         except socket.timeout:
+            continue
+         except:
+            break
+      print 'Finished receive thread'
+
+   def getNewMessage(self):
+      return self.recvmsg
+      
+   def sendMessage(self, message):
+      self.sock.send(message)
+      
+   def closeConnection(self):
+      self.thread_stop.set()
+      self.sock.close()
+      print 'Connection closed.'
+
 class GUI(tk.Frame):
 
-   def __init__(self, parent):
+   def __init__(self, parent, serverTcpIP, serverPort):
       tk.Frame.__init__(self, parent)
       self.parent = parent
       self.allCB = {}
+      self.net = Network(self, serverTcpIP, serverPort)
+      self.question = StringVar()
+      self.question.set('Welcome to Rives del''Orne ')
       self.initUI()
 
    def resize(self, w, h, w_box, h_box, pil_image):
@@ -90,8 +138,10 @@ class GUI(tk.Frame):
       self.limg.image = imgtk
       self.limg.pack(side=RIGHT) 
       
+
       # Label
-      self.ltext = Label(middleframe, text="Hello. Would you like to answer this question?", font=("Helvetica", 32))
+      self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32))
+      self.ltext.bind("<<NewMessage>>", self.updateLabel)
       self.ltext.pack()
 
       # Buttons
@@ -108,22 +158,32 @@ class GUI(tk.Frame):
       self.BtnN.image = phN
       self.BtnN.pack(side=RIGHT)
 
+   def updateLabel(self, event):
+      print 'Event triggered'
+      self.question.set(self.net.getNewMessage())
       
    def ActionY(self):
-      print('Yes')
+      message = 'Yes\n\r'
+      print(message)
+      self.net.sendMessage(message)
 
    def ActionN(self):
-      print('No')
+      message = 'No\n\r'
+      print(message)
+      self.net.sendMessage(message)
 
    def quit(self):
+      self.net.closeConnection()
       pass
 
-
+SERVER_TCP_IP = '127.0.0.1'
+SERVER_TCP_PORT = 9000
 
 def main():
    root = tk.Tk()
-   f = GUI(root)
-   root.geometry("1920x1080+0+0")
+   f = GUI(root, SERVER_TCP_IP, SERVER_TCP_PORT)
+#   root.geometry("1920x1080+0+0")
+   root.geometry("1200x800+50+50")
    root.mainloop()
    f.quit()
 
