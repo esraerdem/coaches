@@ -15,6 +15,7 @@ from PIL import Image, ImageTk
 import cv2
 import socket
 import threading
+import errno, time
 
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
@@ -22,41 +23,76 @@ class Network:
       self.parent = parent
       self.serverTcpIP = serverTcpIP
       self.serverPort = serverPort
-      self.initNetwork()
       self.recvmsg = ''
+      self.netStatusOk = False
       self.thread_stop= threading.Event()
-      self.recvThread = threading.Thread(target=self.receiveMessage)
-      self.recvThread.start()
+      self.initNetwork()
+      self.netStatusThread = threading.Thread(target=self.verifyNetwork)
+      self.netStatusThread.start()
       print 'Network started.'
 
+   def verifyNetwork(self):
+      while (not self.thread_stop.is_set()):
+         if (not self.netStatusOk):
+            print 'Trying to reconnect'
+            self.initNetwork()
+         else:
+            secsToSleep = 1
+            time.sleep(secsToSleep)
+      print 'Finished verifyNetwork thread'
+
    def initNetwork(self):
-      print "Connected to %s:%s." % (self.serverTcpIP,self.serverPort)
-      self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-      self.sock.connect((self.serverTcpIP, self.serverPort))
-      self.sock.settimeout(1)
+      while (not self.thread_stop.is_set()):
+         try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.settimeout(1)
+            self.sock.connect((self.serverTcpIP, self.serverPort))
+            print "Connected to %s:%s." % (self.serverTcpIP,self.serverPort)
+            self.recvThread = threading.Thread(target=self.receiveMessage)
+            self.recvThread.start()
+            self.netStatusOk = True
+            break
+         except socket.error as e:
+            print '[error]', e
+            if (e.errno == errno.ECONNREFUSED):
+               print 'not able to connect'
+               secsToSleep = 5
+               print "trying to reconnect in %d seconds" % (secsToSleep)
+               time.sleep(secsToSleep)
 
    def receiveMessage(self):
-      #generates events to update the GUI
+      #generates events to update the GUI based on the received messages
       BUFFER_SIZE = 1024
-      while 1:
+      while (not self.thread_stop.is_set()):
          try:
             self.recvmsg = self.sock.recv(BUFFER_SIZE)
-            self.parent.ltext.event_generate("<<NewMessage>>");
-            print 'received: ', self.recvmsg
          except socket.timeout:
             continue
-         except:
+
+         if (self.recvmsg):
+            self.parent.ltext.event_generate("<<NewMessage>>")
+            print 'received: ', self.recvmsg
+         else: #if there is no data something happened in the server
+            self.netStatusOk = False
             break
+
       print 'Finished receive thread'
 
    def getNewMessage(self):
       return self.recvmsg
       
    def sendMessage(self, message):
-      self.sock.send(message)
+      if (self.netStatusOk):
+         self.sock.send(message)
       
    def closeConnection(self):
       self.thread_stop.set()
+      print 'Finishing threads...'
+      time.sleep(5)
+      
+      if (self.recvThread.isAlive() or self.netStatusThread.isAlive()):
+         print 'ups.. some thread still alive'
+      
       self.sock.close()
       print 'Connection closed.'
 
@@ -68,7 +104,7 @@ class GUI(tk.Frame):
       self.allCB = {}
       self.net = Network(self, serverTcpIP, serverPort)
       self.question = StringVar()
-      self.question.set('Welcome to Rives del''Orne ')
+      self.question.set("Welcome to Rives de l'Orne ")
       self.initUI()
 
    def resize(self, w, h, w_box, h_box, pil_image):
@@ -79,7 +115,6 @@ class GUI(tk.Frame):
       f1 = 1.0*w_box/w  # 1.0 forces float division in Python2
       f2 = 1.0*h_box/h
       factor = min([f1, f2])
-      #print(f1, f2, factor)  # test
       # use best down-sizing filter
       width = int(w*factor)
       height = int(h*factor)
