@@ -287,7 +287,7 @@
      id="node4"
      transform="translate(4.8506973,175.50087)">
     <title
-       id="title95">gotoPrinter</title>
+       id="title95">goto_printer</title>
     <ellipse
        style="fill:none;stroke:#000000"
        sodipodi:ry="18"
@@ -305,7 +305,7 @@
        id="text99"
        font-size="14.00"
        y="-86.776604"
-       x="384">gotoPrinter</text>
+       x="384">goto_printer</text>
   </g>
   <text
      x="240.28952"
@@ -380,7 +380,7 @@
      id="node10"
      transform="translate(-994.02527,355.61811)">
     <title
-       id="title154">gotoHome</title>
+       id="title154">goto_home</title>
     <ellipse
        style="fill:none;stroke:#000000"
        sodipodi:ry="18"
@@ -398,7 +398,7 @@
        id="text158"
        font-size="14.00"
        y="-86.776604"
-       x="1150">gotoHome</text>
+       x="1150">goto_home</text>
   </g>
   <text
      x="427.33102"
@@ -429,7 +429,7 @@
      id="node6"
      transform="translate(-206.69139,382.61831)">
     <title
-       id="title170">gotoOffice</title>
+       id="title170">goto_office</title>
     <ellipse
        style="fill:none;stroke:#000000"
        sodipodi:ry="18"
@@ -447,14 +447,14 @@
        id="text174"
        font-size="14.00"
        y="-140.77699"
-       x="803">gotoOffice</text>
+       x="803">goto_office</text>
   </g>
   <g
      class="node"
      id="node7"
      transform="translate(-206.69139,382.61831)">
     <title
-       id="title186">gotoTech</title>
+       id="title186">goto_tech</title>
     <ellipse
        style="fill:none;stroke:#000000"
        sodipodi:ry="18"
@@ -472,14 +472,14 @@
        id="text190"
        font-size="14.00"
        y="-86.776604"
-       x="803">gotoTech</text>
+       x="803">goto_tech</text>
   </g>
   <g
      class="node"
      id="node8"
      transform="translate(-571.96655,382.61831)">
     <title
-       id="title211">giveDocument</title>
+       id="title211">give_document</title>
     <polygon
        style="fill:none;stroke:#000000"
        id="polygon213"
@@ -489,14 +489,14 @@
        id="text215"
        font-size="14.00"
        y="-140.77699"
-       x="996">giveDocument</text>
+       x="996">give_document</text>
   </g>
   <g
      class="node"
      id="node9"
      transform="translate(-571.96655,382.61831)">
     <title
-       id="title225">explain</title>
+       id="title225">call_tech</title>
     <polygon
        style="fill:none;stroke:#000000"
        id="polygon227"
@@ -506,7 +506,7 @@
        id="text229"
        font-size="14.00"
        y="-86.776604"
-       x="996">explain</text>
+       x="996">call_tech</text>
   </g>
   <g
      class="edge"

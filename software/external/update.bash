@@ -68,3 +68,19 @@ else
     cd laser_analysis; svn up; cd ..
 fi
 
+# TCP interface
+
+if [ ! -d tcp_interface ]; then
+    git clone https://github.com/gennari/tcp_interface
+    cd ../ros/catkin_ws/src/
+    ln -sf ../../../external/tcp_interface .
+    cd -
+else
+    cd tcp_interface; git pull; cd ..
+fi
+
+# thin navigation
+
+# ...
+
+
