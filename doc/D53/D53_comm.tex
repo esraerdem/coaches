@@ -10,7 +10,7 @@ A multi-robot system can be seen as a set of agents that cooperate together to a
 One of the greatest challenges in such systems is to provide a stable and reliable infrastructure which allows the communication among specific modules of each agent.
 We can divide the problem of communication in two different cases: local data transmission between  modules running on the same physical machine, and remote communication where modules are distributed within the network.
 With modern operating systems, both problems can be solved mapping each individual module as a software process, transforming the task of informations exchange in the well known problem of interprocess communication.
-The single most notable attribute of mapping modules onto separate processes is that every module receives a separate memory address space. The introduction of this barrier provides a number of benefits; modules can be run on the same or different host devices, started and stopped independently, written in different programming languages and for different operating systems, and catastrophic failure of one module (e.g. a segmentation fault) does not necessarily impact another. To allow communication between isolated modules, is necessary to identify what kind of information have to be passed,  a system that can marshal (encode) that information into a message, a way to send that message from one module to another, and way to un-marshal (decode) the message once received.
+The single most notable attribute of mapping modules onto separate processes is that every module receives a separate memory address space. The introduction of this barrier provides a number of benefits; modules can be run on the same or different host devices, started and stopped independently, written in different programming languages and for different operating systems, and catastrophic failure of one module (e.g., a segmentation fault) does not necessarily impact another. To allow communication between isolated modules, is necessary to identify what kind of information have to be passed,  a system that can marshal (encode) that information into a message, a way to send that message from one module to another, and way to un-marshal (decode) the message once received.
 
 There are several recurring themes in existing systems. Publish/subscribe models are the most commonly used, with TCP being the most common transport. Most of these systems employ a centralized hub, whether it is used for message routing or merely for “match making”. 
 
@@ -34,6 +34,7 @@ Lightweight Communications and Marshalling (LCM) is a message passing system for
 	LCM clients can also build a fingerprint database, allowing them to identify the type of message when it is received. This is the technique used by our tool lcm-spy, which allows realtime deep inspection of LCM traffic.
 	
 	\item[C] Communication
+
 	The communications aspect of LCM can be summarized as a publish-subscribe messaging system that uses UDP multicast as its underlying transport layer. Under the publish/subscribe model, each message is transmitted on a named channel, and modules subscribe to the channels required to complete their designated tasks. It is typically the case (though not enforced by LCM) that all the messages on a particular channel are of a single pre-specified type.
 		\begin{enumerate}
 		\item 

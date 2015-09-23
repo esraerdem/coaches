@@ -23,7 +23,7 @@ The design of the robot is described in a later section in this document.
 The main robotic platform consists of a Segway's RMP210, shown in Fig. \ref{fig:segway}.
 It is a non-balancing platform with two propulsion wheels which can operate stably in indoor environments via a third caster wheel. The base is able to load up to 45 kg, suitable to carry out the transportation tasks of the use cases defined in deliverable D5.2. Below, we describe the main technical characteristics of the platform:
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline 
@@ -59,7 +59,7 @@ potentially people tracking.
 
 Their specifications are summarized in the following table:
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{tabular}{|c|c|c|}
 \hline \bf{Model No.}& \bf{UTM-30-LX} & \bf{URG-04LX-UG01} \\
 \hline \bf{Power source} & 12VDC±10\% & 5VDC±5\%(USB Bus power) \\
@@ -116,7 +116,7 @@ carried out.
 \label{fig:cameras}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -136,7 +136,7 @@ carried out.
 \caption{ASUS Xtion pro Live specifications.}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -168,7 +168,7 @@ eliminate the surrounding noise and focus audio recording from the main directio
 as it is shown in Fig. \ref{fig:microphone}.
 Below, we describe the main technical specifications of these devices.
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -182,7 +182,7 @@ Below, we describe the main technical specifications of these devices.
 & Screen: 10.6 inch ClearType Full HD Display \\
 & Resolution: 1920 x 1080 \\
 & Touch: 10-point multi-touch \\
-\hline \bf{CPU}  & 4th generation Intel® Core™ i5 Processor \\
+\hline \bf{CPU}  & 4th generation Intel\textsuperscript{\textregistered} Core\textsuperscript{TM} i5 Processor \\
 \hline \multirow{2}{*}{\bf{Wireless Connections}} 
 & Wireless: Wi-Fi (802.11a/b/g/n) \\
 & Bluetooth 4.0 Low Energy technology \\
@@ -204,7 +204,7 @@ Below, we describe the main technical specifications of these devices.
 \caption{Microsoft Surface Pro 2 specifications.}
 \end{table}
 
-\begin{table}[h]
+\begin{table}[h!]
 \begin{center}
 \begin{tabular}{|c|c|}
 \hline
@@ -241,27 +241,91 @@ Below, we describe the main technical specifications of these devices.
 
 
 \subsubsection{Additional devices}
-PC laptop: HP EliteBook 820 G2
-SBC: 3 Odroid C1
-Network switch for internal communication and external wireless communication
+The robot platform, sensors and human-robot interfaces described above will be connected
+through a PC laptop and 3 Odroid C1 Single Board Computers (SBC) (see Fig. \ref{fig:odroid}) that will free the main computer from processing load.
+A network switch will interconnect all these devices and will provide internal communication as well as external wireless access to the communication network installed in the building.
+The technical specifications of the laptop, a HP EliteBook 820 G2, and of the Odroid C1 boards are presented below.
+The arrangement of all the devices on the robot will be explained in the next section.
 
 
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+& \bf{HP EliteBook 820 G2} \\
+\hline \bf{Operating system } & Ubuntu Linux \\
+\hline \bf{Processor} & Intel\textsuperscript{\textregistered} Core\textsuperscript{TM} i3-5010U (2.1GHz, 3MB L3 Cache) \\
+\hline \bf{Memory} & \\
+\hline \bf{Internal Storage} & \\
+\hline \bf{Graphics} & Intel\textsuperscript{\textregistered} HD Graphics 5500 \\
+\hline \bf{Dimensions } & 31 cm x 21.5 cm x 2.1 cm \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Specifications of the HP EliteBook 820 G2.}
+\end{table}
 
+\begin{table}[h!]
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+& \bf{ODROID-C1} \\
+\hline \multirow{3}{*}{\bf{CPU }}	
+& Amlogic S805 SoC  \\
+& 4 x ARM\textsuperscript{\textregistered} Cortex\textsuperscript{\textregistered}-A5 1.5GHz \\
+& ARMv7 Architecture @28nm \\
+\hline \bf{GPU } & 2 x ARM\textsuperscript{\textregistered} Mali\textsuperscript{TM}-450MP 600MHz \\
+\hline \bf{RAM } & 1GB 32bit DDR3 792MHz \\
+\hline \bf{Flash Storage } &	Micro-SD UHS-1@100Mhz/SDR50 or eMMC storage option \\
+\hline \bf{USB2.0 Host } & 4 Ports \\
+\hline \bf{USB2.0 Device / OTG } & 1 Port for Linux USB Gadget driver \\
+\hline \bf{Ethernet/LAN } & 10/100/1000 Mbit/s \\
+\hline \bf{Video and Audio Output } & HDMI \\
+\hline \bf{Camera Input } & USB 720p \\
+\hline \bf{Size } & 85 mm x 56 mm \\
+\hline \bf{Weight } & 40 g \\
+\hline
+\end{tabular}
+\end{center}
+\caption{Specifications of the ODROID-C1 board.}
+\end{table}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=4cm]{fig/odroidc1.jpg}
+\end{center}
+\caption{Odroid C1 board.}
+\label{fig:odroid}
+\end{figure}
 
 \subsection{Device Connections}
+All the devices presented in the previous section are integrated in
+the robot as shown in Fig. \ref{fig:architecture}.
 
-Robot, 2 Laser, 3 Cameras -USB- 2 Bananas
+The main functionalities and behaviour of the robot will be managed by
+the laptop which will run the ROS master to synchronize the different
+modules of the system.  However, we propose a balanced architecture
+where the sensor data acquisition and its subsequent processing is not
+handled by this single computer.  Instead, cameras, laser range
+finders as well as the robotic platform are connected via USB to the 3
+Odroid boards which will be in charge of the acquisition and
+processing tasks. In particular, the data acquisition from the ASUS
+Xtion cameras is the most expensive in terms of processing
+requirements. Consequently, this process is distributed by connecting
+the cameras into the 3 different Odroid boards.
 
-3 Odroid  -Ethernet- Net Switch
+The data transfer between the SBCs, the laptop and the human-robot
+interfaces will be through Ethernet connection using the network
+switch. This component will also provide the system with wireless access to external
+devices such as the cameras placed in the building or to the communication infrastructure.
 
-Laptop, Tablet -Ethernet- Net Switch
-
-Microphone -USB- Tablet
-
-Speakers -audio jack- Tablet
-
-External devices -Wireless- Net switch
-
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[height=6cm]{fig/robotarchitecture.pdf}
+\end{center}
+\caption{Robot Architecture.}
+\label{fig:architecture}
+\end{figure}
 
 
 \subsection{Device drivers}
