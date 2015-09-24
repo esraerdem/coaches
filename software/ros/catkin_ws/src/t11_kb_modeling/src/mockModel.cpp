@@ -105,13 +105,13 @@ MockModel::MockModel(ros::NodeHandle node) {
   
   service_get_location = node.advertiseService(SERVICE_GET_LOCATION, &MockModel::getLocation, this);
   service_get_all_sites = node.advertiseService(SERVICE_GET_ALL_SITES, &MockModel::getAllSites, this);
-
+/*
   locations["doorWest"]=mkPoint(6,19);
   locations["doorEast"]=mkPoint(93.69,29.75);
   locations["monoprix"]=mkPoint(78,24);
   locations["phone"]=mkPoint(89,31);
   locations["restaurant"]=mkPoint(10,23);
-  locations["carPark"]=mkPoint(27,20);
+  locations["carPark"]=mkPoint(27,20);*/
   //Printer DIAG Demo
   locations["home"]=mkPoint(1.3,15);
   locations["printer"]=mkPoint(3,21.5);
