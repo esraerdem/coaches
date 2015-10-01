@@ -303,7 +303,7 @@ All the devices presented in the previous section are integrated in
 the robot as shown in Fig. \ref{fig:architecture}.
 
 The main functionalities and behaviour of the robot will be managed by
-the laptop which will run the ROS master to synchronize the different
+the laptop which will run the ROS master under Linux to synchronize the different
 modules of the system.  However, we propose a balanced architecture
 where the sensor data acquisition and its subsequent processing is not
 handled by this single computer.  Instead, cameras, laser range
@@ -319,6 +319,11 @@ interfaces will be through Ethernet connection using the network
 switch. This component will also provide the system with wireless access to external
 devices such as the cameras placed in the building or to the communication infrastructure.
 
+Buiding such distributed system offers one additional advantage, among others. 
+Device drivers can be installed on the SBCs to maintain a stable interface with the hardware, 
+independent of the particular configuration of the main laptop, its operating system or its kernel version.
+Next section will describe the specific device drivers that will be used in the robot set-up.
+
 \begin{figure}[h!]
 \begin{center}
 \includegraphics[height=6cm]{fig/robotarchitecture.pdf}
@@ -330,8 +335,23 @@ devices such as the cameras placed in the building or to the communication infra
 
 \subsection{Device drivers}
 
-thin\_drivers ...
+Device drivers provide a communication interface between the hardware
+components and the operating system. Most of the drivers for the
+robotic devices are publicly available through the ROS
+community. However, they lack of uniformity and produce a lot of
+complex information that is not always necessary for certain
+applications. Additionally, we encountered some issues when running
+these drivers on embedded boards.
 
+For these reasons, at Sapienza University we started to develop
+\textit{thin\_drivers}\footnote{https://github.com/grisetti/thin\_drivers},
+our own suite of lightweight device drivers.
+
+They provide a unified ROS interface for the most common devices such
+as RGB-D cameras (e.g., ASUS Xtion), laser scanners (e.g., the Hokuyo
+family) or IMUs. The drivers are minimal, in the sense that they
+publish only a subset of the information produced by the sensor and
+can be modified based on the user needs.
 
 
 
