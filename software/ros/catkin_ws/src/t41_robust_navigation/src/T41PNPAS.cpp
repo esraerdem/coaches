@@ -33,23 +33,17 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
 
 int T41PNPActionServer::evalCondition(string cond) {
 
-    // printf("-- Evaluating condition %s \n",cond.c_str());
+	int r=-1; // -1 default, conditions will be evaluated by PNPConditionEvent variable
+
+    if (cond == "true"  )  return 1; 
 
     if (cond.find("L_diago")!=string::npos)
         return 1; // the robot is in the correct position -> always true
 
-    // if (cond == "personHere"  )  return 1; 
-
-
-    // printf("-- Evaluating condition %s = %d\n",cond.c_str(),-1);
-
-    return -1;   // Test, all conditions are true!!!
-
-//    return PNPActionServer::evalCondition(cond);  // default returns -1
 
     // when this function returns -1, the condition is evaluated from
     // the events published to PNPConditionEvent
-
+    return r;
 }
 
 /*

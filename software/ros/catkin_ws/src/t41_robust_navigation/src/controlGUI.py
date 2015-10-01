@@ -1,26 +1,32 @@
 #!/usr/bin/env python
 
 import Tkinter as tk
-import tkMessageBox
+#import tkMessageBox
 import thread
 from Tkinter import *
 from ttk import *
-import sys, time, os, glob, shutil, math, datetime
+import sys, time, os, glob, shutil, math, datetime, thread
 import rospy
 from std_msgs.msg import String
 from shared.msg import Event
 
 
-Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'personHere', 'personPrinter', 'nohelp', 'helpbringdoc', 'helptechnician' ]
+Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'nohelp', 'helpbringdoc', 'helptechnician' ]
+CBConditions = ['personHere', 'personPrinter' ]
+ConditionVar = [ None ] * len(CBConditions) 
+do_run = True
 
+def printf(format, *args):
+    sys.stdout.write(format % args)
 
 class DIP(tk.Frame):
     def __init__(self, parent):
         tk.Frame.__init__(self, parent) 
-        self.parent = parent        
-        self.first_map_selected = True
+        self.parent = parent
+        for i in range(0,len(CBConditions)):
+            ConditionVar[i] = IntVar()
+            ConditionVar[i].set(0)
         self.initUI()
-        
 
     def initUI(self):
 
@@ -34,14 +40,26 @@ class DIP(tk.Frame):
         col = 0
         
         for i in range(0,len(Conditions)):
-	  self.add_condition(Conditions[i],row)
-	  row = row+1
+            self.add_condition(Conditions[i],row)
+            row = row+1
+        for i in range(0,len(CBConditions)):
+            self.add_CBcondition(CBConditions[i],ConditionVar[i],row)
+            row = row+1
     
+    def add_CBcondition(self,cond,ivar,_row):
+        print 'CondGUI: Adding CB condition: %s' % (cond)
+        b = Checkbutton(self, text=cond, variable=ivar, command=lambda c=cond,v=ivar: self.doCBcondition(c,v))
+        b.grid(sticky=W, row=_row, column=0, pady=4, padx=5)
+        
     def add_condition(self,cond,_row):
-	print 'CondGUI: Adding condition: %s' % (cond)
-	# Buttons
+        print 'CondGUI: Adding condition: %s' % (cond)
+        # Buttons
         b = Button(self, text=cond,command=lambda cond=cond: self.docondition(cond))
         b.grid(sticky=W, row=_row, column=0, pady=4, padx=5)
+
+
+    def doCBcondition(self,cond,var):
+        print "CondGUI: Set condition %s = %d" %(cond,var.get())
         
 
     def docondition(self,cond):
@@ -67,9 +85,25 @@ class DIP(tk.Frame):
             else:
                 print "CondGUI: Sending condition %s ..." %(cond)
                 pubCond.publish(cond)              
-	print "CondGUI: Done."
-	
+    print "CondGUI: Done."
 
+    def quit(self):
+        do_run = False
+
+# Thread for sending CB conditions
+def run():
+    rospy.sleep(5)
+    while (do_run):
+        for i in range(0,len(CBConditions)):
+            # printf("Sending condition %s = %s\n",CBConditions[i],ConditionVar[i].get())
+            cond = ""
+            if (ConditionVar[i].get()==0):
+                cond = "!"
+            cond = cond + CBConditions[i]
+            pubCond.publish(cond)
+            rospy.sleep(0.05)
+        rospy.sleep(2)
+    print "Condition sending thread terminated"
 
 def main():
     global pubCond, pubEvent
@@ -78,6 +112,7 @@ def main():
     pubEvent = rospy.Publisher('/diago/t22_event', Event, queue_size=1)
     root = tk.Tk()
     f = DIP(root)
+    thread.start_new_thread(run, ())
     root.geometry("360x320+0+0")
     root.mainloop()
 

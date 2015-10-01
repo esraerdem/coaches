@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Run simulated printer demo directly loading the PNP
+
 xterm -e "roslaunch simDIAGPrinter.launch" &
 
 sleep 15

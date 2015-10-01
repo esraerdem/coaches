@@ -52,8 +52,10 @@ string extractName(string s) {
     if (i!=string::npos) {
        r = s.substr(0,i);
        trim(r);
-    } else 
+    } else {
+      trim(s);
       return s;
+    }
     return r;
 }
 
@@ -109,20 +111,36 @@ string transformState(string s) {
 }
 
 string extractCondition(string s) {
-    // s = "p1( X ) & p2 ( X ) & ... "
+    // s = "p1( X ) & p2 ( X ) & not p3 ... "
     //cout << "HERE [" << s << "]" << endl;
     vector<string> v;
     vector<string> vc;
     split(v,s,boost::is_any_of("&"),boost::token_compress_on);
-
+    bool stateNOT = false;
+    string res="";
     vector<string>::iterator i;
     for (i=v.begin(); i!=v.end(); i++) {
-        string st = *i; // one state
-        //cout << "   - here ["<<st<<"]" << endl;
+        string st = *i; // one state        
         string pred = extractName(st);
+
+// cout << "   - here ["<<st<<"] pred: [" << pred <<  "]" << endl;
+
         if (pred[0]!='_') {
             string par = transformParamsWith_(extractParams(st));
-            vc.push_back(shortPredicate(pred)+"_"+par);
+//LI new fix to test
+            if (par=="")
+              res = shortPredicate(pred);
+            else
+              res = shortPredicate(pred)+"_"+par;
+            if (pred.substr(0,4)=="not ") {
+              res = "(" + res + ")";              
+            }
+
+// cout << "   - here substr [" << pred.substr(0,4) << "]" << endl;
+
+// cout << "   - here put " << res << endl;
+
+            vc.push_back(res);
         }
     }
 
@@ -130,11 +148,11 @@ string extractCondition(string s) {
     if (vc.size()==0) {
         r = r + "true";
     }
-    if (vc.size()==1) {
+    else if (vc.size()==1) {
         r = r + vc[0];
     }
     else {
-        r = r + " and";
+        r = r + "and";
         for (i=vc.begin(); i!=vc.end(); i++) {
             r = r + " " + *i;
         }
@@ -181,13 +199,15 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
         //transformedconditions[tstate] = extractCondition(sa.state);
         string aname = extractName(sa.action);
         string aparam = transformParamsWith_(extractParams(sa.action));
-        string taction = aname+"_"+aparam;
+		string taction = aname;
+		if (aparam!="")
+        	taction = aname+"_"+aparam;
 
         policy[tstate] = taction;
         //cout << "### Added policy " << tstate << " -> " << taction << endl;
 
 //        vector<string> ss = sa.successors;
-	vector<t41_robust_navigation::StateOutcome> &so = sa.outcomes;
+        vector<t41_robust_navigation::StateOutcome> &so = sa.outcomes;
 	
 //        vector<string>::iterator is;
 //        for (is=ss.end(); is!=ss.begin(); ) {
@@ -196,7 +216,7 @@ void T41::policyCallback(const t41_robust_navigation::Policy::ConstPtr& msg) {
 //            string succ = *is;
             string succ = is->successor;
             string tsucc = transformState(succ);
-	    transformedconditions[tsucc] = extractCondition(is->observation);  // Not really sure of this, condition should be attached to source state instead of destination state I think
+	          transformedconditions[tsucc] = extractCondition(is->observation);  // Not really sure of this, condition should be attached to source state instead of destination state I think
             //printf(" %s [%s] ",succ.c_str(),tsucc.c_str());
             transition_fn[make_pair(tstate,taction)].push_back(tsucc);
             //cout << "### Added transition " << tstate << "," << taction << " -> " << tsucc << endl;
