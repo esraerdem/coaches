@@ -81,8 +81,8 @@
       <Outcome id='help' p='0.34'>
 	<Quality kind='null' const='100' />
 	<Duration kind='null' const='15' />
-	<Observe> helptecnician </Observe>
-	<Next> 3.goto_tecnician </Next>
+	<Observe> helptechnician </Observe>
+	<Next> 3.goto_technician </Next>
       </Outcome>
     </Action>
   </Layer>
@@ -93,10 +93,10 @@
 	<Next> 3.say_receiver </Next>
       </Outcome>
     </Action>
-    <Action id='goto_tecnician'>
+    <Action id='goto_technician'>
       <Outcome id='done' p='1.0'>
 	<Duration kind='distancePrinterTech' const='1' />
-	<Next> 3.say_tecnician </Next>
+	<Next> 3.say_technician </Next>
       </Outcome>
     </Action>
     <Action id='say_receiver'>
@@ -106,7 +106,7 @@
 	<Next> 4.goto_home </Next>
       </Outcome>
     </Action>
-    <Action id='say_tecnician'>
+    <Action id='say_technician'>
       <Outcome id='done' p='1.0'>
 	<Quality kind='null' const='100' />
 	<Duration kind='null' const='15' />
