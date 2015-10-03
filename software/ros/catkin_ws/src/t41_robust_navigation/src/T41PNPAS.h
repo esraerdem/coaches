@@ -17,7 +17,7 @@ class T41PNPActionServer : public PNPActionServer
 {
 private:
     ros::NodeHandle handle;
-    ros::Publisher event_pub, hri_pub;
+    ros::Publisher event_pub, plantoexec_pub, hri_pub;
     // ros::Subscriber laser_sub, variable_sub, speech_sub, pedestrian_sub, general_Pedestrian_sub;
     std::string robotname;
 
@@ -38,6 +38,7 @@ public:
     void turn(string params, bool *run);
     void followcorridor(string params, bool *run);
     void say(string params, bool *run);
+    void restart(string params, bool *run);
 
 };
 

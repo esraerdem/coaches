@@ -45,6 +45,7 @@ class DIP(tk.Frame):
         for i in range(0,len(CBConditions)):
             self.add_CBcondition(CBConditions[i],ConditionVar[i],row)
             row = row+1
+
     
     def add_CBcondition(self,cond,ivar,_row):
         print 'CondGUI: Adding CB condition: %s' % (cond)
@@ -59,7 +60,16 @@ class DIP(tk.Frame):
 
 
     def doCBcondition(self,cond,var):
-        print "CondGUI: Set condition %s = %d" %(cond,var.get())
+        print "CondGUI: Set and send condition %s = %d" %(cond,var.get())
+        condsend = ""        
+        if (var.get()==0):
+           condsend = "!"
+        condsend = condsend + cond
+        print " ... published: %s" %(condsend)
+        pubCond.publish(condsend)
+        rospar = "PNPconditionsBuffer/" + cond; 
+        rospy.set_param(rospar,var.get())
+        rospy.sleep(0.05)
         
 
     def docondition(self,cond):
@@ -75,6 +85,7 @@ class DIP(tk.Frame):
               e.uid = '2'
             print "CondGUI: Send event %s %s" %(e.kind, e.uid)
             pubEvent.publish(e)
+            rospy.sleep(0.05)
         else:
             if (cond=='desire(unknown,swipe)'):
                 scond = 'D_unknown_swipe'
@@ -84,7 +95,11 @@ class DIP(tk.Frame):
                     rospy.sleep(2)
             else:
                 print "CondGUI: Sending condition %s ..." %(cond)
-                pubCond.publish(cond)              
+                pubCond.publish(cond)
+                rospar = "PNPconditionsBuffer/" + cond; 
+                rospy.set_param(rospar,1)
+                rospy.sleep(0.05)
+
     print "CondGUI: Done."
 
     def quit(self):
@@ -93,6 +108,10 @@ class DIP(tk.Frame):
 # Thread for sending CB conditions
 def run():
     rospy.sleep(5)
+    for i in range(0,len(CBConditions)):
+        rospar = "PNPconditionsBuffer/" + CBConditions[i]; 
+        rospy.set_param(rospar,0)
+    rospy.sleep(3)
     while (do_run):
         for i in range(0,len(CBConditions)):
             # printf("Sending condition %s = %s\n",CBConditions[i],ConditionVar[i].get())
@@ -102,7 +121,7 @@ def run():
             cond = cond + CBConditions[i]
             pubCond.publish(cond)
             rospy.sleep(0.05)
-        rospy.sleep(2)
+        rospy.sleep(1.0)
     print "Condition sending thread terminated"
 
 def main():

@@ -16,7 +16,10 @@
 
 T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     event_pub = handle.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 10);
+    plantoexec_pub = handle.advertise<std_msgs::String>(TOPIC_PLANTOEXEC, 100);
     hri_pub = handle.advertise<shared::Goal>(TOPIC_HRI_GOAL, 10);
+
+
     //position_sub = handle.subscribe("odom", 10, &MyPNPActionServer::odom_callback, this);
 
     register_action("advertise",&T41PNPActionServer::advertise,this);
@@ -27,6 +30,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("turn",&T41PNPActionServer::turn,this);
     register_action("goto",&T41PNPActionServer::followcorridor,this);
     register_action("say",&T41PNPActionServer::say,this);
+    register_action("restart",&T41PNPActionServer::restart,this);
 
     handle.param("robot_name",robotname,string("diago"));
 }
@@ -222,18 +226,38 @@ void T41PNPActionServer::swipe(string params, bool *run)
 
 void T41PNPActionServer::wait(string params, bool *run)
 {
-    cout << "### Executing Wait action " << params << " ... " << endl;
-
-    int sleeptime=20; // 0.5 sec.
+    // ROS_INFO_STREAM("### Executing Wait action " << params << " ... ");
+/*
+    int sleeptime=1; // * 0.2 sec.
     while (*run && sleeptime-->0)
-        ros::Duration(0.5).sleep();
+        ros::Duration(0.2).sleep();
+*/
+
+    ros::Duration(0.1).sleep();
+/*
+    if (*run)
+        ROS_INFO("### Finished Wait");
+    else
+        ROS_INFO("### Aborted Wait");
+*/
+}
+
+void T41PNPActionServer::restart(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing Restart action " << params << " ... ");
+
+
+    // publish planToExec to start the plan
+    string planname = "AUTOGENpolicy";
+    std_msgs::String s;
+    s.data = planname;
+    plantoexec_pub.publish(s); // start the new one
 
     if (*run)
         cout << "### Finished Wait" << endl;
     else
         cout << "### Aborted Wait" << endl;
 }
-
 
 int main(int argc, char** argv)
 {

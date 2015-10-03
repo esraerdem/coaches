@@ -7,7 +7,7 @@
   <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
   <arg name="pru_folder" value="$(find t42_multi_robot_planning)/prus" />
   <arg name="PNPGUI" default="false" />
-  <arg name="PRU" value="pruDIAG.xml" />
+  <arg name="PRU" default="pruDIAG.xml" />
   <arg name="pru_patience" value="0.99" /> <!-- percentage of reward kept each second -->
   <arg name="pru_horizon" value="10" />    <!-- number of decisions steps to compute -->
 

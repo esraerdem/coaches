@@ -80,7 +80,7 @@ void MockHRI::hriGoalCallback(const shared::Goal::ConstPtr& msg)
     interactionTimer.start();
   } else if (msg->kind == GOAL_SPEECH) {
     msgOut.data = msg->param;
-    interactionTimer.setPeriod(ros::Duration(msgOut.data.length()/10.));
+    interactionTimer.setPeriod(ros::Duration(3+msgOut.data.length()/10.));
     interactionTimer.start();
   }
   currentInteraction = msg->param;

@@ -2,7 +2,7 @@
 
 # Run simulated printer demo directly loading the PNP
 
-xterm -e "roslaunch PRUplanner2.launch" &
+xterm -e "roslaunch PRUplanner2.launch   PRU:=\"pruDIAG.xml\" " &
 
 sleep 15
 
