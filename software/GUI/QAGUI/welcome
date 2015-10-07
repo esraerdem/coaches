@@ -1,0 +1,14 @@
+#Format: <age, gender, language, occupation>:"Text to say"
+#age = [adult | senior | junior]
+#gender = [m | f]
+#language = [en | fr | it | sp]
+#occupation = [student | professor | visitor]
+#write character '*' for default option
+<*, m, en, *>:  "Hi"
+<*, m, en, professor>:"  Hi professor"
+<*, *, it, *>:"Salve"
+<*, f, it, professor>:"  Ciao professoressa"
+#<adult, f, it, professor>:"  Ciao professoressa"
+<adult, *, it, professor>:"  Ciao professore"
+<*, *, en, visitor>:   "   Welcome visitor   "
+
