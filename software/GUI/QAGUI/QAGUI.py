@@ -72,6 +72,17 @@ class Network:
          if (self.recvmsg):
             self.parent.ltext.event_generate("<<NewMessage>>")
             print 'received: ', self.recvmsg
+            # Example: received 'display_{text|image|video}_welcome'
+            
+            # eval_personalization_rules(welcome) -> actual_interaction
+            
+            # if (text) : show actual_interaction as a label in the GUI
+            
+            # if (image) : show image in actual_interaction as an image in the GUI
+            
+            # if (video) : ...
+            
+            
          else: #if there is no data something happened in the server
             self.netStatusOk = False
             break

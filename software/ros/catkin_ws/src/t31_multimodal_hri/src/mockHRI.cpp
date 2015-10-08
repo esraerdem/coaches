@@ -34,6 +34,7 @@ class MockHRI {
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void hriGoalCallback(const shared::Goal::ConstPtr& msg);
   void doSay(std_msgs::String msg);
+  void doDisplay(std_msgs::String msg);
   
   void intTimerCallback(const ros::TimerEvent&);
   void adTimerCallback(const ros::TimerEvent&);
@@ -101,8 +102,30 @@ void MockHRI::doSay(std_msgs::String msg) {
 	  std::cerr << "ERROR in Say procedure (pico2wave+aplay)" << std::endl;
       }
   }
-}
   
+  // Possibly add functions to also display what the robot says
+  
+}
+ 
+ 
+void MockHRI::doDisplay(std_msgs::String msg) {
+  if (msg.data!="") {
+    std::cout << "Display \033[22;35;1m" << msg.data << "\033[0m" << std::endl;
+    msg.data += "      ."; // if not clearing balloon, adding a few spaces to enlarge the balloon
+  }
+  say_stage_pub.publish(msg);  // received by stage to print out say message
+  if (false && msg.data!="") {
+      std::stringstream ss; ss << "pico2wave -w /tmp/say_out.wav \"" << msg.data << "\"";
+      int r1=system(ss.str().c_str());
+      int r2=system("aplay /tmp/say_out.wav");
+      if (r1<0 || r2<0) {
+          std::cerr << "ERROR in Say procedure (pico2wave+aplay)" << std::endl;
+      }
+  }
+  
+  // Use tcp_interface to send 'display_{text|image|video}_{interactionname}'
+}
+
 void MockHRI::intTimerCallback(const ros::TimerEvent&) {
   shared::Feature msg;
   msg.header.stamp = ros::Time::now();

@@ -33,6 +33,8 @@ def parseRulesFile(file):
     return list_of_rules
 
 
+# function eval_personalization_rules (input_file) : string = right part of the rule
+
 rules_filename = sys.argv[1]
 try:
     f = open(rules_filename, 'r')
