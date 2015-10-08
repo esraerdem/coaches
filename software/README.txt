@@ -9,6 +9,7 @@ divided in the following sub-folders:
 
  - src       contains (non-ROS) source code maintained in the coaches repository
  - ros       contains ros modules
+ - GUI       contains GUI software
  - external  contains external software not maintained in the coaches repository
  - bin       contains executable files
  - include   contains include files 
@@ -55,6 +56,9 @@ It will ask for sudo password in order to install or update required Linux packa
 If everything goes well, you will see at the end the message 
 
   Hello COACHES developers!!!
+
+If there are some errors about not found packages (e.g. pnp_ros), you can go on.
+Some other packages will be installed in a later step.
 
 
 === Set up the COACHES software environment ===
