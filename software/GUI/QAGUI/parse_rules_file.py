@@ -1,10 +1,5 @@
 import sys
 
-
-
-
-
-
 def parseProfile(str):
     profile = str.strip("\n")
     profile = profile.lstrip('<').rstrip('>')
@@ -34,30 +29,21 @@ def parseRulesFile(file):
 
 
 # function eval_personalization_rules (input_file) : string = right part of the rule
+def eval_personalization_rules (rules_filename, profile_string):
 
-rules_filename = sys.argv[1]
-try:
-    f = open(rules_filename, 'r')
-except IOError:
-    print 'cannot open', rules_filename
-else:
-    list_of_rules = parseRulesFile(f)
-    print "LIST OF RULES"
-    for rule in list_of_rules: print(rule)    
+    try:
+        print 'openning ', rules_filename
+        f = open(rules_filename, 'r')
+    except IOError:
+        print 'cannot open', rules_filename
+    else:
+        list_of_rules = parseRulesFile(f)
+        print "LIST OF RULES"
+        for rule in list_of_rules: print(rule)    
+        
+        f.close()
 
-    f.close()
-
-
-instance_filename = sys.argv[2]
-try:
-    f = open(instance_filename, 'r')
-except IOError:
-    print 'cannot open', instance_filename
-else:
-    line = f.readline()
-    f.close()
-
-    profile = parseProfile(line)
+    profile = parseProfile(profile_string)
     print "INPUT PROFILE", profile
 
     #look for more suitable rule
@@ -82,5 +68,14 @@ else:
     print "CANDIDATE PROFILES"
     for candidate in sorted_profiles: print candidate
 
-    print "BEST CANDIDATE"
-    print sorted_profiles[0][0]
+    if len(sorted_profiles)>0:
+        print "BEST CANDIDATE"
+        print sorted_profiles[0][0]
+    else:
+        print "No match found"
+
+    if len(sorted_profiles)>0:
+        return sorted_profiles[0][0][1]
+    else:
+        return ""
+

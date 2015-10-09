@@ -17,6 +17,11 @@ import socket
 import threading
 import errno, time
 
+from parse_rules_file import eval_personalization_rules
+
+profile = '<*,*,*,*>'
+
+
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
    def __init__(self, parent, serverTcpIP, serverPort):
@@ -24,6 +29,7 @@ class Network:
       self.serverTcpIP = serverTcpIP
       self.serverPort = serverPort
       self.recvmsg = ''
+      self.text_to_display = ''
       self.netStatusOk = False
       self.thread_stop= threading.Event()
       self.initNetwork()
@@ -70,19 +76,30 @@ class Network:
             continue
 
          if (self.recvmsg):
-            self.parent.ltext.event_generate("<<NewMessage>>")
             print 'received: ', self.recvmsg
             # Example: received 'display_{text|image|video}_welcome'
+            self.recvmsg = self.recvmsg.replace('\x00',"")
+            splitmsg = self.recvmsg.strip('\n\r').split("_")
+            print splitmsg
+            if len(splitmsg) != 3:
+               print 'There is something wrong with the message format'
+               continue
+            else:
+               mode = splitmsg[1]
+               interactionname = splitmsg[2]
+               # eval_personalization_rules(welcome) -> actual_interaction
+               actual_interaction= eval_personalization_rules(interactionname, profile)
+               print actual_interaction
+               # if (text) : show actual_interaction as a label in the GUI
+               if (mode == 'text'):
+                  self.text_to_display = actual_interaction
+
+               # if (image) : show image in actual_interaction as an image in the GUI
+                  
+               # if (video) : ...
             
-            # eval_personalization_rules(welcome) -> actual_interaction
-            
-            # if (text) : show actual_interaction as a label in the GUI
-            
-            # if (image) : show image in actual_interaction as an image in the GUI
-            
-            # if (video) : ...
-            
-            
+               self.parent.ltext.event_generate("<<NewMessage>>")
+
          else: #if there is no data something happened in the server
             self.netStatusOk = False
             break
@@ -91,7 +108,10 @@ class Network:
 
    def getNewMessage(self):
       return self.recvmsg
-      
+
+   def getTextToDisplay(self):
+      return self.text_to_display
+
    def sendMessage(self, message):
       if (self.netStatusOk):
          self.sock.send(message)
@@ -106,6 +126,35 @@ class Network:
       
       self.sock.close()
       print 'Connection closed.'
+      
+class profileSelectionGUI(object):
+
+   def __init__(self, parent):
+      self.toplevel = tk.Toplevel(parent)
+      profiles_filename = sys.argv[1]
+      try:
+         f = open(profiles_filename, 'r')
+      except IOError:
+         print 'cannot open', profiles_filename
+      else:
+         
+         chosen_profile = ''
+      
+         def callback(text):
+            self.chosen_profile = text
+            self.toplevel.destroy()
+
+         for line in f:
+            line = line.strip("\n")
+            btn = tk.Button(self.toplevel, text=line, command=lambda line=line: callback(line))
+            btn.pack()
+            
+         f.close()
+
+   def show(self):
+      self.toplevel.deiconify()
+      self.toplevel.wait_window()
+      return self.chosen_profile
 
 class GUI(tk.Frame):
 
@@ -145,12 +194,20 @@ class GUI(tk.Frame):
       self.parent.resizable(width=FALSE, height=FALSE)
       self.pack(expand=100)
 
+      profileframe = Frame(self)
+      profileframe.pack()
       topframe = Frame(self)
       topframe.pack()
       middleframe = Frame(self)
       middleframe.pack()
       bottomframe = Frame(self)
       bottomframe.pack(fill = tk.X)
+
+      # Profile selection button
+      self.profilebutton = Button(profileframe, text="Select profile", command=self.profileSelection)
+      self.profilebutton.pack(side=LEFT)
+      self.profile_label = Label(profileframe)
+      self.profile_label.pack(side=LEFT, fill='x')
 
       # Video
       width, height = 500, 375
@@ -183,7 +240,6 @@ class GUI(tk.Frame):
       self.limg = Label(topframe, image=imgtk)
       self.limg.image = imgtk
       self.limg.pack(side=RIGHT) 
-      
 
       # Label
       self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32))
@@ -203,7 +259,7 @@ class GUI(tk.Frame):
 
    def updateLabel(self, event):
       print 'Event triggered'
-      self.question.set(self.net.getNewMessage())
+      self.question.set(self.net.getTextToDisplay())
       
    def ActionY(self):
       message = 'Yes\n\r'
@@ -214,6 +270,11 @@ class GUI(tk.Frame):
       message = 'No\n\r'
       print(message)
       self.net.sendMessage(message)
+
+   def profileSelection(self):
+      global profile
+      profile = profileSelectionGUI(self).show()
+      self.profile_label.configure(text="Current profile: %s" % profile)
 
    def quit(self):
       self.net.closeConnection()

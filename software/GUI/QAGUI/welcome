@@ -8,7 +8,7 @@
 <*, m, en, professor>:"  Hi professor"
 <*, *, it, *>:"Salve"
 <*, f, it, professor>:"  Ciao professoressa"
-#<adult, f, it, professor>:"  Ciao professoressa"
+<adult, f, it, professor>:"  Ciao professoressa"
 <adult, *, it, professor>:"  Ciao professore"
 <*, *, en, visitor>:   "   Welcome visitor   "
-
+<*,*,*,*>:"Welcome to our department"
