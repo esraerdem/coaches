@@ -8,10 +8,10 @@ from ttk import *
 import sys, time, os, glob, shutil, math, datetime, thread
 import rospy
 from std_msgs.msg import String
-from shared.msg import Event
+from shared.msg import Event, AllGoals
 
 
-Conditions = ['desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'nohelp', 'helpbringdoc', 'helptechnician' ]
+Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'nohelp', 'helpbringdoc', 'helptechnician' ]
 CBConditions = ['personHere', 'personPrinter' ]
 ConditionVar = [ None ] * len(CBConditions) 
 do_run = True
@@ -73,8 +73,18 @@ class DIP(tk.Frame):
         
 
     def docondition(self,cond):
-        global pubCond, pubEvent
-        if ("request" in cond):
+        global pubCond, pubEvent, pubKBGoal
+        if (cond=="Send_Goal"):
+            g = AllGoals()
+            #g.mode='' 
+            #g.goals[0] = Goal()           
+            #  g.loc=''
+            #  g.kind=''
+            #  g.param=''
+            #  g.value=0.0
+            #  g.duration=0.0
+            pubKBGoal.publish(g);
+        elif ("request" in cond):
             e = Event()
             e.kind = 'request'
             if ('Blue' in cond):
@@ -125,14 +135,15 @@ def run():
     print "Condition sending thread terminated"
 
 def main():
-    global pubCond, pubEvent
+    global pubCond, pubEvent, pubKBGoal
     rospy.init_node('condition_simulator', anonymous=True)
     pubCond = rospy.Publisher('/diago/PNPConditionEvent', String, queue_size=1)
     pubEvent = rospy.Publisher('/diago/t22_event', Event, queue_size=1)
+    pubKBGoal = rospy.Publisher('/diago/t12_goals_set', AllGoals, queue_size=1)
     root = tk.Tk()
     f = DIP(root)
     thread.start_new_thread(run, ())
-    root.geometry("360x320+0+0")
+    root.geometry("300x400+0+0")
     root.mainloop()
 
 

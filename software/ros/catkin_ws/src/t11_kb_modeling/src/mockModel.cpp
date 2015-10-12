@@ -122,6 +122,9 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["office4"]=mkPoint(1.1,10.65);  
   locations["office5"]=mkPoint(0.8,6.4);
   locations["office6"]=mkPoint(0.8,1.8);
+  locations["corner"]=mkPoint(1.8,1.8);
+  locations["bench"]=mkPoint(8.0,1.8);
+
 } // constructor
 
 static inline double sq(double x) {return x*x;}

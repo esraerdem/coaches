@@ -16,10 +16,11 @@ To quit the simulation, you can just close either the Stage window or the Contro
 
 
 
-2. Simulation printer demo at DIAG (load PNP directly)
+2. Simulation printer demo at DIAG
 
-  $ ./run_printer_demo.sh
+  $ ./run_sim_printer_demo_{pru|pnp}.sh
 
+Using either PRU (pruDIAG.xml) or PNP (PrinterAssistance.pnml) as input.
 
 
 3. Real DIAGO printer demo at DIAG (load PNP directly)

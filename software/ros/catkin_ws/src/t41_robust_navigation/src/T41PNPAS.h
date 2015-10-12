@@ -38,6 +38,7 @@ public:
     void turn(string params, bool *run);
     void followcorridor(string params, bool *run);
     void say(string params, bool *run);
+    void none(string params, bool *run);
     void restart(string params, bool *run);
 
 };

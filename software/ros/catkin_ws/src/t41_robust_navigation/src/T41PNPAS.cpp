@@ -31,6 +31,8 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("goto",&T41PNPActionServer::followcorridor,this);
     register_action("say",&T41PNPActionServer::say,this);
     register_action("restart",&T41PNPActionServer::restart,this);
+    register_action("start",&T41PNPActionServer::none,this);
+    register_action("patrol",&T41PNPActionServer::none,this);
 
     handle.param("robot_name",robotname,string("diago"));
 }
@@ -242,10 +244,14 @@ void T41PNPActionServer::wait(string params, bool *run)
 */
 }
 
+void T41PNPActionServer::none(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing no action ###");
+}
+
 void T41PNPActionServer::restart(string params, bool *run)
 {
     ROS_INFO_STREAM("### Executing Restart action " << params << " ... ");
-
 
     // publish planToExec to start the plan
     string planname = "AUTOGENpolicy";
@@ -254,9 +260,9 @@ void T41PNPActionServer::restart(string params, bool *run)
     plantoexec_pub.publish(s); // start the new one
 
     if (*run)
-        cout << "### Finished Wait" << endl;
+        cout << "### Finished Restart" << endl;
     else
-        cout << "### Aborted Wait" << endl;
+        cout << "### Aborted Restart" << endl;
 }
 
 int main(int argc, char** argv)
