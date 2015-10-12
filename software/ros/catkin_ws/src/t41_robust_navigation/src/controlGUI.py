@@ -11,8 +11,8 @@ from std_msgs.msg import String
 from shared.msg import Event, AllGoals
 
 
-Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'nohelp', 'helpbringdoc', 'helptechnician' ]
-CBConditions = ['personHere', 'personPrinter' ]
+Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)', 'helpbringdoc', 'helptechnician' ]
+CBConditions = ['personHere', 'personPrinter', 'nohelp', 'help' ]
 ConditionVar = [ None ] * len(CBConditions) 
 do_run = True
 

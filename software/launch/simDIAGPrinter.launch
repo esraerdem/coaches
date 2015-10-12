@@ -7,6 +7,7 @@
 <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
 <arg name="PNPGUI" default="false" />
 
+<arg name="pru_enabled" default="true" />
 <arg name="pru_folder" value="$(find t42_multi_robot_planning)/prus" />
 <arg name="PRU" value="pruDIAG.xml" />
 <arg name="pru_patience" value="0.99" /> <!-- percentage of reward kept each second -->
@@ -77,6 +78,10 @@
 <node pkg="t41_robust_navigation" type="t41_pnpas" name="pnpas" args="" output="screen">      
 </node>
 
+
+
+<group if="$(arg pru_enabled)">
+
 <node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
 <remap from="t21_robot_location" to="amcl_pose" />
 <param name="robot_name" value="$(arg robot_name)" />
@@ -85,6 +90,8 @@
       <param name="patience" value="$(arg pru_patience)" />
       <param name="horizon" value="$(arg pru_horizon)" />
 </node>
+
+</group>
 
     <group ns="planner">
       <node pkg="move_base" type="move_base" respawn="false" name="planner" output="screen">

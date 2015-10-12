@@ -28,13 +28,21 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("interact",&T41PNPActionServer::interact,this);
     register_action("wait",&T41PNPActionServer::wait,this);
     register_action("turn",&T41PNPActionServer::turn,this);
-    register_action("goto",&T41PNPActionServer::followcorridor,this);
+    register_action("goto",&T41PNPActionServer::gotoplace,this);
+//    register_action("goto",&T41PNPActionServer::followcorridor,this);
     register_action("say",&T41PNPActionServer::say,this);
+    register_action("ask",&T41PNPActionServer::say,this);
+    register_action("display",&T41PNPActionServer::say,this);
     register_action("restart",&T41PNPActionServer::restart,this);
     register_action("start",&T41PNPActionServer::none,this);
     register_action("patrol",&T41PNPActionServer::none,this);
 
     handle.param("robot_name",robotname,string("diago"));
+
+    bench_togo=1; // variable for got_nextbench action - 1: up corridor, 2: right corridor
+
+    listener = new tf::TransformListener();
+
 }
 
 int T41PNPActionServer::evalCondition(string cond) {
@@ -52,11 +60,104 @@ int T41PNPActionServer::evalCondition(string cond) {
     return r;
 }
 
+
+
+
+
+bool T41PNPActionServer::getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
+    if (listener==NULL) {
+        listener = new tf::TransformListener();
+    }
+
+    string src_frame = "/map";
+    string dest_frame = "/" + robotname + "/base_frame";
+    if (robotname=="") { // local trasnformation
+        src_frame = "map";
+        dest_frame = "base_link";
+    }
+
+    tf::StampedTransform transform;
+    try {
+        listener->waitForTransform(src_frame, dest_frame, ros::Time(0), ros::Duration(3));
+        listener->lookupTransform(src_frame, dest_frame, ros::Time(0), transform);
+    }
+    catch(tf::TransformException ex) {
+        th_rad = 999999;
+        ROS_ERROR("Error in tf trasnform %s -> %s\n",src_frame.c_str(), dest_frame.c_str());
+        ROS_ERROR("%s", ex.what());
+        return false;
+    }
+    x = transform.getOrigin().x();
+    y = transform.getOrigin().y();
+    th_rad = tf::getYaw(transform.getRotation());
+
+    return true;
+}
+
+
+
 /*
  * ACTIONS
  */
 
+void T41PNPActionServer::gotoplace(string params, bool *run)
+{
+    if (!run) return;
+
+    ROS_INFO_STREAM("### Executing Goto " << params << " ... ");
+
+    if (params=="nextbench") {
+
+        // which corridor the robot is in?
+        double rx,ry,rth_rad;
+        if (!getRobotPose(robotname, rx, ry, rth_rad)) {
+            cout << "### Cannot get robot pose - Aborted Goto ###" << endl;
+            return;
+        }
+        if (rx<3 && ry<3) {
+            // the robot is in the corner, can go to any bench
+            if (bench_togo==1) 
+                gotoplace("bench1",run);
+            else
+                gotoplace("bench2",run);
+        }
+        else if (ry>=3) {
+            // the robot is in the up corridor
+            if (bench_togo==1) {
+                gotoplace("bench1",run);
+            }
+            else {
+                gotoplace("corner",run); gotoplace("bench2",run);
+            }
+        }
+        else {
+            // the robot is in right corridor
+            if (bench_togo==1) {
+                gotoplace("corner",run); gotoplace("bench1",run);
+            }
+            else {
+                gotoplace("bench2",run);
+            }
+
+        }
+
+        bench_togo = 3 - bench_togo;  // next bench to go
+
+    }
+    else {
+        followcorridor(params, run);
+    }
+
+    if (*run)
+        cout << "### Finished Goto" << endl;
+    else
+        cout << "### Aborted Goto" << endl;
+}
+
 void T41PNPActionServer::turn(string params, bool *run) {
+
+  if (!run) return;
+
   cout << "### Executing Turn " << params << " ... " << endl;
 
   float th_deg = atof(params.c_str());
@@ -64,6 +165,9 @@ void T41PNPActionServer::turn(string params, bool *run) {
 }
 
 void T41PNPActionServer::followcorridor(string params, bool *run) {
+
+  if (!run) return;
+
   cout << "### Executing Follow Corridor " << params << " ... " << endl;
 
   double GX,GY;
@@ -72,7 +176,8 @@ void T41PNPActionServer::followcorridor(string params, bool *run) {
       // robot oriented towards the goal
       double RX,RY,RTH;
       getRobotPose(robotname,RX,RY,RTH);
-      if (params.find("printer")==string::npos) { // if not printer
+      if ( (params.find("printer")==string::npos) &&  // if not printer and not corner
+           (params.find("corner")==string::npos) ) {
         double angle = atan2(GY-RY,GX-RX);
         // turn
         do_turn(robotname, DEG(angle), run);
@@ -97,6 +202,34 @@ void T41PNPActionServer::say(string params, bool *run) {
       cout << "### Finished Say " << params << endl;
   else
       cout << "### Aborted Say " << params << endl;
+
+}
+
+void T41PNPActionServer::ask(string params, bool *run) {
+  cout << "### Executing Ask " << params << " ... " << endl;
+
+  say(params, run);
+
+  if (*run)
+      cout << "### Finished Ask " << params << endl;
+  else
+      cout << "### Aborted Ask " << params << endl;
+
+}
+
+
+void T41PNPActionServer::display(string params, bool *run) {
+  cout << "### Executing Display " << params << " ... " << endl;
+
+  // non-terminating action
+  while (*run && ros::ok())
+    ros::Duration(0.5).sleep();
+
+
+  if (*run)
+      cout << "### Finished Display " << params << endl;
+  else
+      cout << "### Aborted Display " << params << endl;
 
 }
 
@@ -264,6 +397,8 @@ void T41PNPActionServer::restart(string params, bool *run)
     else
         cout << "### Aborted Restart" << endl;
 }
+
+
 
 int main(int argc, char** argv)
 {

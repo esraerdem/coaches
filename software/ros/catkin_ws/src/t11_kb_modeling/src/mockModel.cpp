@@ -112,6 +112,7 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["phone"]=mkPoint(89,31);
   locations["restaurant"]=mkPoint(10,23);
   locations["carPark"]=mkPoint(27,20);*/
+
   //Printer DIAG Demo
   locations["home"]=mkPoint(1.3,15);
   locations["printer"]=mkPoint(3,21.5);
@@ -123,7 +124,8 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["office5"]=mkPoint(0.8,6.4);
   locations["office6"]=mkPoint(0.8,1.8);
   locations["corner"]=mkPoint(1.8,1.8);
-  locations["bench"]=mkPoint(8.0,1.8);
+  locations["bench1"]=mkPoint(3.0,8.0);
+  locations["bench2"]=mkPoint(8.0,3.0);
 
 } // constructor
 
