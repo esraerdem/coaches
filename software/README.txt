@@ -125,7 +125,14 @@ and select a proper combination in the GUI
 
 
 
-Known problems: 
+=== Running COACHES demos ===
+
+Scripts for running COACHES demos are in the software/launch folder.
+See the README file in this folder for more information.
+
+
+
+=== Known problems ===
 
 1. sometimes the very first execution when you turn on the machine does not work.
 Solution: retry or try to launch 'roscore' manually before starting the simulation
@@ -134,6 +141,3 @@ Solution: retry or try to launch 'roscore' manually before starting the simulati
 Solution: re-launch Rviz with the command
   $ rosrun rviz rviz -d `rospack find stage_environments`/config/diago/rviz/diago.rviz
   
-
-
-

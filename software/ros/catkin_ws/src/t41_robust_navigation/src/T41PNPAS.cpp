@@ -7,7 +7,7 @@
 #include <shared/topics_name.h>
 #include <shared/Goal.h>
 #include <shared/goalKind.h>
-
+#include <tcp_interface/RCOMMessage.h>
 #include "T41PNPAS.h"
 #include "T41Actions.h"
 
@@ -18,6 +18,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     event_pub = handle.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 10);
     plantoexec_pub = handle.advertise<std_msgs::String>(TOPIC_PLANTOEXEC, 100);
     hri_pub = handle.advertise<shared::Goal>(TOPIC_HRI_GOAL, 10);
+    rcom_pub= handle.advertise<tcp_interface::RCOMMessage>(TOPIC_RCOMMESSAGE,10);
 
 
     //position_sub = handle.subscribe("odom", 10, &MyPNPActionServer::odom_callback, this);
@@ -32,7 +33,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
 //    register_action("goto",&T41PNPActionServer::followcorridor,this);
     register_action("say",&T41PNPActionServer::say,this);
     register_action("ask",&T41PNPActionServer::say,this);
-    register_action("display",&T41PNPActionServer::say,this);
+    register_action("display",&T41PNPActionServer::display,this);
     register_action("restart",&T41PNPActionServer::restart,this);
     register_action("start",&T41PNPActionServer::none,this);
     register_action("patrol",&T41PNPActionServer::none,this);
@@ -220,12 +221,23 @@ void T41PNPActionServer::ask(string params, bool *run) {
 
 void T41PNPActionServer::display(string params, bool *run) {
   cout << "### Executing Display " << params << " ... " << endl;
-
+  
+  
   // non-terminating action
-  while (*run && ros::ok())
-    ros::Duration(0.5).sleep();
+  //while (*run && ros::ok())
+  //  ros::Duration(0.5).sleep();
 
-
+  // send through tcp_interface a string "display_{text|image|video}_arg"
+  
+  string to_send = "display_" + params;
+  tcp_interface::RCOMMessage message_to_send;
+  message_to_send.robotsender= "diago";
+  message_to_send.robotreceiver="all";
+  message_to_send.value= to_send;
+  rcom_pub.publish(message_to_send);
+  
+  
+  say(params, run);
   if (*run)
       cout << "### Finished Display " << params << endl;
   else

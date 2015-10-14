@@ -16,6 +16,7 @@
 #define TOPIC_SAY "say"
 #define TOPIC_STAGE_SAY "stage_say"
 #define TOPIC_HRI_GOAL "t31_hri_goal"
+#define TOPIC_RCOMMESSAGE "/RCOMMessage"
 
 // T41
 #define TOPIC_POLICY_RESULT "t41_policy_result"
