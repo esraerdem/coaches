@@ -3,7 +3,8 @@
 # Run simulated printer demo directly loading the PNP
 
 DEMO_PRU=pruDIAG.xml
-DEMO_PRU=test1.xml
+#DEMO_PRU=pruDIAG_LI.xml
+#DEMO_PRU=test1.xml
 
 #xterm -e "roslaunch PRUplanner2.launch   PRU:=\"$DEMO_PRU\" " &
 xterm -e "roslaunch sim_diago_DIAG.launch pru_enabled:=true PRU:=\"$DEMO_PRU\" " &
