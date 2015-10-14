@@ -131,14 +131,17 @@ class profileSelectionGUI(object):
 
    def __init__(self, parent):
       self.toplevel = tk.Toplevel(parent)
-      profiles_filename = sys.argv[1]
+      if (len(sys.argv) > 1):
+         profiles_filename = sys.argv[1]
+      else:
+         profiles_filename = "instance"
       try:
          f = open(profiles_filename, 'r')
       except IOError:
          print 'cannot open', profiles_filename
       else:
          
-         chosen_profile = ''
+         self.chosen_profile = ''
       
          def callback(text):
             self.chosen_profile = text
@@ -273,7 +276,9 @@ class GUI(tk.Frame):
 
    def profileSelection(self):
       global profile
-      profile = profileSelectionGUI(self).show()
+      selection = profileSelectionGUI(self).show()
+      if (len(selection) > 0):
+         profile = selection
       self.profile_label.configure(text="Current profile: %s" % profile)
 
    def quit(self):
