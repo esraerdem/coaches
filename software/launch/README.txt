@@ -16,11 +16,12 @@ To quit the simulation, you can just close either the Stage window or the Contro
 
 
 
-2. Simulation printer demo at DIAG
+2. Simulation demo at DIAG
 
-  $ ./run_sim_printer_demo_{pru|pnp}.sh
+  $ ./run_sim_DIAG_demo_{pru|pnp}.sh
 
-Using either PRU (pruDIAG.xml) or PNP (PrinterAssistance.pnml) as input.
+Using either PRU or PNP as input. 
+Edit the .sh file to specify which demo you want to start.
 
 
 3. Real DIAGO printer demo at DIAG (load PNP directly)
@@ -28,16 +29,25 @@ Using either PRU (pruDIAG.xml) or PNP (PrinterAssistance.pnml) as input.
   $ ./run_diago_printer_demo.sh
 
 
-4. Simulaion printer demo at DIAG (from PRU)
-
-  $ ./sim_printer_PRU.sh
 
 
 
+To send a goal to PRUplanner use the following
 
-To send a goal to PRUplanner
+rostopic pub  /diago/t12_goals_set shared/AllGoals "header:
+  seq: 0
+  stamp:
+    secs: 0
+    nsecs: 0
+  frame_id: '' 
+  mode: ''
+  goals:
+  - {loc: 'printer', kind: 'go', param: '', value: 0.0, duration: 0.0}"  --once
+
+
 
 To set a condition for PNP
 
 rostopic pub /diago/PNPConditionEvent std_msgs/String "data: 'CONDITION'" --once
+
 
