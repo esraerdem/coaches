@@ -7,7 +7,7 @@ The robots are under development by Algorithmica company\footnote{www.algorithmi
 
 \section{Robot Hardware Set-up}
 
-The design of the COACHES robots has been carried out considering the requirements of the project, the environment in which they will operate, and the definition of the use cases.
+The design of the COACHES robots has been carried out considering the requirements of the project, the environment in which they will operate, and the definition of the use cases, as dewscribed in Deliverable D5.2 ``Definition of the use cases for the demonstrations''.
 Moreover, the proposed solution is based on the experience gained in building and using DIAGO robot\footnote{https://sites.google.com/a/dis.uniroma1.it/diago} at Sapienza University.
 
 In this section, we report the main hardware components of the robot and their connections.
@@ -21,7 +21,7 @@ The design of the robot is described in a later section in this document.
 
 \subsubsection{Robot base}
 The main robotic platform consists of a Segway's RMP210, shown in Fig. \ref{fig:segway}.
-It is a non-balancing platform with two propulsion wheels which can operate stably in indoor environments via a third caster wheel. The base is able to load up to 45 kg, suitable to carry out the transportation tasks of the use cases defined in deliverable D5.2. Below, we describe the main technical characteristics of the platform:
+It is a non-balancing platform with two propulsion wheels which can operate stably in indoor environments via a third caster wheel. The base is able to load up to 45 kg, suitable to carry out the transportation tasks of the use cases defined in Deliverable D5.2. Below, we describe the main technical characteristics of the platform:
 
 \begin{table}[h!]
 \begin{center}
@@ -52,9 +52,9 @@ It is a non-balancing platform with two propulsion wheels which can operate stab
 
 \subsubsection{On-board sensors}
 
-{\bf Laser range finders.} Two laser range finders equipped on the
-front (Hokuyo UTM-30-LX) and back (Hokuyo URG-04LX-UG01) sides of the
-robot will be used for robot localization, obstacle avoidance and
+{\bf Laser range finders.} Two laser range finders, equipped one on the
+front (Hokuyo UTM-30-LX) and one on the back (Hokuyo URG-04LX-UG01) of the
+robot, will be used for robot localization, obstacle avoidance and
 potentially people tracking.
 
 Their specifications are summarized in the following table:
@@ -76,7 +76,7 @@ Their specifications are summarized in the following table:
 \caption{Hokuyo UTM-30-LX and URG-04LX-UG01 specifications.}
 \end{table}
 
-{\bf would be interesting to know which is the actual scanning angle due to the cover.}
+%TODO: {\bf would be interesting to know which is the actual scanning angle due to the cover.}
 
 \begin{figure}[h!]
 \begin{center}
@@ -90,14 +90,22 @@ Their specifications are summarized in the following table:
 {\bf Cameras.} The robot is mounted with 3 ASUS Xtion pro Live, a RGB
 and Depth sensor that will be used for user gesture recognition,
 people detection and tracking or detection of obstacles not visible by
-the laser range finders. They will be arranged as it will be shown in
-Section 3. 
+the laser range finders. 
+The ASUS Xtion camera is show in Figure \ref{fig:cameras} left and its technical specifications are summarized in Table \ref{tab:xtion}.
+The three cameras will be arranged (as also shown in Section 3) as follows:
+one in the top front looking toward the person who is interacting with the robot,
+one on the bottom front looking at the ground in front of the robot, one in the back looking at people following the robot.
+A first version of the robot may contain only two of these devices.
 
 Additionally, a Logitech HD Pro Webcam C920 is intended to be used for
-robot localization in a later stage.  The camera will point to the ceiling
+robot localization in a later stage.
+The camera is show in Figure \ref{fig:cameras} right and its technical specifications are summarized in Table \ref{tab:logitech}.
+The camera will point to the ceiling
 to take advantage of the special pattern (see Fig. \ref{fig:ceiling}) present in
 the Rives de l'Orne mall, where the project demonstrations will be
 carried out.
+
+Finally, the front camera embedded in the tablet (described below) may be used for additional tasks of face detection and human-robot interaction.
 
 \begin{figure}[h!]
 \begin{center}
@@ -134,6 +142,7 @@ carried out.
 \end{tabular}
 \end{center}
 \caption{ASUS Xtion pro Live specifications.}
+\label{tab:xtion}
 \end{table}
 
 \begin{table}[h!]
@@ -154,19 +163,21 @@ carried out.
 \end{tabular}
 \end{center}
 \caption{Logitech HD Pro Webcam C920 specifications.}
+\label{tab:logitech}
 \end{table}
 
 \subsubsection{Human-Robot Interfaces}
 Interaction with the user will be mainly through a Graphical User
 Interface (GUI) displayed on a tablet Microsoft Surface Pro 2.
-Although this device already incorporates stereo speakers and a
+Tecnical specification of the tablet are described in Table \ref{tab:surface}.
+
+Although this tablet already incorporates stereo speakers and a
 microphone, additional built-in speakers are mounted on the robot
 structure and an external microphone will be used to receive commands
 and spoken requests from the user. Concretely, a RODE NTG-2
 professional microphone has been chosen for its capability to
-eliminate the surrounding noise and focus audio recording from the main direction it is pointing to
-as it is shown in Fig. \ref{fig:microphone}.
-Below, we describe the main technical specifications of these devices.
+eliminate the surrounding noise and focus audio recording from the main direction it is pointing to as it is shown in Figure \ref{fig:microphone}.
+In Table \ref{tab:rode}, the main technical specifications of the microphone are described.
 
 \begin{table}[h!]
 \begin{center}
@@ -202,6 +213,7 @@ Below, we describe the main technical specifications of these devices.
 \end{tabular}
 \end{center}
 \caption{Microsoft Surface Pro 2 specifications.}
+\label{tab:surface}
 \end{table}
 
 \begin{table}[h!]
@@ -227,6 +239,7 @@ Below, we describe the main technical specifications of these devices.
 \end{tabular}
 \end{center}
 \caption{Microphone RODE NTG-2 specifications.}
+\label{tab:rode}
 \end{table}
 
 \begin{figure}[h!]
@@ -241,10 +254,11 @@ Below, we describe the main technical specifications of these devices.
 
 
 \subsubsection{Additional devices}
+
 The robot platform, sensors and human-robot interfaces described above will be connected
-through a PC laptop and 3 Odroid C1 Single Board Computers (SBC) (see Fig. \ref{fig:odroid}) that will free the main computer from processing load.
+through a PC laptop  HP EliteBook 820 G2 and 3 Odroid C1 Single Board Computers (SBC) (see Figure \ref{fig:odroid}) that will free the main computer from processing load and difficulties in configuration and use of hardware devices.
 A network switch will interconnect all these devices and will provide internal communication as well as external wireless access to the communication network installed in the building.
-The technical specifications of the laptop, a HP EliteBook 820 G2, and of the Odroid C1 boards are presented below.
+The technical specifications of the laptop and of the Odroid C1 boards are presented in Tables \ref{tab:elite} and \ref{tab:odroid} respectively.
 The arrangement of all the devices on the robot will be explained in the next section.
 
 
@@ -263,6 +277,7 @@ The arrangement of all the devices on the robot will be explained in the next se
 \end{tabular}
 \end{center}
 \caption{Specifications of the HP EliteBook 820 G2.}
+\label{tab:elite}
 \end{table}
 
 \begin{table}[h!]
@@ -288,6 +303,7 @@ The arrangement of all the devices on the robot will be explained in the next se
 \end{tabular}
 \end{center}
 \caption{Specifications of the ODROID-C1 board.}
+\label{tab:odroid}
 \end{table}
 
 \begin{figure}[h!]
@@ -300,7 +316,7 @@ The arrangement of all the devices on the robot will be explained in the next se
 
 \subsection{Device Connections}
 All the devices presented in the previous section are integrated in
-the robot as shown in Fig. \ref{fig:architecture}.
+the robot as shown in Figure \ref{fig:architecture}.
 
 The main functionalities and behaviour of the robot will be managed by
 the laptop which will run the ROS master under Linux to synchronize the different
@@ -353,7 +369,7 @@ family) or IMUs. The drivers are minimal, in the sense that they
 publish only a subset of the information produced by the sensor and
 can be modified based on the user needs.
 
-
+Moreover, the thin drivers require low computational resources and can thus properly run in real-time on the SBC that are mounted on the COACHES robots.
 
 
 

@@ -2,78 +2,116 @@
 
 %\subsection{Multi-robot communication}
 
-A multi-robot system can be seen as a set of agents that cooperate together to accomplish a global task. Each agent is a software component that can be decomposed in different modules each of which responsible for a specific task, such as task planning, state estimation, data acquisition , human-robot interaction, etc. 
-One of the greatest challenges in such systems is to provide a stable and reliable infrastructure which allows the communication among specific modules of each agent.
-We can divide the problem of communication in two different cases: local data transmission between  modules running on the same physical machine, and remote communication where modules are distributed within the network.
-With modern operating systems, both problems can be solved mapping each individual module as a software process, transforming the task of informations exchange in the well known problem of interprocess communication.
-The single most notable attribute of mapping modules onto separate processes is that every module receives a separate memory address space. The introduction of this barrier provides a number of benefits; modules can be run on the same or different host devices, started and stopped independently, written in different programming languages and for different operating systems, and catastrophic failure of one module (e.g., a segmentation fault) does not necessarily impact another. To allow communication between isolated modules, is necessary to identify what kind of information have to be passed,  a system that can marshal (encode) that information into a message, a way to send that message from one module to another, and way to un-marshal (decode) the message once received.
+In this section, we describe the communication infrastructure between the COACHES robots and between a robot and the other components of the system (e.g., fixed cameras in the environment, management tools, etc.)
 
-There are several recurring themes in existing systems. Publish/subscribe models are the most commonly used, with TCP being the most common transport. Most of these systems employ a centralized hub, whether it is used for message routing or merely for “match making”. 
+A multi-robot system can be seen as a set of agents that cooperate together to accomplish a global task. %Each agent is a software component that can be decomposed in different modules each of which responsible for a specific task, such as task planning, state estimation, data acquisition, human-robot interaction, etc. 
+One of the greatest challenges in such systems is to provide a stable and reliable infrastructure which allows the communication among specific modules of each agent.
+
+We can divide the problem of communication in two different cases: \emph{local data transmission} between  modules running on the same physical machine, and \emph{remote communication} where modules are distributed within the network.
+With modern operating systems, both problems can be solved by mapping each individual module as a software process, transforming the task of information exchange in the well-known problem of inter-process communication. In this way each process receives a separate address space, allowing a physical and semantic separation between modules. Each of them can be written in a different language and can run on different or same host devices. There are also some stability benefits. In fact, if a module has some failures, it does not necessarily impact others. 
+
+For exchanging information between modules, we have to deal with different issues: what kind of information have to be passed, an efficient system to encode them, a way to send messages from one module to another, and a system for decoding messages.
+
+The following features are common in all communication systems:
+
+\begin{itemize}
+	
+	\item[A] Type Specification
+	
+	To specify the semantics of the messages, it is necessary to define a representation (or data structure) for each message.
+	This representation allows for describing all the information that are exchanged in the system.
+    The definition has to be independent from the programming languages, and some tools for read data from messages have to provided.
+	
+	\item[B] Encoding/Decoding
+	
+	Messages to be exchanged have to be encoded in a binary format, and all the modules must know how to interpret the binary contents of a message. This process must be as efficient as possible, to not affect the performance of the entire system. 
+	
+	
+	\item[C] Reliability
+	
+	Due to the possibility of errors during data transmission, it is necessary to include within the encoded message, some process of integrity verification, like a checksum.
+	
+	\item[D] Communication
+
+	In most multi-robot systems, the transmission and reception of messages lean on standard communication protocols, typically TCP or UDP. 
+	
+	This part can be \emph{centralized}, with one single node that keeps track of all the modules and all the agents dispatching messages to the right receiver, or can be \emph{distributed} so all the agents know the other participants and can send the information directly to interested. 
+	A communication model widely used is the publish/subscribe model, in which some communication channels are defined in advanced  and all the modules can publish or listen to this. Usually it requires a mediator that dispatches directly the message from publisher to all the subscribers or it is used to broker point-to-point connection.
+
+\end{itemize}
+
 
 \subsection{Lightweight Communications and Marshalling (LCM)}
 
-Lightweight Communications and Marshalling (LCM) is a message passing system for interprocess communication that is specifically targeted for the development of real-time systems. LCM provide tools for marshalling, communication, and analysis. It uses a “push”-based publish/subscribe model using UDP multicast protocol as a low-latency but unreliable transport, thus avoiding the need for a centralized hub. LCM provides tools for generating marshalling code based on a formal type declaration language; this code can be generated for a large number of platforms and operating systems and provides run-time type safety.
+Lightweight Communications and Marshalling (LCM)\footnote{https://lcm-proj.github.io/} \cite{lcm-iros2010} is a message passing system for interprocess communication that is specifically targeted for the development of real-time systems. LCM provides tools for marshalling, communication, and analysis. It uses a “push”-based publish/subscribe model using UDP multicast protocol as a low-latency but unreliable transport, thus avoiding the need for a centralized hub. LCM provides tools for generating marshalling code based on a formal type declaration language; this code can be generated for a large number of platforms and operating systems and provides run-time type safety.
+
+The following features are relevant in LCM.
 	\begin{itemize}
 	
 	\item[A] Type Specification
 	
-	Formal type specification language for describing messages.
-	The representation does not depend on platform and programming language, and a code generation tool is used to automatically generate language-specific bindings that provide representations of the message in a form native to the programming language. 
-
+	A platform independent language for describing messages is defined, and an automatic code generating tool is provided.
 	
 	\item[B] Marshalling
 	
-	In order for two modules to successfully communicate, they must agree exactly on how to interpret the binary contents of a message. If the interpretations are different, the resulting system behavior is typically undefined, and usually unwanted. In some cases, these problems can be obvious and catastrophic: a disagreement in the signedness of a motor control message, for example, could cause the robot to suddenly jump to maximum reverse power when the value transitions from 0x7f to 0x80. In other cases, problems can be more subtle and difficult to diagnose. Additionally, as a system evolves, the messages may change as new information is required and obsolete information is removed. Thus, message interpretation must be synchronized across modules as messages are updated.
-	Fingerprint: Type checking in LCM is accomplished by prepending each LCM message with a 64-bit fingerprint derived from the type definition. The fingerprint is a hash of the member variable names and types. 
-	In the common case, an LCM client knows what type of message is expected on a particular messaging channel.
-	When a message is received by an LCM client, it first reads the fingerprint of the message. If the fingerprint does not match the LCM client’s expected fingerprint, a type error is reported.
-	LCM clients can also build a fingerprint database, allowing them to identify the type of message when it is received. This is the technique used by our tool lcm-spy, which allows realtime deep inspection of LCM traffic.
+	An efficient encoding/decoding tool is provided for converting messages to a binary format and vice versa. 
 	
-	\item[C] Communication
+	\item[C] Fingerprint 
+	
+	Each message has a fingerprint that depends on its type, and when a message is received if the fingerprint does not match, an error is reported.
+	
+	\item[D] Communication
+	
+	LCM uses a publish/subscribe model led on UDP Multicast layer. Using this standard communication protocol, each message is broadcast to all local and remote modules, and a client simply discards messages to which it is not subscribed. In this way the network load grows up, but there is no need of a centralized hub and consequently there is no single failure point or bottleneck in the system.
 
-	The communications aspect of LCM can be summarized as a publish-subscribe messaging system that uses UDP multicast as its underlying transport layer. Under the publish/subscribe model, each message is transmitted on a named channel, and modules subscribe to the channels required to complete their designated tasks. It is typically the case (though not enforced by LCM) that all the messages on a particular channel are of a single pre-specified type.
-		\begin{enumerate}
-		\item 
-		UDP Multicast: In typical publish-subscribe systems, a mediator process is used to maintain a central registry of all publishers, channels, and subscribers. Messages are then either routed through the mediator directly, or the mediator is used to broker point-to-point connections between a publisher and each of its subscribers. In both cases, the number of times a message is actually transmitted scales linearly with the number of subscribers. When a message has multiple subscribers, this overhead can become substantial. The approach taken by LCM, in contrast, is simply to broadcast all messages to all clients. A client discards those messages to which it is not subscribed. Communication networks such as Ethernet and the 802.11 wireless standards make this an efficient operation, where transmitted packets are received by all devices regardless of destination.
-		LCM bases its communications directly on UDP multicast, which provides a standardized way to leverage this feature. Consequently, it does not require a centralized hub for either relaying messages or for “match making”. A maximum LCM message size of 4 GB is achieved via a simple fragmentation and reassembly protocol. The multicast time-to-live parameter is used to control the scope of a network, and is most commonly set to 0 (all software modules hosted on the same computational device) or 1 (modules spread across devices on the same physical network). 
-		\item
-		Delivery Semantics: LCM provides a best-effort packet delivery mechanism and gives strong preference to the expedient delivery of recent messages, with the notion that the additional latency and complexity introduced by retransmission of lost packets does not justify delaying newly transmitted messages.
-		In general, a system that has significant real-time constraints, such as a robot, may often prefer that a lost packet (e.g., a wheel encoder reading) simply be dropped rather than delay future messages. LCM reflects this in its default mode of operation; higher level semantics may still be implemented on top of the LCM message passing service.
-		\end{enumerate}
 	\end{itemize}
 
 
 \subsection{ROS Communication}
 
-	At the lowest level of its architecture, ROS offers a message passing interface that provides inter-process communication.
-	The ROS middleware offers these facilities:
+Robot Operating System (ROS)\footnote{www.ros.org} is the most common robot middleware used in many robotics applications.
+At the lowest level of its architecture, ROS offers a message passing interface that provides inter-process communication.
+
+The ROS middleware offers these facilities:
 	\begin{itemize}
-		\item publish/subscribe anonymous message passing
-		\item recording and playback of messages
-		\item request/response remote procedure calls
-		\item distributed parameter system
-		\item Message passing
+	\item[A] Type Specification
+		
+	The structure of each message interface is defined using a specific IDL (Interface Description Language). A message generator that translate the IDL files into source code is provided.
+	
+	\item[B] Encoding/Decoding
+		
+    The conversion in binary format for complex data is automatic and platform independent.
+		
+		
+	\item[C] Reliability
+	
+	Each message type has an MD5 sum of the IDL file. Modules can only communicate messages for which both the message type and MD5 sum match.
+
+	\item[D] Communication
+
+	ROS built-in messaging infrastructure manages the communication between distributed nodes via the anonymous publish/subscribe mechanism lean on a TCP layer. This standard protocol, guarantee reliability, ordered receive and error checked delivery for all the messages.
+	
 	\end{itemize}
-	ROS built-in messaging infrastructure manages the communication between distributed nodes via the anonymous publish/subscribe mechanism. The structure of each message interfaces is defined using a specific IDL (Interface Description Language).
-	The roscore works as centralized hub to manage all the messages impairing the communication between different physical machines. 
+	
+	
+ 
+	%The roscore works as centralized hub to manage all the messages impairing the communication between different physical machines. 
 
 \subsection{TCP Interface}
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\linewidth]{fig/Tcp-Interface.pdf}
-\caption{TCP-Interface schematics}
-\label{fig:Tcp-Interface}
+\includegraphics[width=0.8\linewidth]{fig/Tcp-Interface.pdf}\caption{tcp\_interface architecture.}
+\label{fig:tcp_interface}
 \end{figure}
 
-		
-	A multi-robot system depends on both classes of communication previously described. Local message exchange is needed by the different modules composing each agent involved in
-	the system; remote message passing is required for coordination among the agents. The local communication can be efficiently managed using the ROS messaging system, which is inadequate
-	for the remote communication. On the contrary, LCM can be used to cope with both local and remote data transmission, provided reliability is not a desired feature, since UDP protocol does not guarantee the correct exchange of data, in terms of error correction and packet delivery.
-	To overcome the limitations of ROS built-in system and LCM, we built a higher-level block on top of ROS middleware, called TCP-Interface.
 
+As already mentioned, a multi-robot system depends on local message exchange (needed by the different modules composing each agent) and remote message passing (required for coordination among the agents). The local communication can be efficiently managed using the ROS messaging system, but its centralized approach requires a unique roscore running, impairing the communication between different physical machines.
+On the contrary, LCM can be used to cope with both local and remote data transmission, provided reliability is not a desired feature, since UDP protocol does not guarantee the correct exchange of data, in terms of error correction and packet delivery.
 
-	The node allows a peer-to-peer communication between different agents that are on the same network. It consists of three different layers:
+To overcome the limitations of ROS built-in system and LCM, we built a higher-level block on top of ROS middleware: a ROS node called tcp\_interface\footnote{https://github.com/gennari/tcp\_interface}.
+
+The tcp\_interface node allows for a peer-to-peer communication between different agents that are on the same network. Figure \ref{fig:tcp_interface} shows an architectural diagram of the node that consists of three different layers:
 	\begin{itemize}
 		\item Discovery layer:
 			Using UDP protocol, every agent periodically broadcasts a heartbeat message on the network. This mechanism allows each agent to maintain an updated list of all live peers.
@@ -81,11 +119,16 @@ Lightweight Communications and Marshalling (LCM) is a message passing system for
 			It consists of a server that is responsible for receiving messages from other agents, and a client that deals with sending messages to other peers. This layer use the TCP protocol to guarantee the correctness of the packet delivery.
 		\item ROS-Bridge:
 			Based on the ROS publish/subscribe model, this layer is responsible of collecting the messages generated by each local module and to wrap them in a message compliant with the communication layer.
-
-			
+	
 	\end{itemize}
+
+
+By using this architecture, string messages are sent by each node through a ROS standard communication channel (typically /RCOMMessage) as local data. In such a way, it is possible both to exploit at maximum all the ROS communication features and to obtain a distributed mechanism for exchanging messages, like LCM. 
 	
-	
+This node is also used for communication between ROS nodes and non-ROS software components, by simply using the TCP channel.
+In this way TCP string messages can be easily excahnged between a ROS node (through its standard ROS publish/subscribe communication channel) and a non-ROS software through standard TCP connection (e.g., telnet).
+External non-ROS program can be written in any language and run in any operating system on a different machine from the one running ROS.
+This mechanism is used in the COACHES architecture to connect the ROS components controlling the robot and running on a Linux laptop with the user interfaces running on the tablet of the robot under the Microsoft Windows operating system.
 
 
 
