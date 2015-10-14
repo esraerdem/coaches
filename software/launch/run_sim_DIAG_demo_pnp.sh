@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DEMO_PNP=PrinterAssistance
-#DEMO_PNP=BenchAssistance
+#DEMO_PNP=PrinterAssistance
+DEMO_PNP=BenchAssistance
 
 # Run simulated printer demo directly loading the PNP
 

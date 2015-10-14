@@ -18,7 +18,7 @@ class T41PNPActionServer : public PNPActionServer
 {
 private:
     ros::NodeHandle handle;
-    ros::Publisher event_pub, plantoexec_pub, hri_pub;
+    ros::Publisher event_pub, plantoexec_pub, hri_pub, rcom_pub;
     tf::TransformListener* listener;
 
     // ros::Subscriber laser_sub, variable_sub, speech_sub, pedestrian_sub, general_Pedestrian_sub;

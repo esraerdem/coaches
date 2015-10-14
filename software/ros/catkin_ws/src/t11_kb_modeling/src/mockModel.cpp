@@ -117,6 +117,7 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["home"]=mkPoint(1.3,15);
   locations["printer"]=mkPoint(3,21.5);
   locations["technician"]=mkPoint(1.6,1.3);
+  locations["office"]=mkPoint(1.2,19.5);
   locations["office1"]=mkPoint(1.2,23.9);
   locations["office2"]=mkPoint(1.3,19.5);
   locations["office3"]=mkPoint(1.3,15.1);
