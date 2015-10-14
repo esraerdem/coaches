@@ -78,6 +78,14 @@
 <node pkg="t41_robust_navigation" type="t41_pnpas" name="pnpas" args="" output="screen">      
 </node>
 
+<node pkg="tcp_interface" type="tcp_interface" name="tcp_interface" args="" output="screen">
+    <param name="TCP_server_port" value="9000"/>
+    <param name="UDP_server_port" value="9100"/>
+    <param name="network_interface" value="wlan0"/>
+    <param name="UDP_team_min_port" value="9100"/>
+    <param name="UDP_team_max_port" value="9110"/>
+    <param name="config_file" value="$(find tcp_interface)/config/UDPpeers.cfg"/>    
+</node>
 
 
 <group if="$(arg pru_enabled)">
