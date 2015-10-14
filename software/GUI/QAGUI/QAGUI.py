@@ -93,12 +93,14 @@ class Network:
                # if (text) : show actual_interaction as a label in the GUI
                if (mode == 'text'):
                   self.text_to_display = actual_interaction
+                  self.parent.ltext.event_generate("<<NewTextMessage>>")
 
                # if (image) : show image in actual_interaction as an image in the GUI
-                  
+               if (mode == 'image'):
+                  self.image_to_display = actual_interaction
+                  self.parent.limg.event_generate("<<NewImgMessage>>")
                # if (video) : ...
             
-               self.parent.ltext.event_generate("<<NewMessage>>")
 
          else: #if there is no data something happened in the server
             self.netStatusOk = False
@@ -111,6 +113,9 @@ class Network:
 
    def getTextToDisplay(self):
       return self.text_to_display
+
+   def getImgToDisplay(self):
+      return self.image_to_display
 
    def sendMessage(self, message):
       if (self.netStatusOk):
@@ -242,11 +247,12 @@ class GUI(tk.Frame):
       imgtk = ImageTk.PhotoImage(image=im_resized)
       self.limg = Label(topframe, image=imgtk)
       self.limg.image = imgtk
+      self.limg.bind("<<NewImgMessage>>", self.updateImg)
       self.limg.pack(side=RIGHT) 
 
       # Label
       self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32))
-      self.ltext.bind("<<NewMessage>>", self.updateLabel)
+      self.ltext.bind("<<NewTextMessage>>", self.updateLabel)
       self.ltext.pack()
 
       # Buttons
@@ -263,6 +269,17 @@ class GUI(tk.Frame):
    def updateLabel(self, event):
       print 'Event triggered'
       self.question.set(self.net.getTextToDisplay())
+
+   def updateImg(self, event):
+      print 'Event triggered'
+      img_name = self.net.getImgToDisplay()
+      img = PIL.Image.open(img_name)
+      w, h = img.size
+      width, height = 500, 375
+      im_resized = self.setHeight(w, h, height, img)
+      imgtk = ImageTk.PhotoImage(image=im_resized)
+      self.limg.configure(image = imgtk)
+      self.limg.image = imgtk
       
    def ActionY(self):
       message = 'Yes\n\r'
