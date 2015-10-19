@@ -79,27 +79,34 @@ class Network:
             print 'received: ', self.recvmsg
             # Example: received 'display_{text|image|video}_welcome'
             self.recvmsg = self.recvmsg.replace('\x00',"")
-            splitmsg = self.recvmsg.strip('\n\r').split("_")
+            splitmsg = self.recvmsg.strip('\n\r').split("_") # Example: returns ['display', 'text', 'welcome']
+
             print splitmsg
             if len(splitmsg) != 3:
-               print 'There is something wrong with the message format'
+               print 'There is something wrong with the message format: [display_[mode]_[interactionname]]'
                continue
             else:
+               
                mode = splitmsg[1]
                interactionname = splitmsg[2]
-               # eval_personalization_rules(welcome) -> actual_interaction
-               actual_interaction= eval_personalization_rules(interactionname, profile)
-               print actual_interaction
-               # if (text) : show actual_interaction as a label in the GUI
-               if (mode == 'text'):
-                  self.text_to_display = actual_interaction
-                  self.parent.ltext.event_generate("<<NewTextMessage>>")
+               rules_filename = "_".join([splitmsg[1], splitmsg[2]])
 
-               # if (image) : show image in actual_interaction as an image in the GUI
-               if (mode == 'image'):
-                  self.image_to_display = actual_interaction
-                  self.parent.limg.event_generate("<<NewImgMessage>>")
-               # if (video) : ...
+               # eval_personalization_rules(welcome) -> actual_interaction
+               actual_interaction= eval_personalization_rules(rules_filename, profile)
+               print actual_interaction
+
+               if (len(actual_interaction)>0):
+                  # if (text) : show actual_interaction as a label in the GUI
+                  if (mode == 'text'):
+                     self.text_to_display = actual_interaction
+                     self.parent.ltext.event_generate("<<NewTextMessage>>")
+
+                  # if (image) : show image in actual_interaction as an image in the GUI
+                  if (mode == 'image'):
+                     self.image_to_display = actual_interaction
+                     self.parent.limg.event_generate("<<NewImgMessage>>")
+                     
+                  # if (video) : ...TODO
             
 
          else: #if there is no data something happened in the server
@@ -251,7 +258,7 @@ class GUI(tk.Frame):
       self.limg.pack(side=RIGHT) 
 
       # Label
-      self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32))
+      self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32), wraplength=1200)
       self.ltext.bind("<<NewTextMessage>>", self.updateLabel)
       self.ltext.pack()
 

@@ -36,6 +36,7 @@ def eval_personalization_rules (rules_filename, profile_string):
         f = open(rules_filename, 'r')
     except IOError:
         print 'cannot open', rules_filename
+        return ''
     else:
         list_of_rules = parseRulesFile(f)
         print "LIST OF RULES"

@@ -17,7 +17,7 @@ http://www.lfd.uci.edu/~gohlke/pythonlibs/
 
 To test the GUI independently of the rest of the COACHES software:
 
-- Run the tcp_interface node: 
+- Run the tcp_interface node (Can be downloaded from https://github.com/gennari/tcp_interface): 
 >> roscore&
 >> rosrun tcp_interface tcp_interface
 
@@ -38,4 +38,9 @@ value: 'display_image_toilets'"
 robotreceiver must contain the IP and port of the GUI. To retrieve this information you can
 consult the output of the tcp_interface node.
 
-value contains the instruction. By the moment, display_text_welcome and display_image_toilets are supported.
+value contains the instruction. By the moment, the following commands are supported:
+ - display_text_welcome 
+ - display_image_toilets
+ - display_text_toilets
+ - display_text_needhelp
+ - display_text_office

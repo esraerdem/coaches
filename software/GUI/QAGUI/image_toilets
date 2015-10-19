@@ -5,5 +5,5 @@
 #occupation = [student | professor | visitor]
 #write character '*' for default option
 <*, m, *, *>:  "img/men_toilets.png"
-<*, f, *, *>:  "img/women_toilets.png
-<*, *, *, *>:  "img/default_toilets.png
+<*, f, *, *>:  "img/women_toilets.png"
+<*, *, *, *>:  "img/default_toilets.png"

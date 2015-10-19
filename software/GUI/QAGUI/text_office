@@ -1,4 +1,4 @@
 <*, *, en, professor>: Yes go ahead
 <*, *, en, *>: My room is B115 in the corridor at the end of this one.
-<*, *, en, *>: The office of @WHICHPROF is room @WHICHROOM
+#<*, *, en, *>: The office of @WHICHPROF is room @WHICHROOM
 

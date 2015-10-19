@@ -1,0 +1,23 @@
+Guide to the Human-Robot Interactions at DIAG:
+----------------------------------------------
+
+Create easier GUI with buttons for profile selection - TODO
+
+Welcome - display_text_welcome - DONE
+Do you need help - display_text_needhelp - DONE
+
+Create GUI with three options: toilets | office | schedule - TODO
+
+if (toilets):
+  - display_text_toilets - DONE
+  - display_image_toilets - DONE
+
+if (office):
+  - display_text_office - DONE 	
+  - display_image_office - TODO 
+
+if (schedule):
+  - display_image_schedule - TODO
+
+Goodbye - display_text_goodbye - TODO
+	

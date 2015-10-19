@@ -1,0 +1,11 @@
+#Format: <age, gender, language, occupation>:"text_to_display"
+#age = [adult | senior | junior]
+#gender = [m | f]
+#language = [en | fr | it | sp]
+#occupation = [student | professor | visitor]
+#write character '*' for default option
+<*, m, en, *>:  "Men toilets are at the end of the corridor on the left and then on the right"
+<*, f, en, *>:  "Women toilets are at the end of the corridor on the left and then on the left"
+<*, m, it, *>:  "I servizi degli uomini sono in fondo al corridoio a sinistra e poi a destra"
+<*, f, it, *>:  "I servizi delle donne sono in fondo al corridoio a sinistra e poi a sinistra"
+<*, *, *, *>:  "Toilets are at the end of the corridor on the left"
