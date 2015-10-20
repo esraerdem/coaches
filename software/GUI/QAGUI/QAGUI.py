@@ -22,6 +22,9 @@ from parse_rules_file import eval_personalization_rules
 profile = '<*,*,*,*>'
 
 
+# Global variables:
+# net_ROS and net_speech : objects of class Network
+
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
    def __init__(self, parent, serverTcpIP, serverPort):
@@ -77,7 +80,11 @@ class Network:
 
          if (self.recvmsg):
             print 'received: ', self.recvmsg
-            # Example: received 'display_{text|image|video}_welcome'
+            # net_ROS object will receive:
+            #  'display_{text|image|video}_welcome'
+            #  'say_welcome'
+            # net_speech object will receive:
+            #  'ASR_text'
             self.recvmsg = self.recvmsg.replace('\x00',"")
             splitmsg = self.recvmsg.strip('\n\r').split("_") # Example: returns ['display', 'text', 'welcome']
 
@@ -108,6 +115,18 @@ class Network:
                      
                   # if (video) : ...TODO
             
+
+                # if (say_something) coming from tcp_interface: 
+                #
+                #  look for the string to say according to user profile
+                #  txt_say = exact string to say
+                #  
+                #  net_speech.send(txt_say)
+                  
+                  
+                # if (ASR_something) coming from speech server
+                # net_ros.send("@ASR "+something)
+                
 
          else: #if there is no data something happened in the server
             self.netStatusOk = False
