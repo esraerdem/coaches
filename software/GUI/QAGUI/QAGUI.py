@@ -159,10 +159,23 @@ class profileSelectionGUI(object):
             self.chosen_profile = text
             self.toplevel.destroy()
 
+         #this is something temporal, we take just the 4 first profiles and show them in a grid
+         maxProfiles = 4
+         i=0
+         sizegrid = 2
+#         self.toplevel.grid(sticky=N+S+E+W, column=0, row=sizegrid, columnspan=sizegrid)
          for line in f:
+            if (i == maxProfiles):
+               break
             line = line.strip("\n")
-            btn = tk.Button(self.toplevel, text=line, command=lambda line=line: callback(line))
-            btn.pack()
+            btn = tk.Button(self.toplevel, text=line, font=("Helvetica", 32), command=lambda line=line: callback(line)).grid(row=i/sizegrid, column=i%sizegrid, sticky='EWNS')
+            i +=1
+
+         #this shows all profiles as a list
+         # for line in f:
+         #    line = line.strip("\n")
+         #    btn = tk.Button(self.toplevel, text=line, command=lambda line=line: callback(line))
+         #    btn.pack()
             
          f.close()
 

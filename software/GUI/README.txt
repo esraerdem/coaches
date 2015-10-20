@@ -7,7 +7,7 @@ Python GUI
 For Windows
 
 1) OpenCV
-copy cv2.pyd from OpenCV/build/pythoin/2.7 to Python/Lib/site-packages
+copy cv2.pyd from OpenCV/build/python/2.7 to Python/Lib/site-packages
 
 2) Numpy
 install numpy from precompiled windows binary available in
