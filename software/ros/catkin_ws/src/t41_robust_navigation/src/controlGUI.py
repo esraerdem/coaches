@@ -12,7 +12,7 @@ from shared.msg import Event, AllGoals
 
 
 Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)' ]
-CBConditions = ['personHere', 'personPrinter', 'nohelp', 'help', 'helpbringdoc', 'helptechnician' ]
+CBConditions = ['personHere', 'personPrinter', 'nohelp', 'help', 'helpbringdoc', 'helptechnician', 'schedule', 'toilette' ]
 ConditionVar = [ None ] * len(CBConditions) 
 do_run = True
 
@@ -143,7 +143,7 @@ def main():
     root = tk.Tk()
     f = DIP(root)
     thread.start_new_thread(run, ())
-    root.geometry("300x400+0+0")
+    root.geometry("300x480+0+0")
     root.mainloop()
 
 
