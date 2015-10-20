@@ -7,11 +7,11 @@
   <Layer id='1'>
     <Action id='wait'>
       <Outcome id='none' p='0.25'>
+	<Quality kind='null' const='-1' />
 	<Duration kind='null' const='1' />
 	<Observe> not personHere &amp; not personPrinter </Observe>
 	<Next> 
 	  1.wait
-	  2.welcome
 	</Next>
       </Outcome>
       <Outcome id='entry' p='0.25'>
@@ -19,7 +19,7 @@
 	<Observe> personHere &amp; not personPrinter </Observe>
 	<Next> 
 	  1.wait
-	  2.welcome
+	  2.say_Hello
 	</Next>
       </Outcome>
       <Outcome id='print' p='0.25'>
@@ -35,14 +35,14 @@
 	<Observe> personHere &amp; personPrinter </Observe>
 	<Next> 
 	  1.wait
-	  2.welcome
+	  2.say_Hello
 	  2.goto_printer
 	</Next>
       </Outcome>
     </Action>
   </Layer>
   <Layer id='2'>
-    <Action id='welcome'>
+    <Action id='say_Hello'>
       <Outcome id='done' p='1'>
 	<Quality kind='null' const='100' />
 	<Duration kind='null' const='30' />
@@ -54,7 +54,7 @@
 	<Duration kind='distanceEntrancePrinter' const='1' />
 	<Observe> personPrinter </Observe>
 	<Next>
-	  2.say_hello
+	  2.ask_What
 	</Next>
       </Outcome>
       <Outcome id='err' p='0.25'>
@@ -65,7 +65,7 @@
 	</Next>
       </Outcome>
     </Action>
-    <Action id='say_hello'>
+    <Action id='ask_What'>
       <Outcome id='done' p='0.34'>
 	<Quality kind='null' const='100' />
 	<Duration kind='null' const='15' />

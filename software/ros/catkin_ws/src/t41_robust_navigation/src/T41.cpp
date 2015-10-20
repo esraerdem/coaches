@@ -421,6 +421,7 @@ bool T41::getPathLen(t41_robust_navigation::GetPathLen::Request  &req,
   srv.request.goal.header.frame_id="map";
   srv.request.tolerance = 2.1;
   ros::ServiceClient planner = node.serviceClient<nav_msgs::GetPlan>("/diago/planner/planner/make_plan");
+  while (1) {
   if (planner.call(srv)) {
     // Now computes the path length
     double len = 0;
@@ -440,7 +441,9 @@ bool T41::getPathLen(t41_robust_navigation::GetPathLen::Request  &req,
     return true;
   } else {
     ROS_WARN("Unable to compute Path");
-    return false;
+    sleep(1);
+    //    return false;
+  }
   }
 }
 

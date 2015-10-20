@@ -105,14 +105,24 @@ MockModel::MockModel(ros::NodeHandle node) {
   
   service_get_location = node.advertiseService(SERVICE_GET_LOCATION, &MockModel::getLocation, this);
   service_get_all_sites = node.advertiseService(SERVICE_GET_ALL_SITES, &MockModel::getAllSites, this);
-/*
+
+  ros::NodeHandle lnode("~");
+  std::string mapName;
+  lnode.param("map_name",mapName,std::string("none"));
+  std::cout << "Requested building mockup for " << mapName << std::endl;
+
+  if (mapName != "DISB1") {
+  std::cout << "Inserting RiveDeL'Orne sites...\n";
   locations["doorWest"]=mkPoint(6,19);
   locations["doorEast"]=mkPoint(93.69,29.75);
   locations["monoprix"]=mkPoint(78,24);
   locations["phone"]=mkPoint(89,31);
   locations["restaurant"]=mkPoint(10,23);
-  locations["carPark"]=mkPoint(27,20);*/
-
+  locations["carPark"]=mkPoint(27,20);
+  }
+  
+  if (mapName != "RiveOrne") {
+  std::cout << "Inserting DIAG site...\n";
   //Printer DIAG Demo
   locations["home"]=mkPoint(1.3,15);
   locations["printer"]=mkPoint(3,21.5);
@@ -127,7 +137,8 @@ MockModel::MockModel(ros::NodeHandle node) {
   locations["corner"]=mkPoint(1.8,1.8);
   locations["bench1"]=mkPoint(3.0,8.0);
   locations["bench2"]=mkPoint(8.0,3.0);
-
+  }
+  std::cout << "Done.\n" << std::endl;
 } // constructor
 
 static inline double sq(double x) {return x*x;}

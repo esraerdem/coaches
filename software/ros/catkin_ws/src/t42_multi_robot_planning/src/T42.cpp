@@ -43,7 +43,7 @@ int T42::newFixedSite(std::string site) {
   ros::ServiceClient siteLoc = node.serviceClient<t11_kb_modeling::GetLocation>("/diago/get_location");
   ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
   if (siteLoc.call(srv)) {
-    //    std::cout << "adding site " << site << " at " << srv.response.coords.position.x << " x " <<  srv.response.coords.position.y << std::endl;
+    std::cout << "adding site " << site << " at " << srv.response.coords.position.x << " x " <<  srv.response.coords.position.y << std::endl;
     fixedSites[site] = sitesLocation.size();
     sitesLocation.push_back(srv.response.coords.position);
     std::vector<float> dist;
@@ -178,6 +178,8 @@ bool T42::updateDistances(int &closestSite) {
     }
   } else {
     closestSite = -1;
+    if ((robot.x==0) && (robot.y==0) && (robot.z==0))
+      return true; // no robot position yet
     ros::ServiceClient pathLen = node.serviceClient<t41_robust_navigation::GetPathLen>("/diago/get_path_len");
     int i=0;
     for (std::vector<Point>::iterator it = sitesLocation.begin();
@@ -309,6 +311,7 @@ float T42::getDistance(const std::string &orig, const std::string &dest) const {
 }
 
 void T42::run() {
+  ROS_INFO("Planner is ready");
   ros::spin();
 }
 

@@ -4,7 +4,7 @@
 
 sleep 5
 
-xterm -e "roslaunch diagoDIAGPrinter.launch" &
+xterm -hold -e roslaunch diagoDIAGPrinter.launch &
 
 
 sleep 15
@@ -15,7 +15,7 @@ rostopic pub /diago/planToExec std_msgs/String "data: 'PrinterAssistance'" --onc
 
 sleep 1
 
-xterm -e "rostopic echo /diago/pnp/currentActivePlaces" &
+xterm -e rostopic echo /diago/pnp/currentActivePlaces &
 
 
 

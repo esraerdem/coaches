@@ -6,7 +6,7 @@
 
   <master auto="start"/>
 
-  <include file="sim.launch" />
+  <include file="sim_environment.launch" />
 
   <group ns="$(arg robot_name)">
     <param name="robot_name" value="$(arg robot_name)" />

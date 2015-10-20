@@ -8,10 +8,10 @@
 <arg name="PNPGUI" default="false" />
 
 <arg name="pru_enabled" default="true" />
-<arg name="pru_folder" value="$(find t42_multi_robot_planning)/prus" />
-<arg name="PRU" value="pruDIAG.xml" />
-<arg name="pru_patience" value="0.99" /> <!-- percentage of reward kept each second -->
-<arg name="pru_horizon" value="10" />    <!-- number of decisions steps to compute -->
+<arg name="pru_folder" default="$(find t42_multi_robot_planning)/prus" />
+<arg name="PRU" default="pruDIAG.xml" />
+<arg name="pru_patience" default="0.99" /> <!-- percentage of reward kept each second -->
+<arg name="pru_horizon" default="10" />    <!-- number of decisions steps to compute -->
 
 
 <master auto="start"/>
@@ -43,7 +43,8 @@
 </node>
 
 <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
-<remap from="t21_robot_location" to="amcl_pose" />
+  <remap from="t21_robot_location" to="amcl_pose" />
+  <param name="map_name" value="DISB1" />
 </node>
 
 <node pkg="t12_kb_reasoning" type="mockSites" name="kb_reasoning" respawn="false" output="screen">
@@ -90,7 +91,7 @@
 
 <group if="$(arg pru_enabled)">
 
-<node pkg="t42_multi_robot_planning" type="pruPlanner" name="PRU_planner" respawn="false" output="screen">
+<node pkg="t42_multi_robot_planning" type="pruPlanner2" name="PRU_planner" respawn="false" output="screen">
 <remap from="t21_robot_location" to="amcl_pose" />
 <param name="robot_name" value="$(arg robot_name)" />
       <param name="pru_folder" value="$(arg pru_folder)" />

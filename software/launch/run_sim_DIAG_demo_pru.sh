@@ -7,7 +7,7 @@ DEMO_PRU=pruDIAG.xml
 #DEMO_PRU=test1.xml
 
 #xterm -e "roslaunch PRUplanner2.launch   PRU:=\"$DEMO_PRU\" " &
-xterm -e "roslaunch sim_diago_DIAG.launch pru_enabled:=true PRU:=\"$DEMO_PRU\" " &
+xterm -hold -e roslaunch sim_diago_DIAG.launch pru_enabled:=true PRU:="$DEMO_PRU"  &
 
 sleep 15
 
@@ -26,7 +26,7 @@ sleep 15
 
 sleep 1
 
-xterm -e "rostopic echo /diago/pnp/currentActivePlaces" &
+xterm -e rostopic echo /diago/pnp/currentActivePlaces &
 
 
 

@@ -4,19 +4,21 @@
   <arg name="laser_topic" default="scan"/>
   <arg name="laser_frame" default="laser_frame"/>
 
-  <arg name="plan_folder" value="$(find t41_robust_navigation)/plans" />
-  <arg name="pru_folder" value="$(find t42_multi_robot_planning)/prus" />
+  <arg name="plan_folder" default="$(find t41_robust_navigation)/plans" />
+  <arg name="pru_folder" default="$(find t42_multi_robot_planning)/prus" />
   <arg name="PNPGUI" default="false" />
   <arg name="PRU" default="pruDIAG.xml" />
-  <arg name="pru_patience" value="0.99" /> <!-- percentage of reward kept each second -->
-  <arg name="pru_horizon" value="10" />    <!-- number of decisions steps to compute -->
+  <arg name="pru_patience" default="0.99" /> <!-- percentage of reward kept each second -->
+  <arg name="pru_horizon" default="10" />    <!-- number of decisions steps to compute -->
 
+  <arg name="map_name" default="DISB1" />
+  <arg name="world_file" default="AUTOGEN_$(arg map_name)_$(arg robot_name).world" />
 
   <master auto="start"/>
 
-  <include file="sim.launch">
-    <arg name="world_file" value="AUTOGEN_DISB1_diago.world" />
-    <arg name="map_name" value="DISB1" />
+  <include file="sim_environment.launch">
+    <arg name="world_file" value="$(arg world_file)" />
+    <arg name="map_name" value="$(arg map_name)" />
     <arg name="initial_pose_x" default="2.6" />
     <arg name="initial_pose_y" default="13.0" />
     <arg name="initial_pose_a" default="3.14" />
@@ -27,6 +29,7 @@
 
     <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
       <remap from="t21_robot_location" to="amcl_pose" />
+      <param name="map_name" value="$(arg map_name)" />
     </node>
 
     <node pkg="t12_kb_reasoning" type="mockSites" name="kb_reasoning" respawn="false" output="screen">

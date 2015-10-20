@@ -2,6 +2,7 @@
 #include "t41_robust_navigation/policyResults.h"
 #include "t41_robust_navigation/PolicyResult.h"
 #include "t41_robust_navigation/Policy.h"
+#include "t11_kb_modeling/GetAllSites.h"
 #include "PRUplus.h"
 #include "PRU2MDP.h"
 #include "MDP.h"
@@ -68,6 +69,30 @@ PRUplanner::PRUplanner(ros::NodeHandle node) : T42(node) {
   pru->readXML(pruFolder+pruFile);
   ROS_INFO("PRU %s%s has been read.",pruFolder.c_str(),pruFile.c_str());
   std::cout << *pru;
+
+  ros::ServiceClient service_get_all_sites = node.serviceClient<t11_kb_modeling::GetAllSites>("get_all_sites");
+  t11_kb_modeling::GetAllSites srv;
+  if (! service_get_all_sites.call(srv)) {
+    ROS_WARN("Unable to get sites");
+    exit(1);
+  }
+  std::vector<std::string>::const_iterator it = srv.response.ids.begin();
+  while (it != srv.response.ids.end()) {
+    std::cerr << "Registering fixed-site " << *it << std::endl;
+    std::map<std::string, int>::iterator locIt = fixedSites.find(std::string(*it));
+    int siteID = -1;
+    if (locIt == fixedSites.end())
+      siteID = newFixedSite(*it);
+    else
+      siteID = locIt->second;
+    if (siteID != -1) { // No goal at this place
+      siteActionReward[siteID][""] = -1000;
+      siteActionParam[siteID][""] = "";
+      siteActionDuration[siteID][""] = 60;
+    }
+    ++it;
+  }
+  plan();
 }
 
 void PRUplanner::resultCallback(const t41_robust_navigation::PolicyResult::ConstPtr& msg)
