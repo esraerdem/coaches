@@ -13,18 +13,25 @@
 #include "std_msgs/String.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "geometry_msgs/Pose.h"
+#include <tcp_interface/RCOMMessage.h>
+
+#include <boost/algorithm/string.hpp>
 
 #include <sstream>
 #include <istream>
+
+using namespace std;
 
 class MockHRI {
   private:
   ros::Subscriber hri_goal_sub;
   ros::Subscriber location_sub;
+  ros::Subscriber tcp_sub; // receiving data from tcp_interface
 
   ros::Publisher feature_pub;
   ros::Publisher hri_act_pub;
   ros::Publisher say_stage_pub;
+  ros::Publisher PNP_cond_pub;
   ros::Timer interactionTimer;
   ros::Timer adTimer;
 
@@ -33,6 +40,7 @@ class MockHRI {
 
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void hriGoalCallback(const shared::Goal::ConstPtr& msg);
+  void tcpCallback(tcp_interface::RCOMMessage msg);
   void doSay(std_msgs::String msg);
   void doDisplay(std_msgs::String msg);
   
@@ -47,10 +55,13 @@ class MockHRI {
 MockHRI::MockHRI(ros::NodeHandle node) {
   hri_goal_sub = node.subscribe(TOPIC_HRI_GOAL, 10, &MockHRI::hriGoalCallback, this);
   location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &MockHRI::locationCallback, this);
+  tcp_sub = node.subscribe(TOPIC_RCOMMESSAGE, 10, &MockHRI::tcpCallback, this);
 
   feature_pub = node.advertise<shared::Feature>("t31_feature", 100);
   hri_act_pub = node.advertise<t31_multimodal_hri::HRIActuation>("hri_actuation", 100);
   say_stage_pub = node.advertise<std_msgs::String>(TOPIC_STAGE_SAY, 100);
+  PNP_cond_pub = node.advertise<std_msgs::String>(TOPIC_PNPCONDITION, 100);
+
   interactionTimer = node.createTimer(ros::Duration(5), &MockHRI::intTimerCallback, this, true); interactionTimer.stop();
   adTimer = node.createTimer(ros::Duration(3), &MockHRI::adTimerCallback, this, true); adTimer.stop();
   currentInteraction = "";
@@ -58,6 +69,25 @@ MockHRI::MockHRI(ros::NodeHandle node) {
 
 void MockHRI::locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg) {
   robot = msg->pose.pose;
+}
+
+void MockHRI::tcpCallback(tcp_interface::RCOMMessage msg) {
+    string sm = msg.value;
+    if (sm!="") {
+        boost::algorithm::to_lower(sm);
+        vector<string> toks;
+        boost::split(toks,sm,boost::is_any_of("()\" \n\r"));
+        for (vector<string>::iterator it = toks.begin(); it != toks.end(); ++it) {
+            std_msgs::String out;
+            if (*it=="yes" || *it=="no" || 
+                *it=="schedule" || *it=="toilet" || *it=="adminroom") {
+                out.data = *it;
+                PNP_cond_pub.publish(out);
+                cout << "Published PNP condition from ASR: " << out.data << endl;
+            }
+            
+        }
+    }
 }
 
 void MockHRI::hriGoalCallback(const shared::Goal::ConstPtr& msg)
