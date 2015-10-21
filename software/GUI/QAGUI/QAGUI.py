@@ -17,18 +17,16 @@ import socket
 import threading
 import errno, time
 
+import os
+script_dir = os.path.dirname(__file__)
+
 from parse_rules_file import eval_personalization_rules
 
 profile = '<*,*,*,*>'
 
-
-# Global variables:
-# net_ROS and net_speech : objects of class Network
-
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
-   def __init__(self, parent, serverTcpIP, serverPort):
-      self.parent = parent
+   def __init__(self, serverTcpIP, serverPort):
       self.serverTcpIP = serverTcpIP
       self.serverPort = serverPort
       self.recvmsg = ''
@@ -39,6 +37,9 @@ class Network:
       self.netStatusThread = threading.Thread(target=self.verifyNetwork)
       self.netStatusThread.start()
       print 'Network started.'
+
+   def setParent(self, parent):
+      self.parent = parent # mantains link to the GUI so we can generate events on it
 
    def verifyNetwork(self):
       while (not self.thread_stop.is_set()):
@@ -64,7 +65,7 @@ class Network:
          except socket.error as e:
             print '[error]', e
             if (e.errno == errno.ECONNREFUSED):
-               print 'not able to connect'
+               print 'not able to connect', self.serverTcpIP, ':', self.serverPort
                secsToSleep = 5
                print "trying to reconnect in %d seconds" % (secsToSleep)
                time.sleep(secsToSleep)
@@ -89,44 +90,54 @@ class Network:
             splitmsg = self.recvmsg.strip('\n\r').split("_") # Example: returns ['display', 'text', 'welcome']
 
             print splitmsg
-            if len(splitmsg) != 3:
-               print 'There is something wrong with the message format: [display_[mode]_[interactionname]]'
+            if (len(splitmsg) > 3 or len(splitmsg) < 2):
+               print 'There is something wrong with the message format. Example: display_[mode]_[interactionname]'
                continue
             else:
-               
-               mode = splitmsg[1]
-               interactionname = splitmsg[2]
-               rules_filename = "_".join([splitmsg[1], splitmsg[2]])
+               if (splitmsg[0] == 'display' and len(splitmsg) == 3):
+                  mode = splitmsg[1]
+                  interactionname = splitmsg[2]
+                  rules_filename = "_".join([splitmsg[1], splitmsg[2]])
+                  #to correctly load the file if the GUI is not executed from the current dir
+                  rules_filename = os.path.join(script_dir, rules_filename)
 
-               # eval_personalization_rules(welcome) -> actual_interaction
-               actual_interaction= eval_personalization_rules(rules_filename, profile)
-               print actual_interaction
+                  # eval_personalization_rules(welcome) -> actual_interaction
+                  actual_interaction= eval_personalization_rules(rules_filename, profile)
+                  print "Display: ", actual_interaction
 
-               if (len(actual_interaction)>0):
-                  # if (text) : show actual_interaction as a label in the GUI
-                  if (mode == 'text'):
-                     self.text_to_display = actual_interaction
-                     self.parent.ltext.event_generate("<<NewTextMessage>>")
+                  if (len(actual_interaction)>0):
+                     # if (text) : show actual_interaction as a label in the GUI
+                     if (mode == 'text'):
+                        self.text_to_display = actual_interaction
+                        self.parent.ltext.event_generate("<<NewTextMessage>>")
 
-                  # if (image) : show image in actual_interaction as an image in the GUI
-                  if (mode == 'image'):
-                     self.image_to_display = actual_interaction
-                     self.parent.limg.event_generate("<<NewImgMessage>>")
+                     # if (image) : show image in actual_interaction as an image in the GUI
+                     if (mode == 'image'):
+                        self.image_to_display = actual_interaction
+                        self.parent.limg.event_generate("<<NewImgMessage>>")
                      
-                  # if (video) : ...TODO
-            
+                     # if (video) : ...TODO
 
-                # if (say_something) coming from tcp_interface: 
-                #
-                #  look for the string to say according to user profile
-                #  txt_say = exact string to say
-                #  
-                #  net_speech.send(txt_say)
-                  
-                  
-                # if (ASR_something) coming from speech server
-                # net_ros.send("@ASR "+something)
-                
+               elif (splitmsg[0] == 'say' and  len(splitmsg) == 2):
+                  # if (say_something) coming from tcp_interface: 
+                  rules_filename = "_".join(["text", splitmsg[1]])
+                  rules_filename = os.path.join(script_dir, rules_filename)
+
+                  #  look for the string to say according to user profile
+                  txt_say = eval_personalization_rules(rules_filename, profile)
+                  print "Say: ", txt_say
+
+                  if (len(txt_say)>0):
+                     net_speech.sendMessage(txt_say)
+
+               elif (splitmsg[0] == 'ASR'):
+                  # if (ASR_something) coming from speech server
+                  # net_ros.send("@ASR "+something)
+                  print "ASR: " 
+                  net_ROS.sendMessage("@ASR")
+               else:
+                  print 'Unrecognized instruction'
+                  continue
 
          else: #if there is no data something happened in the server
             self.netStatusOk = False
@@ -156,24 +167,24 @@ class Network:
          print 'ups.. some thread still alive'
       
       self.sock.close()
-      print 'Connection closed.'
+      print "Connection to %s:%s closed." % (self.serverTcpIP,self.serverPort)
       
 class profileSelectionGUI(object):
 
    def __init__(self, parent):
       self.toplevel = tk.Toplevel(parent)
+      self.chosen_profile = ''
       if (len(sys.argv) > 1):
          profiles_filename = sys.argv[1]
       else:
          profiles_filename = "instance"
       try:
+         profiles_filename = os.path.join(script_dir, profiles_filename)
          f = open(profiles_filename, 'r')
       except IOError:
          print 'cannot open', profiles_filename
       else:
-         
-         self.chosen_profile = ''
-      
+
          def callback(text):
             self.chosen_profile = text
             self.toplevel.destroy()
@@ -182,7 +193,6 @@ class profileSelectionGUI(object):
          maxProfiles = 4
          i=0
          sizegrid = 2
-#         self.toplevel.grid(sticky=N+S+E+W, column=0, row=sizegrid, columnspan=sizegrid)
          for line in f:
             if (i == maxProfiles):
                break
@@ -205,11 +215,10 @@ class profileSelectionGUI(object):
 
 class GUI(tk.Frame):
 
-   def __init__(self, parent, serverTcpIP, serverPort):
+   def __init__(self, parent):
       tk.Frame.__init__(self, parent)
       self.parent = parent
-      self.allCB = {}
-      self.net = Network(self, serverTcpIP, serverPort)
+      net_ROS.setParent(self)
       self.question = StringVar()
       self.question.set("Welcome to Rives de l'Orne ")
       self.initUI()
@@ -258,7 +267,9 @@ class GUI(tk.Frame):
 
       # Video
       width, height = 500, 375
-      cap = cv2.VideoCapture('videos/rives_delorne.mp4')
+      rel_path = 'videos/rives_delorne.mp4'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      cap = cv2.VideoCapture(abs_file_path)
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
       
@@ -280,7 +291,9 @@ class GUI(tk.Frame):
       show_frame()
 
       # Image
-      img = PIL.Image.open('img/caen-bienvenue.jpg')
+      rel_path = 'img/caen-bienvenue.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      img = PIL.Image.open(abs_file_path)
       w, h = img.size
       im_resized = self.setHeight(w, h, height, img)
       imgtk = ImageTk.PhotoImage(image=im_resized)
@@ -295,24 +308,29 @@ class GUI(tk.Frame):
       self.ltext.pack()
 
       # Buttons
-      imY = PIL.Image.open('img/yes_150.jpg')
+      rel_path = 'img/yes_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imY = PIL.Image.open(abs_file_path)
       self.phY = ImageTk.PhotoImage(imY)
-      imN = PIL.Image.open('img/no_150.jpg')
+      rel_path = 'img/no_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imN = PIL.Image.open(abs_file_path)
       self.phN = ImageTk.PhotoImage(imN)
             
       self.BtnY = Button(self, image=self.phY, command=self.ActionY)
       self.BtnY.pack(side=LEFT)      
-      self.BtnN = Button(self, image=self.phN,command=self.ActionN)
+      self.BtnN = Button(self, image=self.phN, command=self.ActionN)
       self.BtnN.pack(side=RIGHT)
 
    def updateLabel(self, event):
       print 'Event triggered'
-      self.question.set(self.net.getTextToDisplay())
+      self.question.set(net_ROS.getTextToDisplay())
 
    def updateImg(self, event):
       print 'Event triggered'
-      img_name = self.net.getImgToDisplay()
-      img = PIL.Image.open(img_name)
+      img_name = net_ROS.getImgToDisplay()
+      abs_file_path = os.path.join(script_dir, img_name)
+      img = PIL.Image.open(abs_file_path)
       w, h = img.size
       width, height = 500, 375
       im_resized = self.setHeight(w, h, height, img)
@@ -323,12 +341,12 @@ class GUI(tk.Frame):
    def ActionY(self):
       message = 'Yes\n\r'
       print(message)
-      self.net.sendMessage(message)
+      net_ROS.sendMessage(message)
 
    def ActionN(self):
       message = 'No\n\r'
       print(message)
-      self.net.sendMessage(message)
+      net_ROS.sendMessage(message)
 
    def profileSelection(self):
       global profile
@@ -338,15 +356,23 @@ class GUI(tk.Frame):
       self.profile_label.configure(text="Current profile: %s" % profile)
 
    def quit(self):
-      self.net.closeConnection()
+      net_ROS.closeConnection()
+      #net_speech.closeConnection()
       pass
 
-SERVER_TCP_IP = '127.0.0.1'
-SERVER_TCP_PORT = 9000
+# Global variables:
+# net_ROS and net_speech : objects of class Network
+SPEECH_SERVER_TCP_IP = '127.0.0.1'
+SPEECH_SERVER_TCP_PORT = 5000
+ROS_SERVER_TCP_IP = '192.168.2.225' #'127.0.0.1'
+ROS_SERVER_TCP_PORT = 9000
+
+#net_speech = Network(SPEECH_SERVER_TCP_IP, SPEECH_SERVER_TCP_PORT)
+net_ROS = Network(ROS_SERVER_TCP_IP, ROS_SERVER_TCP_PORT)
 
 def main():
    root = tk.Tk()
-   f = GUI(root, SERVER_TCP_IP, SERVER_TCP_PORT)
+   f = GUI(root)
 #   root.geometry("1920x1080+0+0")
    root.geometry("1200x800+50+50")
    root.mainloop()

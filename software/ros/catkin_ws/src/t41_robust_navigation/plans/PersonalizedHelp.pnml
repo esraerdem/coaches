@@ -150,9 +150,9 @@
         <size width="32" height="32" />
       </graphics>
       <name>
-        <value>display_img_schedule.exec</value>
+        <value>display_image_schedule.exec</value>
         <graphics>
-          <offset x="-66" y="39" />
+          <offset x="-74" y="39" />
         </graphics>
       </name>
       <initialMarking>
@@ -196,9 +196,9 @@
         <size width="32" height="32" />
       </graphics>
       <name>
-        <value>display_img_toilette.exec</value>
+        <value>display_image_toilet.exec</value>
         <graphics>
-          <offset x="-39" y="32" />
+          <offset x="-41" y="32" />
         </graphics>
       </name>
       <initialMarking>
@@ -382,9 +382,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>display_img_schedule.start</value>
+        <value>display_image_schedule.start</value>
         <graphics>
-          <offset x="-44" y="-35" />
+          <offset x="-52" y="-35" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -402,9 +402,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>display_img_schedule.end</value>
+        <value>display_image_schedule.end</value>
         <graphics>
-          <offset x="-77" y="-23" />
+          <offset x="-85" y="-23" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -442,9 +442,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>display_img_toilette.start</value>
+        <value>display_image_toilet.start</value>
         <graphics>
-          <offset x="-62" y="-43" />
+          <offset x="-63" y="-43" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -462,9 +462,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>display_img_toilette.end</value>
+        <value>display_image_toilet.end</value>
         <graphics>
-          <offset x="-77" y="-27" />
+          <offset x="-78" y="-27" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
