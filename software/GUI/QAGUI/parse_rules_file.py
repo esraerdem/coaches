@@ -35,7 +35,6 @@ def eval_personalization_rules (rules_filename, profile_string):
 
     try:
         print 'openning ', rules_filename
-        rules_filename = os.path.join(script_dir, rules_filename)
         f = open(rules_filename, 'r')
     except IOError:
         print 'cannot open', rules_filename

@@ -364,7 +364,7 @@ class GUI(tk.Frame):
 # net_ROS and net_speech : objects of class Network
 SPEECH_SERVER_TCP_IP = '127.0.0.1'
 SPEECH_SERVER_TCP_PORT = 5000
-ROS_SERVER_TCP_IP = '192.168.2.225' #'127.0.0.1'
+ROS_SERVER_TCP_IP = '127.0.0.1'
 ROS_SERVER_TCP_PORT = 9000
 
 #net_speech = Network(SPEECH_SERVER_TCP_IP, SPEECH_SERVER_TCP_PORT)

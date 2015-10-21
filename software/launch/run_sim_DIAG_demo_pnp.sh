@@ -18,10 +18,6 @@ xterm -e rostopic echo /diago/pnp/currentActivePlaces &
 
 sleep 1
 
-xterm -e rosrun tcp_interface tcp_interface &
-
-sleep 1
-
 xterm -e python ../GUI/QAGUI/QAGUI.py &
 
 
