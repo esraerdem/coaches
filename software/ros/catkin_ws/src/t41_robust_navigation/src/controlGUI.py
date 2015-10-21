@@ -11,8 +11,8 @@ from std_msgs.msg import String
 from shared.msg import Event, AllGoals
 
 
-Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)' ]
-CBConditions = ['personHere', 'personPrinter', 'nohelp', 'help', 'helpbringdoc', 'helptechnician', 'schedule', 'toilette' ]
+Conditions = ['Send_Goal','desire(unknown,swipe)','request(PBlue)','request(PRed)','request(PPink)','yes','no', 'schedule', 'toilet', 'adminroom' ]
+CBConditions = ['personhere', 'personPrinter', 'nohelp', 'help', 'helpbringdoc', 'helptechnician' ]
 ConditionVar = [ None ] * len(CBConditions) 
 do_run = True
 
@@ -40,23 +40,25 @@ class DIP(tk.Frame):
         col = 0
         
         for i in range(0,len(Conditions)):
-            self.add_condition(Conditions[i],row)
+            self.add_condition(Conditions[i],row,col)
             row = row+1
+        row = 0
+        col = 1
         for i in range(0,len(CBConditions)):
-            self.add_CBcondition(CBConditions[i],ConditionVar[i],row)
+            self.add_CBcondition(CBConditions[i],ConditionVar[i],row,col)
             row = row+1
 
     
-    def add_CBcondition(self,cond,ivar,_row):
+    def add_CBcondition(self,cond,ivar,_row,_col):
         print 'CondGUI: Adding CB condition: %s' % (cond)
         b = Checkbutton(self, text=cond, variable=ivar, command=lambda c=cond,v=ivar: self.doCBcondition(c,v))
-        b.grid(sticky=W, row=_row, column=0, pady=4, padx=5)
+        b.grid(sticky=W, row=_row, column=_col, pady=4, padx=5)
         
-    def add_condition(self,cond,_row):
+    def add_condition(self,cond,_row,_col):
         print 'CondGUI: Adding condition: %s' % (cond)
         # Buttons
         b = Button(self, text=cond,command=lambda cond=cond: self.docondition(cond))
-        b.grid(sticky=W, row=_row, column=0, pady=4, padx=5)
+        b.grid(sticky=W, row=_row, column=_col, pady=4, padx=5)
 
 
     def doCBcondition(self,cond,var):
@@ -106,8 +108,8 @@ class DIP(tk.Frame):
             else:
                 print "CondGUI: Sending condition %s ..." %(cond)
                 pubCond.publish(cond)
-                rospar = "PNPconditionsBuffer/" + cond; 
-                rospy.set_param(rospar,1)
+                #rospar = "PNPconditionsBuffer/" + cond; 
+                #rospy.set_param(rospar,1)
                 rospy.sleep(0.05)
 
     print "CondGUI: Done."
@@ -143,7 +145,7 @@ def main():
     root = tk.Tk()
     f = DIP(root)
     thread.start_new_thread(run, ())
-    root.geometry("300x480+0+0")
+    root.geometry("300x400+0+0")
     root.mainloop()
 
 

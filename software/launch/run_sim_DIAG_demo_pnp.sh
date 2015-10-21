@@ -6,7 +6,7 @@ DEMO_PNP=PersonalizedHelp
 
 # Run simulated printer demo directly loading the PNP
 
-xterm -hold -e roslaunch sim_diago_DIAG.launch pru_enabled:=false &
+xterm -e roslaunch sim_diago_DIAG.launch pru_enabled:=false &
 
 sleep 15
 
