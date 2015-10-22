@@ -25,7 +25,7 @@
     <node pkg="t22_situation_awareness" type="t22" name="situation_awareness" respawn="false" output="screen">
     </node>
     
-    <node pkg="t31_multimodal_hri" type="mockHRI" name="multimodal_hri" respawn="false" output="screen">
+    <node pkg="t31_multimodal_hri" type="t31" name="hri" respawn="false" output="screen">
     </node>
 
     <node pkg="t32_human_needs_estimation" type="t32" name="human_needs_estimation" respawn="false" output="screen">

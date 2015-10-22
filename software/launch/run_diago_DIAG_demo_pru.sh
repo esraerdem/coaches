@@ -1,18 +1,22 @@
 #!/bin/bash
 
+# Run simulated printer demo directly loading the PNP
+
 DEMO_PRU=pruDIAG.xml
 #DEMO_PRU=pruDIAG_LI.xml
 #DEMO_PRU=test1.xml
 
-# Run simulation
+# Run navigation modules for real robot
 
-xterm -e roslaunch sim_environment.launch world_file:=\"AUTOGEN_DISB1_diago.world\" &
+`(rospack find diago_apps)`/script/run_navigation.py diago DISB1 REAL 2.2 11.8 180
 
-sleep 3
+sleep 5
 
 # Run PRU enabled modules
 
-xterm -hold -e roslaunch diago_all.launch pru_enabled:=true PRU:="$DEMO_PRU"  &
+xterm -e roslaunch diago_all.launch pru_enabled:=true PRU:="$DEMO_PRU" initial_pose_x:=2.2 initial_pose_y:=11.8 initial_pose_a:=3.14 &
+
+xterm -e ./joyevent.py  &
 
 sleep 15
 

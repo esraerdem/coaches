@@ -45,7 +45,7 @@ class Joy2Twist(object):
           if (data.buttons[0]==1): # blue = personPrinter
               self.PNP_event_pub.publish("personPrinter")
           if (data.buttons[1]==1): # green = personHere
-              self.PNP_event_pub.publish("personHere")
+              self.PNP_event_pub.publish("personhere")
           if (data.buttons[2]==1): # red = helpbringdoc
               self.PNP_event_pub.publish("helpbringdoc")
           if (data.buttons[3]==1): # orange = helptechnician

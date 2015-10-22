@@ -6,14 +6,12 @@ Only the first time, you need to create the simulated worlds with:
 
   $ ./create_world.sh 
 
-To quit the simulation, you can just close either the Stage window or the Control GUI.
 
-
+RUNNING THE DEMOS
 
 1. Simulation in Rive1 map (current version with mockups):
 
   $ roslaunch simWithMock.launch 
-
 
 
 2. Simulation demo at DIAG
@@ -26,9 +24,20 @@ Edit the .sh file to specify which demo you want to start.
 
 3. Real DIAGO printer demo at DIAG (load PNP directly)
 
-  $ ./run_diago_printer_demo.sh
+  $ ./run_diago_DIAG_demo_{pru|pnp}.sh
+
+Same as before, but with the real robot.
 
 
+To quit the simulation, you can just close either the Stage window or the Control GUI.
+
+Otherwise, you can kill all the ROS nodes: 
+
+  $ rosnode kill -a
+
+or all the xterm windows: 
+
+  $ killall -9 xterm
 
 
 
