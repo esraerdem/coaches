@@ -160,6 +160,10 @@ class Network:
                   if (len(txt_say)>0):
                      net_speech.sendMessage(txt_say)
 
+               elif (splitmsg[0] == 'display' and splitmsg[1] == 'init'):
+                  # tell the GUI to initialize
+                  self.parent.parent.event_generate("<<resetMessage>>")
+                  
                else:
                   print 'Unrecognized instruction'
                   continue
@@ -178,6 +182,7 @@ class Network:
 
    def sendMessage(self, message):
       if (self.netStatusOk):
+         print "Sending: ", message
          self.sock.send(message)
       
    def closeConnection(self):
@@ -290,24 +295,29 @@ class GUI(tk.Frame):
    def initUI(self):
       self.parent.title("COACHES Q&A")
       self.parent.resizable(width=FALSE, height=FALSE)
+      self.parent.bind("<<needhelpMessage>>", self.yesnoSelection)
       self.parent.bind("<<whichhelpMessage>>", self.userNeedSelection)
+      self.parent.bind("<<resetMessage>>", self.resetGUI)
+
       self.pack(expand=100)
 
-      profileframe = Frame(self)
-      profileframe.pack()
-      topframe = Frame(self)
-      topframe.pack()
-      middleframe = Frame(self)
-      middleframe.pack()
-      bottomframe = Frame(self)
-      bottomframe.pack(fill = tk.X)
+      self.profileframe = Frame(self)
+      self.profileframe.pack()
+      self.topframe = Frame(self)
+      self.topframe.pack()
+      self.middleframe = Frame(self)
+      self.middleframe.pack()
+      self.bottomframe = Frame(self)
+      self.bottomframe.pack(fill = tk.X)
 
+      # PROFILE FRAME
       # Profile selection button
-      self.profilebutton = Button(profileframe, text="Select profile", command=self.profileSelection)
+      self.profilebutton = Button(self.profileframe, text="Select profile", command=self.profileSelection)
       self.profilebutton.pack(side=LEFT)
-      self.profile_label = Label(profileframe)
+      self.profile_label = Label(self.profileframe)
       self.profile_label.pack(side=LEFT, fill='x')
 
+      # TOP FRAME
       # Video
       width, height = 500, 375
       rel_path = 'videos/rives_delorne.mp4'
@@ -316,7 +326,7 @@ class GUI(tk.Frame):
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
       
-      lvideo = tk.Label(topframe)
+      lvideo = tk.Label(self.topframe)
       lvideo.pack(side = LEFT)
 
       def show_frame():
@@ -340,30 +350,20 @@ class GUI(tk.Frame):
       w, h = img.size
       im_resized = self.setHeight(w, h, height, img)
       imgtk = ImageTk.PhotoImage(image=im_resized)
-      self.limg = Label(topframe, image=imgtk)
+      self.limg = Label(self.topframe, image=imgtk)
       self.limg.image = imgtk
       self.limg.bind("<<NewImgMessage>>", self.updateImg)
       self.limg.pack(side=RIGHT) 
 
+      # MIDDLE FRAME
       # Label
-      self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32), wraplength=1200)
+      self.ltext = Label(self.middleframe, textvariable=self.question, font=("Helvetica", 32), wraplength=1200)
       self.ltext.bind("<<NewTextMessage>>", self.updateLabel)
       self.ltext.pack()
 
-      # Buttons
-      rel_path = 'img/yes_150.jpg'
-      abs_file_path = os.path.join(script_dir, rel_path)
-      imY = PIL.Image.open(abs_file_path)
-      self.phY = ImageTk.PhotoImage(imY)
-      rel_path = 'img/no_150.jpg'
-      abs_file_path = os.path.join(script_dir, rel_path)
-      imN = PIL.Image.open(abs_file_path)
-      self.phN = ImageTk.PhotoImage(imN)
-            
-      self.BtnY = Button(self, image=self.phY, command=self.ActionY)
-      self.BtnY.pack(side=LEFT)      
-      self.BtnN = Button(self, image=self.phN, command=self.ActionN)
-      self.BtnN.pack(side=RIGHT)
+      # BOTTOM FRAME
+      # Buttons will be shown only if a question of yes|no is received
+      
 
    def updateLabel(self, event):
       print 'Event triggered. updateLabel'
@@ -385,11 +385,13 @@ class GUI(tk.Frame):
       message = 'BUTTON Yes\n\r'
       print(message)
       net_ROS.sendMessage(message)
+      self.bottomframe.destroy()
 
    def ActionN(self):
       message = 'BUTTON No\n\r'
       print(message)
       net_ROS.sendMessage(message)
+      self.bottomframe.destroy()
 
    def profileSelection(self):
       global profile
@@ -404,6 +406,35 @@ class GUI(tk.Frame):
       selection = helpSelectionGUI(self).show()
       print "User need: " , selection
       net_ROS.sendMessage(selection)      
+
+   def yesnoSelection(self, event):
+      print 'Event triggered. yesnoSelection'
+      rel_path = 'img/yes_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imY = PIL.Image.open(abs_file_path)
+      self.phY = ImageTk.PhotoImage(imY)
+      rel_path = 'img/no_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imN = PIL.Image.open(abs_file_path)
+      self.phN = ImageTk.PhotoImage(imN)
+            
+      self.BtnY = Button(self.bottomframe, image=self.phY, command=self.ActionY)
+      self.BtnY.pack(side=LEFT)      
+      self.BtnN = Button(self.bottomframe, image=self.phN, command=self.ActionN)
+      self.BtnN.pack(side=RIGHT)
+
+   def resetGUI(self, event):
+      print 'Event triggered. resetGUI'
+      #reset some variables
+      global profile
+      profile = '<*,*,*,*>'
+      self.question.set("Welcome to Rives de l'Orne ")
+      #reset frames
+      self.profileframe.destroy()
+      self.topframe.destroy()
+      self.middleframe.destroy()
+      self.bottomframe.destroy()
+      self.initUI()
 
    def quit(self):
       net_ROS.closeConnection()
