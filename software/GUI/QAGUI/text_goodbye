@@ -1,1 +1,13 @@
-TODO: Write some personalized interactions using rules as in the welcome case and test it.
+#Format: <age, gender, language, occupation>:"Text to say"
+#age = [adult | senior | junior]
+#gender = [m | f]
+#language = [en | fr | it | sp]
+#occupation = [student | professor | visitor]
+#write character '*' for default option
+
+<*, *, en, *>:  "Goodbye"
+<*, *, it, *>:  "Arrivederci"
+<*, *, en, professor>:"  Goodbye professor"
+<*, f, it, professor>:"  Arrivederci professoressa"
+<*, m, it, professor>:"  Arrivederci professore"
+<*,*,*,*>:"Goodbye"
