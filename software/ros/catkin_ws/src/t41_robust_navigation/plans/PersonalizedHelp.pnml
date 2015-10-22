@@ -265,9 +265,9 @@
         <size width="32" height="32" />
       </graphics>
       <name>
-        <value>P0</value>
+        <value>Cwaitperson</value>
         <graphics>
-          <offset x="5" y="35" />
+          <offset x="-25" y="35" />
         </graphics>
       </name>
       <initialMarking>
@@ -578,9 +578,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>ask_needhelp.start</value>
+        <value>[personhere] ask_needhelp.start</value>
         <graphics>
-          <offset x="-40" y="-32" />
+          <offset x="-84" y="-32" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -678,9 +678,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[nohelp] display_image_schedule.end</value>
+        <value>[or nohelp (not personhere)] display_image_schedule.end</value>
         <graphics>
-          <offset x="-136" y="-18" />
+          <offset x="-201" y="-18" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -898,9 +898,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[nohelp] display_text_toilet.end</value>
+        <value>[or nohelp (not personhere)] display_text_toilet.end</value>
         <graphics>
-          <offset x="-142" y="-23" />
+          <offset x="-206" y="-23" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -960,7 +960,7 @@
       <name>
         <value>display_text_adminroom.start</value>
         <graphics>
-          <offset x="-54" y="-25" />
+          <offset x="-55" y="-27" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -978,9 +978,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[nohelp] display_text_adminroom.end</value>
+        <value>[or nohelp (not personhere)] display_text_adminroom.end</value>
         <graphics>
-          <offset x="-142" y="-14" />
+          <offset x="-206" y="-14" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -1001,6 +1001,66 @@
         <value>[not personhere]</value>
         <graphics>
           <offset x="-46" y="-25" />
+        </graphics>
+      </name>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=200,g=200,b=220]</value>
+        </FillColor>
+      </toolspecific>
+    </transition>
+    <transition id="t26">
+      <graphics>
+        <position x="876" y="95" />
+        <size width="8" height="32" />
+      </graphics>
+      <name>
+        <value>[not personhere]</value>
+        <graphics>
+          <offset x="-45" y="32" />
+        </graphics>
+      </name>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=200,g=200,b=220]</value>
+        </FillColor>
+      </toolspecific>
+    </transition>
+    <transition id="t27">
+      <graphics>
+        <position x="17" y="411" />
+        <size width="48" height="8" />
+      </graphics>
+      <name>
+        <value>[not personhere]</value>
+        <graphics>
+          <offset x="30" y="-22" />
+        </graphics>
+      </name>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=0,g=0,b=0]</value>
+        </FrameColor>
+        <FillColor>
+          <value>java.awt.Color[r=200,g=200,b=220]</value>
+        </FillColor>
+      </toolspecific>
+    </transition>
+    <transition id="t28">
+      <graphics>
+        <position x="632" y="131" />
+        <size width="8" height="32" />
+      </graphics>
+      <name>
+        <value>[not personhere]</value>
+        <graphics>
+          <offset x="12" y="4" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -1803,6 +1863,111 @@
     <arc id="a50" source="t25" target="p1">
       <graphics>
         <position x="69" y="329" />
+      </graphics>
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a51" source="p6" target="t26">
+      <graphics>
+        <position x="996" y="110" />
+      </graphics>
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a52" source="t26" target="p1">
+      <graphics>
+        <position x="94" y="110" />
+      </graphics>
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a53" source="p16" target="t27">
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a54" source="t27" target="p1">
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a55" source="p5" target="t28">
+      <inscription>
+        <value>1</value>
+        <graphics>
+          <offset x="0" y="0" />
+        </graphics>
+      </inscription>
+      <toolspecific tool="JARP" version="1.2">
+        <FrameColor>
+          <value>java.awt.Color[r=128,g=128,b=128]</value>
+        </FrameColor>
+        <ArrowMode>
+          <value>2</value>
+        </ArrowMode>
+      </toolspecific>
+    </arc>
+    <arc id="a56" source="t28" target="p1">
+      <graphics>
+        <position x="101" y="147" />
       </graphics>
       <inscription>
         <value>1</value>

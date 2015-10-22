@@ -2,10 +2,11 @@
 
 using namespace std;
 
-T31::T31(ros::NodeHandle node) {
+T31::T31(ros::NodeHandle n) : nodep("~"), node(n) {
   hri_goal_sub = node.subscribe(TOPIC_HRI_GOAL, 10, &T31::hriGoalCallback, this);
   location_sub = node.subscribe(TOPIC_ROBOT_LOCATION, 10, &T31::locationCallback, this);
   tcp_sub = node.subscribe(TOPIC_RCOMMESSAGE, 10, &T31::tcpCallback, this);
+  laser_obsmap_sub = node.subscribe(TOPIC_LASER_OBSMAP, 10, &T31::laserobsmapCallback, this);
 
   feature_pub = node.advertise<shared::Feature>("t31_feature", 100);
   hri_act_pub = node.advertise<t31_multimodal_hri::HRIActuation>("hri_actuation", 100);
@@ -27,15 +28,14 @@ void T31::tcpCallback(tcp_interface::RCOMMessage msg) {
         boost::algorithm::to_lower(sm);
         vector<string> toks;
         boost::split(toks,sm,boost::is_any_of("()\" \n\r"));
-        for (vector<string>::iterator it = toks.begin(); it != toks.end(); ++it) {
+        if (toks.size()>1) {
+            vector<string>::iterator it = toks.begin();
+            string frame = *it++;
+            string value = *it;
             std_msgs::String out;
-            if (*it=="yes" || *it=="no" || 
-                *it=="schedule" || *it=="toilet" || *it=="adminroom") {
-                out.data = *it;
-                PNP_cond_pub.publish(out);
-                cout << "Published PNP condition from ASR: " << out.data << endl;
-            }
-            
+            out.data = value;
+            PNP_cond_pub.publish(out);
+            cout << "Published PNP condition from ASR: " << out.data << endl;
         }
     }
 }
@@ -67,6 +67,25 @@ void T31::hriGoalCallback(const shared::Goal::ConstPtr& msg)
   currentInteraction = msg->param;
   doSay(msgOut);
 }
+
+void T31::laserobsmapCallback(laser_analysis::LaserObstacleMap msg) {
+/*
+stamp: 
+  secs: 2078
+  nsecs: 200000000
+npoints: 8
+mx: 1.2499999851
+my: -0.184673331911
+var: 0.0073012683974
+*/
+
+//    cout << "laser obstacle: " << msg << endl;
+
+    bool r = (msg.npoints>5 && msg.mx<1.3);
+    string param = "/diago/PNPconditionsBuffer/personhere"; 
+    nodep.setParam(param, r?1:0);
+}
+
 
 void T31::doSay(std_msgs::String msg) {
   if (msg.data!="") {

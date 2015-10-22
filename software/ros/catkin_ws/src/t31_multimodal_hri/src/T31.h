@@ -15,6 +15,7 @@
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
 #include "geometry_msgs/Pose.h"
 #include <tcp_interface/RCOMMessage.h>
+#include <laser_analysis/LaserObstacleMap.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -23,9 +24,12 @@
 
 class T31 {
   private:
+  ros::NodeHandle node, nodep;
+
   ros::Subscriber hri_goal_sub;
   ros::Subscriber location_sub;
   ros::Subscriber tcp_sub; // receiving data from tcp_interface
+  ros::Subscriber laser_obsmap_sub; // receiving data from laser_analysis
 
   ros::Publisher feature_pub;
   ros::Publisher hri_act_pub;
@@ -40,6 +44,8 @@ class T31 {
   void locationCallback(const geometry_msgs::PoseWithCovarianceStamped::ConstPtr& msg);
   void hriGoalCallback(const shared::Goal::ConstPtr& msg);
   void tcpCallback(tcp_interface::RCOMMessage msg);
+  void laserobsmapCallback(laser_analysis::LaserObstacleMap msg);
+
   void doSay(std_msgs::String msg);
   void doDisplay(std_msgs::String msg);
   
@@ -47,7 +53,7 @@ class T31 {
   void adTimerCallback(const ros::TimerEvent&);
 
   public:
-  T31(ros::NodeHandle node);
+  T31(ros::NodeHandle n);
   void run();
 };
 

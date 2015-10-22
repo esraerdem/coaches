@@ -14,7 +14,7 @@ sleep 3
 
 xterm -hold -e roslaunch diago_all.launch pru_enabled:=true PRU:="$DEMO_PRU"  &
 
-sleep 15
+sleep 10
 
 # Send the goal from KB - NOT NEEDED!!!
 

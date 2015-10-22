@@ -195,7 +195,7 @@ void T41PNPActionServer::say(string params, bool *run) {
   hri_goal.param = params;
   hri_pub.publish(hri_goal);
 
-  int sleeptime=6; // *0.5 sec.
+  int sleeptime=4; // *0.5 sec.
   while (*run && sleeptime-->0 && ros::ok())
     ros::Duration(0.5).sleep();
 
@@ -208,6 +208,13 @@ void T41PNPActionServer::say(string params, bool *run) {
 
 void T41PNPActionServer::ask(string params, bool *run) {
   cout << "### Executing Ask " << params << " ... " << endl;
+
+  string to_send = "ask_" + params;
+  tcp_interface::RCOMMessage message_to_send;
+  message_to_send.robotsender= "diago";
+  message_to_send.robotreceiver="all";
+  message_to_send.value= to_send;
+  rcom_pub.publish(message_to_send);
 
   say(params, run);
 
@@ -236,8 +243,8 @@ void T41PNPActionServer::display(string params, bool *run) {
   message_to_send.value= to_send;
   rcom_pub.publish(message_to_send);
   
-  
   say(params, run);
+
   if (*run)
       cout << "### Finished Display " << params << endl;
   else

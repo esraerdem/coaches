@@ -14,7 +14,7 @@ sleep 3
 
 xterm -e roslaunch diago_all.launch pru_enabled:=false &
 
-sleep 15
+sleep 10
 
 rostopic pub /diago/planToExec std_msgs/String "data: '$DEMO_PNP'" --once
 
@@ -24,7 +24,7 @@ xterm -e rostopic echo /diago/pnp/currentActivePlaces &
 
 sleep 1
 
-#xterm -e python ../GUI/QAGUI/QAGUI.py &
+xterm -e python ../GUI/QAGUI/QAGUI.py &
 
 
 

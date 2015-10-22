@@ -6,6 +6,7 @@
 // general
 #define TOPIC_ROBOT_LOCATION "amcl_pose"
 #define TOPIC_MOVE_BASE "move_base"
+#define TOPIC_RCOMMESSAGE "/RCOMMessage"
 
 // T11
 #define TOPIC_KB "t11_knowledge"
@@ -16,7 +17,8 @@
 #define TOPIC_SAY "say"
 #define TOPIC_STAGE_SAY "stage_say"
 #define TOPIC_HRI_GOAL "t31_hri_goal"
-#define TOPIC_RCOMMESSAGE "/RCOMMessage"
+#define TOPIC_LASER_OBSMAP "laser_obstacle_map"
+
 
 // T41
 #define TOPIC_POLICY_RESULT "t41_policy_result"
