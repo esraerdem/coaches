@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #DEMO_PNP=PrinterAssistance
-DEMO_PNP=BenchAssistance
-#DEMO_PNP=PersonalizedHelp
+#DEMO_PNP=BenchAssistance
+DEMO_PNP=PersonalizedHelp
 
 # Run simulation
 
