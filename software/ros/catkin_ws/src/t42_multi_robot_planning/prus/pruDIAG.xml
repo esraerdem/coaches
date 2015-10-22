@@ -9,14 +9,14 @@
       <Outcome id='none' p='0.25'>
 	<Quality kind='null' const='-1' />
 	<Duration kind='null' const='1' />
-	<Observe> not personHere &amp; not personPrinter </Observe>
+	<Observe> not personhere &amp; not personprinter </Observe>
 	<Next> 
 	  1.wait
 	</Next>
       </Outcome>
       <Outcome id='entry' p='0.25'>
 	<Duration kind='null' const='1' />
-	<Observe> personHere &amp; not personPrinter </Observe>
+	<Observe> personhere &amp; not personprinter </Observe>
 	<Next> 
 	  1.wait
 	  2.say_Hello
@@ -24,7 +24,7 @@
       </Outcome>
       <Outcome id='print' p='0.25'>
 	<Duration kind='null' const='1' />
-	<Observe> personPrinter &amp; not personHere </Observe>
+	<Observe> personprinter &amp; not personhere </Observe>
 	<Next> 
 	  1.wait
 	  2.goto_printer
@@ -52,14 +52,14 @@
     <Action id='goto_printer'>
       <Outcome id='ok' p='0.75'>
 	<Duration kind='distanceEntrancePrinter' const='1' />
-	<Observe> personPrinter </Observe>
+	<Observe> personprinter </Observe>
 	<Next>
 	  2.ask_What
 	</Next>
       </Outcome>
       <Outcome id='err' p='0.25'>
 	<Duration kind='distanceEntrancePrinter' const='1' />
-	<Observe> not personPrinter </Observe>
+	<Observe> not personprinter </Observe>
 	<Next>
 	  4.goto_home
 	</Next>

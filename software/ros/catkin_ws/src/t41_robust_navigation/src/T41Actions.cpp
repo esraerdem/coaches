@@ -2,18 +2,23 @@
 
 #include <tf/transform_listener.h>
 #include <shared/topics_name.h>
+#include <shared/Goal.h>
+#include <shared/goalKind.h>
+#include <tcp_interface/RCOMMessage.h>
 
-#include "T41Actions.h"
+#include "T41PNPAS.h"
 
 #include "t11_kb_modeling/GetLocation.h"
 
 #define RAD(a) ((a)/180.0*M_PI)
+#define DEG(a) ((a)*180.0/M_PI)
+
 
 using namespace std;
 
 tf::TransformListener* listener = NULL;
 
-bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
+bool T41PNPActionServer::getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
     if (listener==NULL) {
         listener = new tf::TransformListener();
     }
@@ -43,46 +48,354 @@ bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
     return true;
 }
 
+bool T41PNPActionServer::getLocationPosition(string loc, double &GX, double &GY) {
+    ros::NodeHandle node;
+    ros::ServiceClient siteLoc = node.serviceClient<t11_kb_modeling::GetLocation>("/diago/get_location");
 
+    t11_kb_modeling::GetLocation srv;
+    srv.request.loc = loc;
 
+    if (siteLoc.call(srv)) {
+        GX = srv.response.coords.position.x; GY = srv.response.coords.position.y;
+        ROS_INFO_STREAM("Location " << loc << " at " << GX  << " , " << GY);
+    }
+    else {
+        ROS_ERROR_STREAM("Location "<<loc<<" unknown.");
+        return false;
+    }
 
-
-actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase = NULL;
-actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
-actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction> *ac_followcorridor = NULL;
-
-std::string turn_topic = "turn";
-std::string followcorridor_topic = "follow_corridor";
-
-#if 0
-
-
-std::string followperson_topic = "follow_person";
-std::string askquestion_topic = "interaction";
-
-
-actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
-
-actionlib::SimpleActionClient<rococo_navigation::FollowPersonAction> *ac_followperson = NULL;
-actionlib::SimpleActionClient<coaches_reasoning::AskQuestionAction> *ac_askquestion = NULL;
-rococo_navigation::FollowCorridorGoal goal;
-
-string variableValues;
-double pedestrianDistance;
-
-void variableCallback(const std_msgs::String::ConstPtr& msg){
-    variableValues = msg->data;
+    return true;
 }
 
 
 
-#endif
+/*
+ * ACTIONS
+ */
 
-boost::mutex mtx_movebase;
+void T41PNPActionServer::gotoplace(string params, bool *run)
+{
+    if (!run) return;
 
-void do_movebase(string robotname, float GX, float GY, float GTh_DEG, bool *run) { // theta in degrees
+    ROS_INFO_STREAM("### Executing Goto " << params << " ... ");
 
-    mtx_movebase.lock();
+    if (params=="nextbench") {
+
+        // which corridor the robot is in?
+        double rx,ry,rth_rad;
+        if (!getRobotPose(robotname, rx, ry, rth_rad)) {
+            cout << "### Cannot get robot pose - Aborted Goto ###" << endl;
+            return;
+        }
+        if (rx<3 && ry<3) {
+            // the robot is in the corner, can go to any bench
+            if (bench_togo==1) 
+                gotoplace("bench1",run);
+            else
+                gotoplace("bench2",run);
+        }
+        else if (ry>=3) {
+            // the robot is in the up corridor
+            if (bench_togo==1) {
+                gotoplace("bench1",run);
+            }
+            else {
+                gotoplace("corner",run); gotoplace("bench2",run);
+            }
+        }
+        else {
+            // the robot is in right corridor
+            if (bench_togo==1) {
+                gotoplace("corner",run); gotoplace("bench1",run);
+            }
+            else {
+                gotoplace("bench2",run);
+            }
+
+        }
+
+        bench_togo = 3 - bench_togo;  // next bench to go
+
+    }
+    else {
+        followcorridor(params, run);
+    }
+
+    if (*run)
+        cout << "### Finished Goto" << endl;
+    else
+        cout << "### Aborted Goto" << endl;
+}
+
+void T41PNPActionServer::turn(string params, bool *run) {
+
+  if (!run) return;
+
+  cout << "### Executing Turn " << params << " ... " << endl;
+
+  float th_deg = atof(params.c_str());
+  do_turn(th_deg,run);
+}
+
+void T41PNPActionServer::followcorridor(string params, bool *run) {
+
+  if (!run) return;
+
+  cout << "### Executing Follow Corridor " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_follow_corridor(GX,GY,run);
+      // robot oriented towards the goal
+      double RX,RY,RTH;
+      getRobotPose(robotname,RX,RY,RTH);
+      if ( (params.find("printer")==string::npos) &&  // if not printer and not corner
+           (params.find("corner")==string::npos) ) {
+        double angle = atan2(GY-RY,GX-RX);
+        // turn
+        do_turn(DEG(angle), run);
+      }
+  }
+}
+
+
+void T41PNPActionServer::say(string params, bool *run) {
+  cout << "### Executing Say " << params << " ... " << endl;
+
+  shared::Goal hri_goal;
+  hri_goal.kind = GOAL_SPEECH;
+  hri_goal.param = params;
+  hri_pub.publish(hri_goal);
+
+  int sleeptime=4; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+    ros::Duration(0.5).sleep();
+
+  if (*run)
+      cout << "### Finished Say " << params << endl;
+  else
+      cout << "### Aborted Say " << params << endl;
+
+}
+
+void T41PNPActionServer::ask(string params, bool *run) {
+  cout << "### Executing Ask " << params << " ... " << endl;
+
+  string to_send = "ask_" + params;
+  tcp_interface::RCOMMessage message_to_send;
+  message_to_send.robotsender= "diago";
+  message_to_send.robotreceiver="all";
+  message_to_send.value= to_send;
+  rcom_pub.publish(message_to_send);
+
+  say(params, run);
+
+  if (*run)
+      cout << "### Finished Ask " << params << endl;
+  else
+      cout << "### Aborted Ask " << params << endl;
+
+}
+
+
+void T41PNPActionServer::display(string params, bool *run) {
+  cout << "### Executing Display " << params << " ... " << endl;
+  
+  
+  // non-terminating action
+  //while (*run && ros::ok())
+  //  ros::Duration(0.5).sleep();
+
+  // send through tcp_interface a string "display_{text|image|video}_arg"
+  
+  string to_send = "display_" + params;
+  tcp_interface::RCOMMessage message_to_send;
+  message_to_send.robotsender= "diago";
+  message_to_send.robotreceiver="all";
+  message_to_send.value= to_send;
+  rcom_pub.publish(message_to_send);
+  
+  say(params, run);
+
+  if (*run)
+      cout << "### Finished Display " << params << endl;
+  else
+      cout << "### Aborted Display " << params << endl;
+
+}
+
+
+void T41PNPActionServer::advertise(string params, bool *run) {
+  cout << "### Executing Advertise " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_movebase(GX,GY,0,run);
+  }
+  else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
+  
+  if (! *run)
+    cout << "ABORT"<<endl;
+
+  if (*run) {
+    cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
+
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Advertise!!!";
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=6; // *0.5 sec.
+    while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+  }
+
+  if (*run)
+      cout << "### Finished Advertise " << params << endl;
+  else
+      cout << "### Aborted Advertise " << params << endl;
+}
+
+void T41PNPActionServer::advertiseComplex(string params, bool *run) {
+  cout << "### Executing AdvertiseComplex " << params << " ... " << endl;
+
+  double GX,GY;
+  if (getLocationPosition(params,GX,GY)) {
+      do_movebase(GX,GY,0,run);
+  }
+  else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
+
+  if (! *run)
+    cout << "ABORT"<<endl;
+
+  if (*run) {
+    cout << "\033[22;34;1mADVERTISING: " << params << "\033[0m" << endl;
+    
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_ADVERTISE;
+    hri_goal.param = "Ad";
+    hri_pub.publish(hri_goal);
+  }
+
+  int sleeptime=6; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+
+  if (*run && ros::ok()){
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Do you want to swipe your card?";
+    hri_pub.publish(hri_goal);    
+  }
+
+  sleeptime=4; // *0.5 sec.
+  while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+
+  if (*run)
+      cout << "### Finished AdvertiseComplex " << params << endl;
+  else
+      cout << "### Aborted AdvertiseComplex " << params << endl;
+}
+
+void T41PNPActionServer::interact(string params, bool *run)
+{
+    cout << "### Executing Interact " << params << " ... " << endl;
+
+    double GX,GY;
+    if (getLocationPosition(params,GX,GY)) {
+        double RX,RY,RTH,dx;
+        getRobotPose(robotname,RX,RY,RTH);
+        if (RX<GX) dx=-1; else dx=+1;
+        do_movebase(GX+dx,GY,0,run);  // cannot use the same position as the target
+    }
+    else ROS_WARN("Advertise: Cannot find location %s.",params.c_str());
+
+    cout << "\033[22;34;1mINTERACTING: " << params << "\033[0m" << endl;
+
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_INTERACT;
+    hri_goal.param = params;
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=10; // *0.5 sec.
+    while (*run && sleeptime-->0)
+      ros::Duration(0.5).sleep();
+    
+    if (*run) {
+        cout << "### Finished Interact" << endl;
+    } else
+        cout << "### Aborted Interact" << endl;
+}
+
+
+
+void T41PNPActionServer::swipe(string params, bool *run)
+{
+    cout << "### Executing Swipe action " << params << " ... " << endl;
+
+    shared::Goal hri_goal;
+    hri_goal.kind = GOAL_SPEECH;
+    hri_goal.param = "Please swipe your card!";
+    hri_pub.publish(hri_goal);
+    
+    int sleeptime=2; // *0.5 sec.
+    while (*run && sleeptime-->0 && ros::ok())
+      ros::Duration(0.5).sleep();
+
+    if (*run)
+        cout << "### Finished Swipe" << endl;
+    else
+        cout << "### Aborted Swipe" << endl;
+}
+
+
+void T41PNPActionServer::wait(string params, bool *run)
+{
+    // ROS_INFO_STREAM("### Executing Wait action " << params << " ... ");
+/*
+    int sleeptime=1; // * 0.2 sec.
+    while (*run && sleeptime-->0)
+        ros::Duration(0.2).sleep();
+*/
+
+    ros::Duration(0.1).sleep();
+/*
+    if (*run)
+        ROS_INFO("### Finished Wait");
+    else
+        ROS_INFO("### Aborted Wait");
+*/
+}
+
+void T41PNPActionServer::none(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing no action ###");
+}
+
+void T41PNPActionServer::restart(string params, bool *run)
+{
+    ROS_INFO_STREAM("### Executing Restart action " << params << " ... ");
+
+    // publish planToExec to start the plan
+    string planname = "AUTOGENpolicy";
+    std_msgs::String s;
+    s.data = planname;
+    plantoexec_pub.publish(s); // start the new one
+
+    if (*run)
+        cout << "### Finished Restart" << endl;
+    else
+        cout << "### Aborted Restart" << endl;
+}
+
+
+
+
+
+void T41PNPActionServer::do_movebase(float GX, float GY, float GTh_DEG, bool *run) { // theta in degrees
+
+  mtx_movebase.lock();
 
   if (ac_movebase==NULL) { //create the client only once
     // Define the action client (true: we want to spin a thread)
@@ -90,7 +403,7 @@ void do_movebase(string robotname, float GX, float GY, float GTh_DEG, bool *run)
 
     // Wait for the action server to come up
     while(!ac_movebase->waitForServer(ros::Duration(5.0))){
-		    ROS_INFO("Waiting for move_base action server to come up");
+	    ROS_INFO("Waiting for move_base action server to come up");
     }
   }
 
@@ -99,7 +412,7 @@ void do_movebase(string robotname, float GX, float GY, float GTh_DEG, bool *run)
   while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
 	  ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
 	  ros::Duration(1.0).sleep();
-    secs =ros::Time::now().toSec();
+      secs =ros::Time::now().toSec();
   }
 
   // Set the goal (MAP frame)
@@ -144,6 +457,159 @@ void do_movebase(string robotname, float GX, float GY, float GTh_DEG, bool *run)
 
   mtx_movebase.unlock();
 }
+
+
+
+void T41PNPActionServer::do_turn(float GTh_DEG, bool *run) {
+
+    if (ac_turn==NULL) {
+      ac_turn = new actionlib::SimpleActionClient<rococo_navigation::TurnAction>(TOPIC_TURN, true);
+
+      while(!ac_turn->waitForServer(ros::Duration(5.0))){
+              ROS_INFO("Waiting for turn action server to come up");
+      }
+    }
+
+    rococo_navigation::TurnGoal goal;
+
+    goal.target_angle = GTh_DEG;
+    goal.absolute_relative_flag = "ABS";
+    goal.max_ang_vel = 50.0;  // deg/s
+
+    // Send the goal
+    ROS_INFO("Sending goal TURN %f", GTh_DEG);
+    ac_turn->cancelAllGoals(); ros::Duration(1).sleep();
+    ac_turn->sendGoal(goal);
+
+    while (!ac_turn->waitForResult(ros::Duration(0.5)) && (*run)){
+        ROS_INFO("Turning...");
+    }
+    ac_turn->cancelAllGoals();
+}
+
+
+
+void T41PNPActionServer::do_follow_corridor(float GX, float GY, bool *run) {
+
+  if (ac_followcorridor==NULL) {
+    // Define the action client (true: we want to spin a thread)
+    ac_followcorridor = new actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction>(TOPIC_FOLLOWCORRIDOR, true);
+
+    // Wait for the action server to come up
+    while(!ac_followcorridor->waitForServer(ros::Duration(5.0))){
+            ROS_INFO("Waiting for follow_corridor action server to come up");
+    }
+  }
+
+  // Read time
+  double secs =ros::Time::now().toSec();
+  while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
+      ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
+      ros::Duration(1.0).sleep();
+    secs =ros::Time::now().toSec();
+  }
+
+  // Set the goal (MAP frame)
+  rococo_navigation::FollowCorridorGoal goal;
+  goal.target_X = GX;  goal.target_Y = GY;   // goal
+  goal.max_vel = 0.7;  // m/s
+
+  // Send the goal
+  ROS_INFO("Sending goal");
+  ac_followcorridor->sendGoal(goal);
+
+  // Wait for termination
+  double d_threshold=0.5, d=d_threshold+1.0;
+  while (!ac_followcorridor->waitForResult(ros::Duration(0.5)) && (*run) && (d>d_threshold)) {
+    // ROS_INFO("Running...");
+    double RX,RY,RTH;
+  }
+
+  // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
+  ac_followcorridor->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
+}
+
+
+
+
+
+
+
+
+
+
+#if 0
+
+
+
+
+
+/*
+ *   OLD ACTIONS
+ */
+
+
+
+
+#if 0
+
+
+std::string followperson_topic = "follow_person";
+std::string askquestion_topic = "interaction";
+
+
+actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn = NULL;
+
+actionlib::SimpleActionClient<rococo_navigation::FollowPersonAction> *ac_followperson = NULL;
+actionlib::SimpleActionClient<coaches_reasoning::AskQuestionAction> *ac_askquestion = NULL;
+rococo_navigation::FollowCorridorGoal goal;
+
+string variableValues;
+double pedestrianDistance;
+
+void variableCallback(const std_msgs::String::ConstPtr& msg){
+    variableValues = msg->data;
+}
+
+
+
+#endif
+
+
+#if 0
+
+bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad) {
+    if (listener==NULL) {
+        listener = new tf::TransformListener();
+    }
+
+    string src_frame = "/map";
+    string dest_frame = "/" + robotname + "/base_frame";
+    if (robotname=="") { // local trasnformation
+        src_frame = "map";
+        dest_frame = "base_link";
+    }
+
+    tf::StampedTransform transform;
+    try {
+        listener->waitForTransform(src_frame, dest_frame, ros::Time(0), ros::Duration(3));
+        listener->lookupTransform(src_frame, dest_frame, ros::Time(0), transform);
+    }
+    catch(tf::TransformException ex) {
+        th_rad = 999999;
+        ROS_ERROR("Error in tf trasnform %s -> %s\n",src_frame.c_str(), dest_frame.c_str());
+        ROS_ERROR("%s", ex.what());
+        return false;
+    }
+    x = transform.getOrigin().x();
+    y = transform.getOrigin().y();
+    th_rad = tf::getYaw(transform.getRotation());
+
+    return true;
+}
+
+#endif
+
 
 
 
@@ -194,24 +660,6 @@ void gotopose(string params, bool *run) {
 
 #endif
 
-bool getLocationPosition(string loc, double &GX, double &GY) {
-    ros::NodeHandle node;
-    ros::ServiceClient siteLoc = node.serviceClient<t11_kb_modeling::GetLocation>("/diago/get_location");
-
-    t11_kb_modeling::GetLocation srv;
-    srv.request.loc = loc;
-
-    if (siteLoc.call(srv)) {
-        GX = srv.response.coords.position.x; GY = srv.response.coords.position.y;
-        ROS_INFO_STREAM("Location " << loc << " at " << GX  << " , " << GY);
-    }
-    else {
-        ROS_ERROR_STREAM("Location "<<loc<<" unknown.");
-        return false;
-    }
-
-    return true;
-}
 
 
 
@@ -310,71 +758,7 @@ void generalPedestrianCallback(const coaches_msgs::PedestrianInfo::ConstPtr& ped
 
 #endif
 
-void do_turn(string robotname, float GTh_DEG, bool *run) {
 
-    if (ac_turn==NULL) {
-      ac_turn = new actionlib::SimpleActionClient<rococo_navigation::TurnAction>(turn_topic, true);
-
-      while(!ac_turn->waitForServer(ros::Duration(5.0))){
-              ROS_INFO("Waiting for turn action server to come up");
-      }
-    }
-
-    rococo_navigation::TurnGoal goal;
-
-    goal.target_angle = GTh_DEG;
-    goal.absolute_relative_flag = "ABS";
-    goal.max_ang_vel = 45.0;  // deg/s
-
-    // Send the goal
-    ROS_INFO("Sending goal TURN %f", GTh_DEG);
-    ac_turn->cancelAllGoals(); ros::Duration(1).sleep();
-    ac_turn->sendGoal(goal);
-
-    while (!ac_turn->waitForResult(ros::Duration(0.5)) && (*run)){
-        ROS_INFO("Turning...");
-    }
-    ac_turn->cancelAllGoals();
-}
+#endif
 
 
-
-void do_follow_corridor(string robotname, float GX, float GY, bool *run) {
-
-  if (ac_followcorridor==NULL) {
-    // Define the action client (true: we want to spin a thread)
-    ac_followcorridor = new actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction>(followcorridor_topic, true);
-
-    // Wait for the action server to come up
-    while(!ac_followcorridor->waitForServer(ros::Duration(5.0))){
-            ROS_INFO("Waiting for follow_corridor action server to come up");
-    }
-  }
-
-  // Read time
-  double secs =ros::Time::now().toSec();
-  while (secs==0) {  // NEEDED OTHERWISE CLOCK WILL BE 0 AND GOAL_ID IS NOT SET CORRECTLY
-      ROS_ERROR_STREAM("Time is null: " << ros::Time::now());
-      ros::Duration(1.0).sleep();
-    secs =ros::Time::now().toSec();
-  }
-
-  // Set the goal (MAP frame)
-  rococo_navigation::FollowCorridorGoal goal;
-  goal.target_X = GX;  goal.target_Y = GY;   // goal
-  goal.max_vel = 0.7;  // m/s
-
-  // Send the goal
-  ROS_INFO("Sending goal");
-  ac_followcorridor->sendGoal(goal);
-
-  // Wait for termination
-  double d_threshold=0.5, d=d_threshold+1.0;
-  while (!ac_followcorridor->waitForResult(ros::Duration(0.5)) && (*run) && (d>d_threshold)) {
-    ROS_INFO("Running...");
-    double RX,RY,RTH;
-  }
-
-  // Cancel all goals (NEEDED TO ISSUE NEW GOALS LATER)
-  ac_followcorridor->cancelAllGoals(); ros::Duration(1).sleep(); // wait 1 sec
-}

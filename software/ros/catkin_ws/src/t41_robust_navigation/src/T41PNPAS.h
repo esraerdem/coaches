@@ -6,10 +6,31 @@
 #include <actionlib/client/simple_action_client.h>
 #include <move_base_msgs/MoveBaseAction.h>
 #include <tf/transform_listener.h>
+#include <std_msgs/String.h>
 
 #include <pnp_ros/PNPActionServer.h>
+#include <rococo_navigation/TurnAction.h>
+#include <rococo_navigation/FollowCorridorAction.h>
 
-#include "T41Actions.h"
+#include <map>
+#include <boost/thread/thread.hpp>
+
+
+
+// #include "T41Actions.h"
+
+
+
+// Action utilities
+
+/*
+bool getRobotPose(std::string robotname, double &x, double &y, double &th_rad);
+bool getLocationPosition(std::string loc, double &GX, double &GY);
+void do_movebase(std::string robotname, float GX, float GY, float GTh_DEG, bool *run); // theta in degrees
+void do_turn(std::string robotname, float GTh_DEG, bool *run);
+void do_follow_corridor(std::string robotname, float GX, float GY, bool *run);
+*/
+
 
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
@@ -21,8 +42,14 @@ private:
     ros::Publisher event_pub, plantoexec_pub, hri_pub, rcom_pub;
     tf::TransformListener* listener;
 
-    // ros::Subscriber laser_sub, variable_sub, speech_sub, pedestrian_sub, general_Pedestrian_sub;
+    // action clients
+    actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> *ac_movebase;
+    actionlib::SimpleActionClient<rococo_navigation::TurnAction> *ac_turn;
+    actionlib::SimpleActionClient<rococo_navigation::FollowCorridorAction> *ac_followcorridor;
+
     std::string robotname;
+
+    boost::mutex mtx_movebase;
 
     int bench_togo;
 
@@ -34,6 +61,9 @@ public:
 
     // Get current robot pose
     bool getRobotPose(string robotname, double &x, double &y, double &th_rad);
+
+    // Get coordinates of semantic location
+    bool getLocationPosition(string loc, double &GX, double &GY);
 
     /*
      * ACTIONS
@@ -51,6 +81,10 @@ public:
     void display(string params, bool *run);
     void none(string params, bool *run);
     void restart(string params, bool *run);
+    
+    void do_movebase(float GX, float GY, float GTh_DEG, bool *run);
+    void do_turn(float GTh_DEG, bool *run);
+    void do_follow_corridor(float GX, float GY, bool *run);
 
 };
 

@@ -5,7 +5,6 @@
 
 // general
 #define TOPIC_ROBOT_LOCATION "amcl_pose"
-#define TOPIC_MOVE_BASE "move_base"
 #define TOPIC_RCOMMESSAGE "/RCOMMessage"
 
 // T11
@@ -25,6 +24,10 @@
 #define TOPIC_PLANTOEXEC "planToExec"
 #define TOPIC_PNPACTIVEPLACES "pnp/currentActivePlaces"
 #define TOPIC_PNPCONDITION "PNPConditionEvent"
+#define TOPIC_MOVE_BASE "move_base"
+#define TOPIC_TURN "turn"
+#define TOPIC_FOLLOWCORRIDOR "follow_corridor"
+
 
 // T42
 #define TOPIC_POLICY "t42_policy"

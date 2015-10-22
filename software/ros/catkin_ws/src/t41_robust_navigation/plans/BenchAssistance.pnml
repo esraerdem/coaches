@@ -422,9 +422,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere]</value>
+        <value>[personhere]</value>
         <graphics>
-          <offset x="-37" y="34" />
+          <offset x="-36" y="34" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -442,7 +442,7 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[not personHere]</value>
+        <value>[not personhere]</value>
         <graphics>
           <offset x="-45" y="32" />
         </graphics>

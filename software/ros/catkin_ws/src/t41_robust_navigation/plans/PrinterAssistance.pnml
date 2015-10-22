@@ -449,7 +449,7 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personPrinter]</value>
+        <value>[personprinter]</value>
         <graphics>
           <offset x="-32" y="-32" />
         </graphics>
@@ -609,7 +609,7 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere] goto_office.end</value>
+        <value>[personhere] goto_office.end</value>
         <graphics>
           <offset x="-76" y="-24" />
         </graphics>
@@ -749,9 +749,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere] goto_technician.end</value>
+        <value>[personhere] goto_technician.end</value>
         <graphics>
-          <offset x="-70" y="-26" />
+          <offset x="-69" y="-26" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -809,9 +809,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere]</value>
+        <value>[personhere]</value>
         <graphics>
-          <offset x="-33" y="32" />
+          <offset x="-32" y="32" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -869,9 +869,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere]</value>
+        <value>[personhere]</value>
         <graphics>
-          <offset x="-37" y="34" />
+          <offset x="-36" y="34" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
@@ -889,7 +889,7 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[not personHere]</value>
+        <value>[not personhere]</value>
         <graphics>
           <offset x="-45" y="32" />
         </graphics>
@@ -909,9 +909,9 @@
         <size width="8" height="32" />
       </graphics>
       <name>
-        <value>[personHere]</value>
+        <value>[personhere]</value>
         <graphics>
-          <offset x="-33" y="32" />
+          <offset x="-32" y="32" />
         </graphics>
       </name>
       <toolspecific tool="JARP" version="1.2">
