@@ -40,7 +40,9 @@ consult the output of the tcp_interface node.
 
 value contains the instruction. By the moment, the following commands are supported:
  - display_text_welcome 
- - display_image_toilets
- - display_text_toilets
+ - display_image_toilet
+ - display_text_toilet
  - display_text_needhelp
+ - display_text_whichhelp
  - display_text_office
+ - display_text_schedule

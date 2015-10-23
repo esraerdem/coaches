@@ -20,9 +20,10 @@ import errno, time
 import os
 script_dir = os.path.dirname(__file__)
 
-from parse_rules_file import eval_personalization_rules
+from parse_rules_file import *
 
-profile = '<*,*,*,*>'
+profile = '<*,*,*,*>' #the default profile
+help_actions = ["toilets", "administrative_room", "schedule", "nohelp"]
 
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
@@ -78,12 +79,19 @@ class Network:
             self.recvmsg = self.sock.recv(BUFFER_SIZE)
          except socket.timeout:
             continue
+            
+         if (not self.recvmsg):
+            #if there is no data something happened in the server
+            self.netStatusOk = False
+            break
 
-         if (self.recvmsg):
+         print 'received: ', self.recvmsg
+         if (self.recvmsg.find("OK") < 0):
             print 'received: ', self.recvmsg
             # net_ROS object will receive:
             #  'display_{text|image|video}_welcome'
             #  'say_welcome'
+            #  'ask_needhelp'
             # net_speech object will receive:
             #  'ASR_text'
             self.recvmsg = self.recvmsg.replace('\x00',"")
@@ -91,9 +99,11 @@ class Network:
 
             print splitmsg
             if (len(splitmsg) > 3 or len(splitmsg) < 2):
+               net_ROS.sendMessage("ASR "+ self.recvmsg)
                print 'There is something wrong with the message format. Example: display_[mode]_[interactionname]'
                continue
             else:
+               print "RECEIVED: ", self.recvmsg
                if (splitmsg[0] == 'display' and len(splitmsg) == 3):
                   mode = splitmsg[1]
                   interactionname = splitmsg[2]
@@ -110,6 +120,9 @@ class Network:
                      if (mode == 'text'):
                         self.text_to_display = actual_interaction
                         self.parent.ltext.event_generate("<<NewTextMessage>>")
+                        splitprofile = parseProfile(profile)
+                        print "[SAY] "+actual_interaction+"|"+splitprofile[2]
+                        net_speech.sendMessage("[SAY] "+actual_interaction+"|"+splitprofile[2])
 
                      # if (image) : show image in actual_interaction as an image in the GUI
                      if (mode == 'image'):
@@ -117,6 +130,23 @@ class Network:
                         self.parent.limg.event_generate("<<NewImgMessage>>")
                      
                      # if (video) : ...TODO
+               elif (splitmsg[0] == 'ask' and  len(splitmsg) == 2):
+                  #This instruction involves displaying a text and showing a GUI with options for the user 
+                  print "ASK RECEIVED: ", self.recvmsg
+                  interactionname = splitmsg[1]
+                  rules_filename = "_".join(["text", splitmsg[1]])
+                  rules_filename = os.path.join(script_dir, rules_filename)
+                  print rules_filename
+                  actual_interaction= eval_personalization_rules(rules_filename, profile)
+                  if (len(actual_interaction)>0):
+                     self.text_to_display = actual_interaction
+                     self.parent.ltext.event_generate("<<NewTextMessage>>")
+                     splitprofile = parseProfile(profile)
+                     print "[SAY] "+ actual_interaction+"|"+splitprofile[2]
+                     net_speech.sendMessage("[SAY] "+actual_interaction+"|"+splitprofile[2])
+
+                     eventname = "<<"+interactionname+"Message>>"
+                     self.parent.parent.event_generate(eventname)                  
 
                elif (splitmsg[0] == 'say' and  len(splitmsg) == 2):
                   # if (say_something) coming from tcp_interface: 
@@ -130,18 +160,14 @@ class Network:
                   if (len(txt_say)>0):
                      net_speech.sendMessage(txt_say)
 
-               elif (splitmsg[0] == 'ASR'):
-                  # if (ASR_something) coming from speech server
-                  # net_ros.send("@ASR "+something)
-                  print "ASR: " 
-                  net_ROS.sendMessage("@ASR")
+               elif (splitmsg[0] == 'display' and splitmsg[1] == 'init'):
+                  # tell the GUI to initialize
+                  self.parent.parent.event_generate("<<resetMessage>>")
+                  
                else:
                   print 'Unrecognized instruction'
                   continue
 
-         else: #if there is no data something happened in the server
-            self.netStatusOk = False
-            break
 
       print 'Finished receive thread'
 
@@ -156,6 +182,7 @@ class Network:
 
    def sendMessage(self, message):
       if (self.netStatusOk):
+         print "Sending: ", message
          self.sock.send(message)
       
    def closeConnection(self):
@@ -213,6 +240,26 @@ class profileSelectionGUI(object):
       self.toplevel.wait_window()
       return self.chosen_profile
 
+class helpSelectionGUI(object):
+
+   def __init__(self, parent):
+      self.toplevel = tk.Toplevel(parent)
+      self.chosen_help_action = ''
+
+      def callback(text):
+         self.chosen_help_action = text
+         self.toplevel.destroy()
+
+      for action in help_actions:
+         btn = tk.Button(self.toplevel, text=action, font=("Helvetica", 32), command=lambda action=action: callback(action))
+         btn.pack()
+
+   def show(self):
+      self.toplevel.deiconify()
+      self.toplevel.wait_window()
+      print "Chosen action: " , self.chosen_help_action
+      return self.chosen_help_action
+
 class GUI(tk.Frame):
 
    def __init__(self, parent):
@@ -248,23 +295,29 @@ class GUI(tk.Frame):
    def initUI(self):
       self.parent.title("COACHES Q&A")
       self.parent.resizable(width=FALSE, height=FALSE)
+      self.parent.bind("<<needhelpMessage>>", self.yesnoSelection)
+      self.parent.bind("<<whichhelpMessage>>", self.userNeedSelection)
+      self.parent.bind("<<resetMessage>>", self.resetGUI)
+
       self.pack(expand=100)
 
-      profileframe = Frame(self)
-      profileframe.pack()
-      topframe = Frame(self)
-      topframe.pack()
-      middleframe = Frame(self)
-      middleframe.pack()
-      bottomframe = Frame(self)
-      bottomframe.pack(fill = tk.X)
+      self.profileframe = Frame(self)
+      self.profileframe.pack()
+      self.topframe = Frame(self)
+      self.topframe.pack()
+      self.middleframe = Frame(self)
+      self.middleframe.pack()
+      self.bottomframe = Frame(self)
+      self.bottomframe.pack(fill = tk.X)
 
+      # PROFILE FRAME
       # Profile selection button
-      self.profilebutton = Button(profileframe, text="Select profile", command=self.profileSelection)
+      self.profilebutton = Button(self.profileframe, text="Select profile", command=self.profileSelection)
       self.profilebutton.pack(side=LEFT)
-      self.profile_label = Label(profileframe)
+      self.profile_label = Label(self.profileframe)
       self.profile_label.pack(side=LEFT, fill='x')
 
+      # TOP FRAME
       # Video
       width, height = 500, 375
       rel_path = 'videos/rives_delorne.mp4'
@@ -273,7 +326,7 @@ class GUI(tk.Frame):
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
       cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
       
-      lvideo = tk.Label(topframe)
+      lvideo = tk.Label(self.topframe)
       lvideo.pack(side = LEFT)
 
       def show_frame():
@@ -297,37 +350,27 @@ class GUI(tk.Frame):
       w, h = img.size
       im_resized = self.setHeight(w, h, height, img)
       imgtk = ImageTk.PhotoImage(image=im_resized)
-      self.limg = Label(topframe, image=imgtk)
+      self.limg = Label(self.topframe, image=imgtk)
       self.limg.image = imgtk
       self.limg.bind("<<NewImgMessage>>", self.updateImg)
       self.limg.pack(side=RIGHT) 
 
+      # MIDDLE FRAME
       # Label
-      self.ltext = Label(middleframe, textvariable=self.question, font=("Helvetica", 32), wraplength=1200)
+      self.ltext = Label(self.middleframe, textvariable=self.question, font=("Helvetica", 32), wraplength=1200)
       self.ltext.bind("<<NewTextMessage>>", self.updateLabel)
       self.ltext.pack()
 
-      # Buttons
-      rel_path = 'img/yes_150.jpg'
-      abs_file_path = os.path.join(script_dir, rel_path)
-      imY = PIL.Image.open(abs_file_path)
-      self.phY = ImageTk.PhotoImage(imY)
-      rel_path = 'img/no_150.jpg'
-      abs_file_path = os.path.join(script_dir, rel_path)
-      imN = PIL.Image.open(abs_file_path)
-      self.phN = ImageTk.PhotoImage(imN)
-            
-      self.BtnY = Button(self, image=self.phY, command=self.ActionY)
-      self.BtnY.pack(side=LEFT)      
-      self.BtnN = Button(self, image=self.phN, command=self.ActionN)
-      self.BtnN.pack(side=RIGHT)
+      # BOTTOM FRAME
+      # Buttons will be shown only if a question of yes|no is received
+      
 
    def updateLabel(self, event):
-      print 'Event triggered'
+      print 'Event triggered. updateLabel'
       self.question.set(net_ROS.getTextToDisplay())
 
    def updateImg(self, event):
-      print 'Event triggered'
+      print 'Event triggered. updateImg'
       img_name = net_ROS.getImgToDisplay()
       abs_file_path = os.path.join(script_dir, img_name)
       img = PIL.Image.open(abs_file_path)
@@ -339,37 +382,79 @@ class GUI(tk.Frame):
       self.limg.image = imgtk
       
    def ActionY(self):
-      message = 'Yes\n\r'
+      message = 'BUTTON Yes\n\r'
       print(message)
       net_ROS.sendMessage(message)
+      self.bottomframe.destroy()
 
    def ActionN(self):
-      message = 'No\n\r'
+      message = 'BUTTON No\n\r'
       print(message)
       net_ROS.sendMessage(message)
+      self.bottomframe.destroy()
 
    def profileSelection(self):
       global profile
       selection = profileSelectionGUI(self).show()
+      print "Selection: " , selection
       if (len(selection) > 0):
          profile = selection
       self.profile_label.configure(text="Current profile: %s" % profile)
 
+   def userNeedSelection(self, event):
+      print 'Event triggered. userNeedSelection'
+      selection = helpSelectionGUI(self).show()
+      print "User need: " , selection
+      net_ROS.sendMessage(selection)      
+
+   def yesnoSelection(self, event):
+      print 'Event triggered. yesnoSelection'
+      rel_path = 'img/yes_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imY = PIL.Image.open(abs_file_path)
+      self.phY = ImageTk.PhotoImage(imY)
+      rel_path = 'img/no_150.jpg'
+      abs_file_path = os.path.join(script_dir, rel_path)
+      imN = PIL.Image.open(abs_file_path)
+      self.phN = ImageTk.PhotoImage(imN)
+            
+      self.BtnY = Button(self.bottomframe, image=self.phY, command=self.ActionY)
+      self.BtnY.pack(side=LEFT)      
+      self.BtnN = Button(self.bottomframe, image=self.phN, command=self.ActionN)
+      self.BtnN.pack(side=RIGHT)
+
+   def resetGUI(self, event):
+      print 'Event triggered. resetGUI'
+      #reset some variables
+      global profile
+      profile = '<*,*,*,*>'
+      self.question.set("Welcome to Rives de l'Orne ")
+      #reset frames
+      self.profileframe.destroy()
+      self.topframe.destroy()
+      self.middleframe.destroy()
+      self.bottomframe.destroy()
+      self.initUI()
+
    def quit(self):
       net_ROS.closeConnection()
-      #net_speech.closeConnection()
+      net_speech.closeConnection()
       pass
 
 # Global variables:
 # net_ROS and net_speech : objects of class Network
 SPEECH_SERVER_TCP_IP = '127.0.0.1'
 SPEECH_SERVER_TCP_PORT = 5000
+#SPEECH_SERVER_TCP_IP = '10.0.0.1'
+#SPEECH_SERVER_TCP_PORT = 1800
 ROS_SERVER_TCP_IP = '127.0.0.1'
 ROS_SERVER_TCP_PORT = 9000
 
-#net_speech = Network(SPEECH_SERVER_TCP_IP, SPEECH_SERVER_TCP_PORT)
+net_speech = Network(SPEECH_SERVER_TCP_IP, SPEECH_SERVER_TCP_PORT)
 net_ROS = Network(ROS_SERVER_TCP_IP, ROS_SERVER_TCP_PORT)
-
+net_speech.sendMessage("[CONNECT]PythonTestClient\n")
+time.sleep(0.2)
+net_speech.sendMessage("[INIT]\n")
 def main():
    root = tk.Tk()
    f = GUI(root)
