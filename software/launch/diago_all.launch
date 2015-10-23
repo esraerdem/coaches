@@ -19,9 +19,11 @@
 <arg name="pru_patience" default="0.99" /> <!-- percentage of reward kept each second -->
 <arg name="pru_horizon" default="10" />    <!-- number of decisions steps to compute -->
 
+<arg name="include_robot_navigation" default="false" />
 
 <master auto="start"/>
 
+<group if="$(arg include_robot_navigation)">
 
 <include file="robot_navigation.launch">
     <arg name="map_name" value="$(arg map_name)" />
@@ -34,15 +36,22 @@
     <arg name="use_gradient_based_navigation" value="true" />
 </include>
 
+</group>
+
 <group ns="$(arg robot_name)">
 
     <param name="robot_name" value="$(arg robot_name)" />
 
+    <group if="$(arg include_robot_navigation)">
+    
     <node pkg="laser_analysis" name="laserobstacle" type="laserobstacle" args="-gui"  output="screen">
         <param name="laser_frame_id" value="/$(arg robot_name)/laser_frame" />
         <param name="map_distance" value="0.5" />
     </node>
 
+    </group>
+    
+    
     <node pkg="t11_kb_modeling" type="mockModel" name="kb_modeling" respawn="false" output="screen">
       <remap from="t21_robot_location" to="amcl_pose" />
       <param name="map_name" value="DISB1" />

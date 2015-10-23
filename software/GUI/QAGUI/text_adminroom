@@ -1,4 +1,4 @@
-<*, *, en, professor>: Yes go ahead
-<*, *, en, *>: The administrative room is B104 in the middle of this corridor.
-<*, *, it, professor>: Si avanti
-<*, *, it, *>: La stanza amministrativa è B104 nel mezzo del corridoio
+<*, *, en, professor>: All right, go ahead
+<*, *, it, professor>: Bene, prego
+<*, *, it, *>: La stanza amministrativa è B104, nel mezzo del corridoio
+<*, *, *, *>: The administrative room is B104, in the middle of this corridor.

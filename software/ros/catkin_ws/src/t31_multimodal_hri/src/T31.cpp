@@ -26,12 +26,22 @@ void T31::tcpCallback(tcp_interface::RCOMMessage msg) {
     string sm = msg.value;
     if (sm!="") {
         boost::algorithm::to_lower(sm);
+        cout << "Received from ASR: " << sm << endl;
         vector<string> toks;
         boost::split(toks,sm,boost::is_any_of("()\" \n\r"));
         if (toks.size()>1) {
             vector<string>::iterator it = toks.begin();
-            string frame = *it++;
-            string value = *it;
+            string pre = *it++; // should be eityher 'button' or 'asr'
+            string frame = "-";
+            if (pre=="asr") {
+                frame = *it++;
+            }
+            string value = "-";
+            for ( ; it!=toks.end(); it++)
+                if (*it!="") {
+                    value = *it; break; 
+                }
+            cout << "Tokenize from ASR: " << toks.size() << " - " << pre << " - " << frame << " - " << value << endl;
             std_msgs::String out;
             out.data = value;
             PNP_cond_pub.publish(out);

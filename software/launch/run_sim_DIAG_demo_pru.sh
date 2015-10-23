@@ -12,7 +12,7 @@ sleep 3
 
 # Run PRU enabled modules
 
-xterm -hold -e roslaunch diago_all.launch pru_enabled:=true PRU:="$DEMO_PRU"  &
+xterm -hold -e roslaunch diago_all.launch include_robot_navigation:=true pru_enabled:=true PRU:="$DEMO_PRU"  &
 
 sleep 10
 

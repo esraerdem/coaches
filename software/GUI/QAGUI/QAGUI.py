@@ -23,7 +23,7 @@ script_dir = os.path.dirname(__file__)
 from parse_rules_file import *
 
 profile = '<*,*,*,*>' #the default profile
-help_actions = ["toilets", "administrative_room", "schedule", "nohelp"]
+help_actions = ["toilet", "adminroom", "schedule", "nohelp"]
 
 class Network:
    #This class starts the network and launches a thread to receive asynchronous messages
@@ -105,6 +105,7 @@ class Network:
             else:
                print "RECEIVED: ", self.recvmsg
                if (splitmsg[0] == 'display' and len(splitmsg) == 3):
+                  #self.parent.parent.event_generate("<<resetMessage>>")
                   mode = splitmsg[1]
                   interactionname = splitmsg[2]
                   rules_filename = "_".join([splitmsg[1], splitmsg[2]])
@@ -131,6 +132,7 @@ class Network:
                      
                      # if (video) : ...TODO
                elif (splitmsg[0] == 'ask' and  len(splitmsg) == 2):
+                  #self.parent.parent.event_generate("<<resetMessage>>")
                   #This instruction involves displaying a text and showing a GUI with options for the user 
                   print "ASK RECEIVED: ", self.recvmsg
                   interactionname = splitmsg[1]
@@ -320,31 +322,48 @@ class GUI(tk.Frame):
       # TOP FRAME
       # Video
       width, height = 500, 375
-      rel_path = 'videos/rives_delorne.mp4'
-      abs_file_path = os.path.join(script_dir, rel_path)
-      cap = cv2.VideoCapture(abs_file_path)
-      cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
-      cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
       
-      lvideo = tk.Label(self.topframe)
-      lvideo.pack(side = LEFT)
+      if (False):
+        rel_path = 'videos/rives_delorne.mp4'
+        abs_file_path = os.path.join(script_dir, rel_path)
+        cap = cv2.VideoCapture(abs_file_path)
+        cap.set(cv2.cv.CV_CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT, height)
+        
+        lvideo = tk.Label(self.topframe)
+        lvideo.pack(side = LEFT)
+     
+        def show_frame():
+            retval, frame = cap.read()
+            if (retval): # true = still frames to read
+                cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+                h, w = cv2image.shape[:2]
+                img = Image.fromarray(cv2image)
+                im_resized = self.setHeight(w, h, height, img)
+                imgtk = ImageTk.PhotoImage(image=im_resized)
+                lvideo.imgtk = imgtk
+                lvideo.configure(image=imgtk)
+                lvideo.after(20, show_frame)
 
-      def show_frame():
-         retval, frame = cap.read()
-         if (retval): # true = still frames to read
-            cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-            h, w = cv2image.shape[:2]
-            img = Image.fromarray(cv2image)
-            im_resized = self.setHeight(w, h, height, img)
-            imgtk = ImageTk.PhotoImage(image=im_resized)
-            lvideo.imgtk = imgtk
-            lvideo.configure(image=imgtk)
-            lvideo.after(20, show_frame)
+        show_frame()
 
-      show_frame()
-
-      # Image
-      rel_path = 'img/caen-bienvenue.jpg'
+      else:
+        # Left Image
+        # rel_path = 'img/caen-bienvenue.jpg'
+        rel_path = 'img/diag_logo.jpg'
+        abs_file_path = os.path.join(script_dir, rel_path)
+        img = PIL.Image.open(abs_file_path)
+        w, h = img.size
+        im_resized = self.setHeight(w, h, height/2, img)
+        imgtk = ImageTk.PhotoImage(image=im_resized)
+        self.limg = Label(self.topframe, image=imgtk)
+        self.limg.image = imgtk
+        self.limg.pack(side=LEFT) 
+          
+          
+      # Right Image
+      # rel_path = 'img/caen-bienvenue.jpg'
+      rel_path = 'img/diag.png'
       abs_file_path = os.path.join(script_dir, rel_path)
       img = PIL.Image.open(abs_file_path)
       w, h = img.size
@@ -405,7 +424,7 @@ class GUI(tk.Frame):
       print 'Event triggered. userNeedSelection'
       selection = helpSelectionGUI(self).show()
       print "User need: " , selection
-      net_ROS.sendMessage(selection)      
+      net_ROS.sendMessage("BUTTON "+selection+"\n\r")
 
    def yesnoSelection(self, event):
       print 'Event triggered. yesnoSelection'
@@ -426,8 +445,8 @@ class GUI(tk.Frame):
    def resetGUI(self, event):
       print 'Event triggered. resetGUI'
       #reset some variables
-      global profile
-      profile = '<*,*,*,*>'
+      #global profile
+      #profile = '<*,*,*,*>'
       self.question.set("Welcome to Rives de l'Orne ")
       #reset frames
       self.profileframe.destroy()
@@ -443,10 +462,10 @@ class GUI(tk.Frame):
 
 # Global variables:
 # net_ROS and net_speech : objects of class Network
-SPEECH_SERVER_TCP_IP = '127.0.0.1'
-SPEECH_SERVER_TCP_PORT = 5000
-#SPEECH_SERVER_TCP_IP = '10.0.0.1'
-#SPEECH_SERVER_TCP_PORT = 1800
+#SPEECH_SERVER_TCP_IP = '127.0.0.1'
+#SPEECH_SERVER_TCP_PORT = 5000
+SPEECH_SERVER_TCP_IP = '10.0.0.1'
+SPEECH_SERVER_TCP_PORT = 1800
 ROS_SERVER_TCP_IP = '127.0.0.1'
 ROS_SERVER_TCP_PORT = 9000
 
@@ -459,7 +478,8 @@ def main():
    root = tk.Tk()
    f = GUI(root)
 #   root.geometry("1920x1080+0+0")
-   root.geometry("1200x800+50+50")
+#   root.geometry("1200x800+50+50")
+   root.geometry("1200x600+50+50")
    root.mainloop()
    f.quit()
 

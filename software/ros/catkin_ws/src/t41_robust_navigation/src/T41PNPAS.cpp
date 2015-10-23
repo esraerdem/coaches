@@ -29,7 +29,7 @@ T41PNPActionServer::T41PNPActionServer() : PNPActionServer() {
     register_action("goto",&T41PNPActionServer::gotoplace,this);
 //    register_action("goto",&T41PNPActionServer::followcorridor,this);
     register_action("say",&T41PNPActionServer::say,this);
-    register_action("ask",&T41PNPActionServer::say,this);
+    register_action("ask",&T41PNPActionServer::ask,this);
     register_action("display",&T41PNPActionServer::display,this);
     register_action("restart",&T41PNPActionServer::restart,this);
     register_action("start",&T41PNPActionServer::none,this);

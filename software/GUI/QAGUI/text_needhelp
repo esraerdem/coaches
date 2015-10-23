@@ -6,3 +6,4 @@
 #write character '*' for default option
 <*,*,en,*>: "Do you need help?"
 <*,*,it,*>: "Serve aiuto?"
+<*,*,*n,*>: "Do you need help?"

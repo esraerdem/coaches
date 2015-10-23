@@ -4,6 +4,6 @@
 #language = [en | fr | it | sp]
 #occupation = [student | professor | visitor]
 #write character '*' for default option
-<*,*,en,*>: "How can I help you?"
 <*,*,it,student>: "Comme posso aiutarti?"
-<*,*,it,*>: "Comme posso aiutarle?"
+<*,*,it,*>: "Comme posso aiutarla?"
+<*,*,*,*>: "Do you need help?"
